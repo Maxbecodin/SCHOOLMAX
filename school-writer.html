@@ -1,0 +1,4019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCHOOL MAX</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,700&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #000000;
+    --surface: rgba(6,8,20,0.92);
+    --border: rgba(160,200,255,0.06);
+    --border-hover: rgba(160,200,255,0.12);
+    --text: #e8e8e8;
+    --text-dim: #888;
+    --text-muted: #445;
+    --accent: #5b9fff;
+    --accent-glow: rgba(91,159,255,0.15);
+    --accent-border: rgba(91,159,255,0.35);
+    --white: #f0f0f0;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'Space Mono', monospace;
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --card-shadow: 0 2px 8px rgba(0,0,0,0.6), 0 13px 34px rgba(0,0,0,0.5), 0 34px 89px rgba(0,0,0,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at 15% 10%, rgba(20,40,120,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse at 85% 90%, rgba(60,20,100,0.12) 0%, transparent 60%);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 13px;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  .header {
+    padding: 13px 34px;
+    height: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(0,0,0,0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    gap: 21px;
+  }
+
+  .header-left { display: flex; flex-direction: column; gap: 3px; flex-shrink: 0; }
+
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    font-style: italic;
+    font-family: var(--serif);
+    color: var(--white);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    background: linear-gradient(90deg, var(--white) 0%, var(--white) 40%, rgba(255,255,255,0.6) 50%, var(--white) 60%, var(--white) 100%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: titleShimmer 4s ease-in-out infinite;
+  }
+
+  @keyframes titleShimmer {
+    0% { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
+  }
+
+  .header .tagline {
+    font-size: 8px;
+    color: #556;
+    font-weight: 400;
+    font-family: var(--mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* Tab nav — HUD style */
+  .tab-nav {
+    display: flex;
+    gap: 2px;
+    background: rgba(160,180,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 3px;
+    flex-shrink: 0;
+  }
+
+  .tab-btn {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 700;
+    font-family: var(--mono);
+    padding: 5px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .tab-btn:hover { color: var(--text-dim); }
+  .tab-btn.active {
+    background: rgba(91,159,255,0.06);
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    box-shadow: 0 2px 12px rgba(91,159,255,0.25);
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-shrink: 0;
+  }
+
+  .btn-reset {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 11px;
+    cursor: pointer;
+    font-family: var(--mono);
+    font-weight: 700;
+    transition: color 0.2s ease, border-color 0.2s ease;
+    display: none;
+    padding: 5px 11px;
+    border-radius: 6px;
+    letter-spacing: 0.02em;
+  }
+  .btn-reset:hover { color: var(--text); border-color: var(--border-hover); }
+  .btn-reset.visible { display: block; }
+
+  .brain-badge {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    color: #556;
+    font-weight: 700;
+    font-family: var(--mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    user-select: none;
+  }
+  .brain-badge:hover {
+    color: var(--text-dim);
+    border-color: var(--border);
+    background: rgba(255,255,255,0.03);
+  }
+  .brain-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(91,159,255,0.65);
+    flex-shrink: 0;
+  }
+  .brain-badge svg {
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+  }
+  .brain-badge:hover svg { opacity: 0.8; }
+
+  /* ── Brain Graph Modal ── */
+  .brain-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: #060608;
+    display: flex;
+    flex-direction: column;
+    animation: modalIn 0.22s ease;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.98); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  .brain-modal-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .brain-modal-title {
+    font-size: 11px;
+    font-weight: 700;
+    font-family: var(--mono);
+    color: #445;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .brain-modal-close {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.07);
+    color: #555;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--sans);
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  .brain-modal-close:hover { color: var(--text-dim); border-color: var(--border-hover); }
+  .brain-canvas-wrap {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+  #brainCanvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .brain-hint {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    color: #333;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  /* ── Writer section ── */
+  .step-center {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 55px 34px 89px;
+  }
+  .step-inner {
+    width: 100%;
+    max-width: 618px;
+  }
+  .step-label {
+    font-size: 8px;
+    color: var(--text-muted);
+    margin-bottom: 13px;
+    font-weight: 700;
+    font-family: var(--mono);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .glass-card {
+    background: var(--surface);
+    backdrop-filter: blur(21px);
+    -webkit-backdrop-filter: blur(21px);
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    box-shadow: var(--card-shadow);
+    padding: 8px;
+    overflow: hidden;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .glass-card:hover {
+    border-color: var(--border-hover);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.6), 0 13px 34px rgba(0,0,0,0.55), 0 34px 89px rgba(0,0,0,0.35);
+  }
+
+  /* Step transition animations */
+  @keyframes stepOut {
+    from { opacity: 1; transform: scale(1) translateY(0); }
+    to   { opacity: 0; transform: scale(0.97) translateY(-8px); }
+  }
+  @keyframes stepIn {
+    from { opacity: 0; transform: scale(1.02) translateY(13px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .step-entering {
+    animation: stepIn 0.3s ease-out forwards;
+  }
+  .step-exiting {
+    animation: stepOut 0.2s ease-in forwards;
+  }
+
+  .type-grid { display: flex; flex-direction: column; gap: 1px; }
+
+  .type-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-dim);
+    padding: 13px 21px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    font-family: var(--sans);
+    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    letter-spacing: -0.01em;
+  }
+  .type-btn svg { opacity: 0.45; transition: opacity 0.2s ease; flex-shrink: 0; }
+  .type-btn:hover {
+    background: var(--accent-glow);
+    color: #a0d0ff;
+    border-color: var(--accent-border);
+    transform: scale(1.013);
+    box-shadow: 0 0 21px rgba(100,160,255,0.12);
+  }
+  .type-btn:hover svg { opacity: 1; }
+
+  .container {
+    max-width: 618px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 55px 34px 89px;
+  }
+
+  .type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 8px;
+    color: var(--text-muted);
+    margin-bottom: 34px;
+    font-weight: 700;
+    font-family: var(--mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .form-group { margin-bottom: 21px; }
+
+  .form-label {
+    font-size: 8px;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    font-family: var(--mono);
+  }
+  .form-label .label-opt {
+    color: #334;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 8px;
+  }
+
+  .class-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .chip {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 8px 13px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+    letter-spacing: 0.01em;
+  }
+  .chip:hover { border-color: var(--border-hover); color: var(--text-dim); }
+  .chip.active {
+    background: rgba(91,159,255,0.1);
+    border-color: var(--accent-border);
+    color: #a0d0ff;
+  }
+
+  textarea, input[type="text"], input[type="password"] {
+    width: 100%;
+    background: rgba(4,4,12,0.8);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 13px;
+    font-size: 13px;
+    font-family: var(--sans);
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.3s ease;
+    line-height: 1.65;
+  }
+  textarea:focus, input[type="text"]:focus, input[type="password"]:focus {
+    border-color: rgba(91,159,255,0.25);
+    box-shadow: 0 0 13px rgba(91,159,255,0.08);
+  }
+  textarea::placeholder, input::placeholder { color: var(--text-muted); }
+
+  .textarea-prompt { min-height: 130px; }
+  .textarea-context { min-height: 80px; }
+
+  .btn-generate {
+    width: 100%;
+    padding: 13px 34px;
+    background: var(--white);
+    color: #0a0a0a;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: opacity 0.2s ease, box-shadow 0.3s ease;
+    margin-top: 8px;
+    letter-spacing: -0.01em;
+  }
+  .btn-generate:not(:disabled) {
+    animation: btnPulse 2s ease-in-out infinite;
+  }
+  @keyframes btnPulse {
+    0%, 100% { box-shadow: 0 0 0 rgba(255,255,255,0); }
+    50% { box-shadow: 0 0 13px rgba(255,255,255,0.15); }
+  }
+  .btn-generate:hover:not(:disabled) { opacity: 0.88; box-shadow: 0 0 21px rgba(91,159,255,0.25); animation: none; }
+  .btn-generate:disabled {
+    background: #0c0c14;
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+
+  .output-box {
+    background: var(--surface);
+    background-image: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(160,200,255,0.012) 2px,
+      rgba(160,200,255,0.012) 4px
+    );
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: var(--card-shadow);
+    padding: 34px;
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--text);
+    white-space: pre-wrap;
+    max-height: 520px;
+    overflow-y: auto;
+    font-family: var(--sans);
+    animation: fadeIn 0.3s ease;
+  }
+  .output-box::-webkit-scrollbar { width: 5px; }
+  .output-box::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
+  .output-box::-webkit-scrollbar-thumb { background: rgba(91,159,255,0.25); border-radius: 3px; }
+  .output-box::-webkit-scrollbar-thumb:hover { background: rgba(91,159,255,0.4); }
+
+  /* Global scrollbar styling */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+  ::-webkit-scrollbar-thumb { background: rgba(91,159,255,0.2); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(91,159,255,0.35); }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .action-bar { display: flex; gap: 8px; margin-top: 10px; }
+
+  .detector-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: var(--card-shadow);
+    padding: 21px 34px;
+    margin-top: 13px;
+    animation: fadeIn 0.4s ease;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .detector-ring-wrap {
+    width: 60px;
+    height: 60px;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .detector-ring-wrap svg {
+    width: 60px;
+    height: 60px;
+    transform: rotate(-90deg);
+  }
+  .detector-ring-bg {
+    fill: none;
+    stroke: rgba(255,255,255,0.06);
+    stroke-width: 3;
+  }
+  .detector-ring-fill {
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1.2s ease;
+  }
+  .detector-ring-fill.human { stroke: #6aaa6a; filter: drop-shadow(0 0 4px rgba(100,200,100,0.5)); }
+  .detector-ring-fill.ai { stroke: #cc6666; filter: drop-shadow(0 0 4px rgba(220,80,80,0.5)); }
+  .detector-ring-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 700;
+    font-family: var(--mono);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .detector-ring-label.human { color: #6aaa6a; }
+  .detector-ring-label.ai { color: #cc6666; }
+  .detector-body { flex: 1; min-width: 0; }
+  .detector-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+  .detector-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+  .detector-pill {
+    font-size: 10px;
+    font-weight: 700;
+    font-family: var(--mono);
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+  }
+  .detector-pill.ai {
+    background: rgba(220,80,80,0.12);
+    color: #cc6666;
+    border: 1px solid rgba(220,80,80,0.2);
+  }
+  .detector-pill.mixed {
+    background: rgba(230,180,60,0.1);
+    color: #cca832;
+    border: 1px solid rgba(230,180,60,0.2);
+  }
+  .detector-pill.human {
+    background: rgba(100,200,100,0.1);
+    color: #6aaa6a;
+    border: 1px solid rgba(100,200,100,0.2);
+  }
+
+  .btn-copy {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: border-color 0.2s ease, color 0.2s ease;
+    letter-spacing: 0.02em;
+  }
+  .btn-copy:hover { border-color: var(--border-hover); color: var(--text-dim); box-shadow: 0 0 10px rgba(91,159,255,0.1); }
+  .btn-copy.copied { border-color: rgba(100,200,100,0.3); color: #6aaa6a; }
+
+  .btn-humanize {
+    background: rgba(91,159,255,0.1);
+    border: 1px solid var(--accent-border);
+    color: #a0d0ff;
+    padding: 8px 13px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.3s ease;
+    letter-spacing: 0.02em;
+  }
+  .btn-humanize:hover:not(:disabled) { background: rgba(91,159,255,0.2); color: #c0e0ff; box-shadow: 0 0 13px rgba(91,159,255,0.2); }
+  .btn-humanize:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .changes-box {
+    background: rgba(91,159,255,0.04);
+    border: 1px solid rgba(91,159,255,0.12);
+    border-radius: 8px;
+    padding: 13px 21px;
+    margin-top: 13px;
+    animation: fadeIn 0.3s ease;
+  }
+  .changes-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    font-family: var(--mono);
+    margin-bottom: 8px;
+  }
+  .changes-content {
+    font-size: 12px;
+    color: #666;
+    white-space: pre-wrap;
+    line-height: 1.65;
+  }
+
+  .btn-drip-this {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+    letter-spacing: 0.02em;
+  }
+  .btn-drip-this:hover {
+    border-color: var(--accent-border);
+    color: #a0d0ff;
+    background: var(--accent-glow);
+    box-shadow: 0 0 12px rgba(91,159,255,0.15);
+  }
+
+  .followup-bar { display: flex; gap: 8px; margin-top: 21px; }
+  .followup-bar input { flex: 1; }
+
+  .btn-revise {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 13px 21px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: border-color 0.2s ease, color 0.2s ease;
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+  }
+  .btn-revise:hover:not(:disabled) { border-color: var(--border-hover); color: var(--text); }
+  .btn-revise:disabled { cursor: not-allowed; opacity: 0.4; }
+
+  .loading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-dim);
+    font-size: 13px;
+    padding: 20px 0;
+  }
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid rgba(91,159,255,0.15);
+    border-top: 1.5px solid var(--accent);
+    border-radius: 50%;
+    animation: spin 1.2s linear infinite;
+    flex-shrink: 0;
+    box-shadow: 0 0 8px rgba(91,159,255,0.2);
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-box {
+    background: rgba(239,68,68,0.06);
+    border: 1px solid rgba(239,68,68,0.18);
+    border-radius: 8px;
+    padding: 12px 14px;
+    color: #cc6666;
+    font-size: 12px;
+    margin-bottom: 14px;
+  }
+
+  /* ── Drip section ── */
+  #section-drip {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 55px 34px 89px;
+  }
+
+  .drip-inner {
+    width: 100%;
+    max-width: 618px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* Google sign-in row */
+  .google-auth-row {
+    display: flex;
+    gap: 13px;
+    align-items: center;
+    margin-bottom: 34px;
+  }
+
+  .btn-google-signin {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    border: 1px solid #dadce0;
+    color: #3c4043;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+  }
+  .btn-google-signin:hover {
+    background: #f7f8f8;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  }
+  .btn-google-signin:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .btn-google-signin svg { flex-shrink: 0; }
+
+  .token-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: var(--mono);
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .token-status.connected { color: #6aaa6a; }
+  .token-status.error { color: #cc6666; }
+
+  .google-auth-help {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    line-height: 1.6;
+  }
+
+  /* Detect status badge */
+  .detect-status {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: var(--mono);
+    margin-top: 8px;
+    padding: 7px 12px;
+    border-radius: 7px;
+    letter-spacing: 0.01em;
+  }
+  .detect-status.detecting {
+    background: rgba(255,255,255,0.03);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+  .detect-status.table {
+    background: rgba(91,159,255,0.08);
+    color: #a0d0ff;
+    border: 1px solid var(--accent-border);
+  }
+  .detect-status.plain {
+    background: rgba(255,255,255,0.03);
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+  }
+  .detect-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .detecting .detect-dot { background: #555; }
+  .table .detect-dot { background: var(--accent); box-shadow: 0 0 6px rgba(91,159,255,0.6); }
+  .plain .detect-dot { background: #555; }
+
+  /* Duration slider */
+  input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 2px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 1px;
+    outline: none;
+    cursor: pointer;
+    padding: 0;
+    border: none;
+    resize: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    transition: box-shadow 0.2s ease;
+  }
+  input[type="range"]::-webkit-slider-thumb:hover {
+    box-shadow: 0 0 10px rgba(91,159,255,0.5);
+  }
+
+  .duration-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .duration-val {
+    font-size: 13px;
+    font-weight: 700;
+    font-family: var(--mono);
+    color: var(--text-dim);
+    min-width: 52px;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  /* Use writer output btn */
+  .btn-use-output {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 500;
+    font-family: var(--sans);
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 8px;
+    transition: color 0.2s ease;
+    letter-spacing: 0.01em;
+  }
+  .btn-use-output:hover { color: #a0d0ff; }
+
+  /* Progress UI */
+  .drip-progress-wrap {
+    margin-top: 4px;
+  }
+  .progress-bar-track {
+    width: 100%;
+    height: 2px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 1px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 1px;
+    transition: width 0.4s ease;
+    box-shadow: 0 0 8px rgba(91,159,255,0.5);
+  }
+  .progress-label {
+    font-size: 12px;
+    font-family: var(--mono);
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+  .progress-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+  .btn-cancel {
+    background: none;
+    border: 1px solid rgba(239,68,68,0.2);
+    color: rgba(239,68,68,0.6);
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: border-color 0.2s ease, color 0.2s ease;
+    letter-spacing: 0.02em;
+  }
+  .btn-cancel:hover { border-color: rgba(239,68,68,0.4); color: rgba(239,68,68,0.85); }
+
+  .drip-done {
+    text-align: center;
+    padding: 20px 0;
+    color: var(--text-dim);
+    font-size: 13px;
+  }
+  .drip-done .done-check {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #6aaa6a;
+  }
+
+  @media (max-width: 618px) {
+    .step-center { padding: 34px 13px 55px; }
+    .container, #section-drip { padding: 34px 13px 55px; }
+    .header { padding: 13px; height: auto; gap: 13px; }
+    .header h1 { font-size: 21px; }
+    .tab-btn { padding: 5px 8px; }
+  }
+
+  /* Starfield canvas */
+  #starfieldCanvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* API key setup overlay */
+  .setup-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    background: rgba(0,0,8,0.96);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .setup-card {
+    width: 100%;
+    max-width: 420px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    padding: 34px;
+    box-shadow: var(--card-shadow);
+    position: relative;
+  }
+  .setup-dismiss {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: none;
+    border: none;
+    color: #555;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 4px;
+    transition: color 0.15s ease;
+  }
+  .setup-dismiss:hover { color: var(--text); }
+  .setup-title {
+    font-size: 21px;
+    font-weight: 700;
+    font-style: italic;
+    font-family: var(--serif);
+    color: var(--white);
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .setup-sub {
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 22px;
+    line-height: 1.6;
+  }
+  .setup-sub a { color: var(--accent); text-decoration: none; }
+  .setup-sub a:hover { color: #a0d0ff; }
+  .setup-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .setup-row input {
+    flex: 1;
+    resize: none;
+    min-height: unset;
+    padding: 10px 13px;
+    font-size: 12px;
+    border-radius: 8px;
+    letter-spacing: 0.01em;
+  }
+  .btn-save-key {
+    background: var(--white);
+    border: none;
+    color: #0a0a0a;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: opacity 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .btn-save-key:hover { opacity: 0.85; }
+  .setup-error {
+    font-size: 11px;
+    color: #cc6666;
+    margin-top: 10px;
+    display: none;
+  }
+
+  /* Key badge in header */
+  .btn-key {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 6px;
+    transition: color 0.2s ease, border-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-family: var(--mono);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .btn-key:hover { color: var(--text); border-color: var(--border-hover); box-shadow: 0 0 10px rgba(91,159,255,0.12); }
+  /* ── Solar System Labels ── */
+  .system-modal .planet-label {
+    position: absolute;
+    color: rgba(160,200,255,0.95);
+    font-size: 14px;
+    font-weight: 700;
+    font-family: var(--mono);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    pointer-events: none;
+    transition: color 0.3s;
+    text-shadow: 0 0 10px rgba(91,159,255,0.5);
+  }
+  .system-modal .planet-label.bright { color: rgba(200,230,255,1); text-shadow: 0 0 12px rgba(91,159,255,0.7); }
+  .system-modal .sun-label {
+    position: absolute;
+    color: rgba(255,240,180,0.95);
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    pointer-events: none;
+    text-shadow: 0 0 10px rgba(255,220,100,0.5);
+  }
+  .system-modal #system-info-card {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    background: rgba(0,0,0,0.75);
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 12px;
+    padding: 16px 20px;
+    min-width: 220px;
+    max-width: 300px;
+    z-index: 100;
+  }
+  .system-modal #system-info-card.visible { opacity: 1; }
+  .system-modal #system-info-card h2 { color: #fff; font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .system-modal #system-info-card .badge {
+    display: inline-block; font-size: 10px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.8px; padding: 3px 8px; border-radius: 6px;
+    background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); margin-bottom: 10px;
+  }
+  .system-modal #system-info-card p { color: rgba(255,255,255,0.65); font-size: 13px; line-height: 1.5; }
+
+  /* ── Auth UI ── */
+  .auth-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 6px;
+    transition: color 0.2s ease, border-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-family: var(--mono);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .auth-btn:hover { color: var(--text); border-color: var(--border-hover); }
+
+  .auth-profile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    position: relative;
+    padding: 3px;
+    border-radius: 6px;
+    transition: background 0.2s ease;
+  }
+  .auth-profile:hover { background: rgba(255,255,255,0.04); }
+  .auth-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border);
+  }
+  .auth-name {
+    font-size: 11px;
+    font-family: var(--mono);
+    font-weight: 700;
+    color: var(--text-dim);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .auth-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: var(--card-shadow);
+    padding: 4px;
+    z-index: 60;
+    min-width: 120px;
+    display: none;
+  }
+  .auth-dropdown.open { display: block; }
+  .auth-dropdown-item {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 11px;
+    font-family: var(--mono);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 8px 13px;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .auth-dropdown-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+
+  /* ── History button ── */
+  .btn-history {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 6px;
+    transition: color 0.2s ease, border-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-family: var(--mono);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .btn-history:hover { color: var(--text); border-color: var(--border-hover); }
+
+  /* ── History Panel ── */
+  .history-panel {
+    position: fixed;
+    top: 0;
+    right: -320px;
+    width: 320px;
+    height: 100%;
+    background: rgba(6,8,20,0.97);
+    border-left: 1px solid var(--border);
+    box-shadow: -8px 0 34px rgba(0,0,0,0.5);
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    transition: right 0.25s ease;
+    backdrop-filter: blur(21px);
+    -webkit-backdrop-filter: blur(21px);
+  }
+  .history-panel.open { right: 0; }
+  .history-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 21px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .history-title {
+    font-size: 8px;
+    font-weight: 700;
+    font-family: var(--mono);
+    color: var(--text-muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .history-close {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+  .history-close:hover { color: var(--text); border-color: var(--border-hover); }
+  .history-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 13px;
+  }
+  .history-empty {
+    color: var(--text-muted);
+    font-size: 11px;
+    text-align: center;
+    padding: 34px 21px;
+    line-height: 1.7;
+  }
+  .history-group-label {
+    font-size: 8px;
+    font-weight: 700;
+    font-family: var(--mono);
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 8px 8px 4px;
+    margin-top: 8px;
+  }
+  .history-group-label:first-child { margin-top: 0; }
+  .history-item {
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 8px;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    transition: background 0.15s ease, border-color 0.15s ease;
+    display: block;
+    margin-bottom: 2px;
+  }
+  .history-item:hover {
+    background: rgba(255,255,255,0.03);
+    border-color: var(--border);
+  }
+  .history-item-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+  .history-item-type {
+    font-size: 8px;
+    font-weight: 700;
+    font-family: var(--mono);
+    color: var(--accent);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .history-item-date {
+    font-size: 8px;
+    color: var(--text-muted);
+    font-family: var(--mono);
+    letter-spacing: 0.02em;
+  }
+  .history-item-prompt {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  /* ── Plans section ── */
+  #plans-section {
+    padding: 89px 34px 120px;
+    border-top: 1px solid var(--border);
+  }
+  .plans-inner {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .plans-usage-row {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-bottom: 21px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    display: none;
+  }
+  .plans-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 13px;
+    margin-top: 21px;
+  }
+  .plan-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    padding: 21px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: border-color 0.2s;
+  }
+  .plan-card:hover { border-color: var(--border-hover); }
+  .plan-card.plan-active {
+    border-color: var(--accent-border);
+    box-shadow: 0 0 0 1px var(--accent-border);
+  }
+  .plan-badge-top {
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: #000;
+    font-family: var(--mono);
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 0 0 6px 6px;
+    white-space: nowrap;
+  }
+  .plan-name {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .plan-price {
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1;
+  }
+  .plan-period {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-muted);
+    margin-top: 3px;
+    margin-bottom: 13px;
+  }
+  .plan-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    flex: 1;
+  }
+  .plan-features li {
+    font-size: 11px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .plan-features li::before {
+    content: '—';
+    color: var(--text-muted);
+    flex-shrink: 0;
+    font-size: 9px;
+  }
+  .plan-current-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-top: 16px;
+    text-align: center;
+  }
+  .plan-btn {
+    margin-top: 16px;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-hover);
+    background: transparent;
+    color: var(--text-dim);
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .plan-btn:hover { color: var(--text); border-color: var(--accent-border); }
+  .plan-btn-accent {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #000;
+    font-weight: 700;
+  }
+  .plan-btn-accent:hover { background: #74aeff; border-color: #74aeff; color: #000; }
+  @media (max-width: 680px) {
+    .plans-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 400px) {
+    .plans-grid { grid-template-columns: 1fr; }
+  }
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+  }
+}
+</script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+</head>
+<body>
+<canvas id="starfieldCanvas"></canvas>
+<div class="app">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <h1>SCHOOL MAX</h1>
+      <div class="tagline">writes like max · not like ai</div>
+    </div>
+
+    <div class="tab-nav">
+      <button class="tab-btn active" id="tab-writer" onclick="switchTab('writer')">writer</button>
+      <button class="tab-btn" id="tab-drip" onclick="switchTab('drip')">drip</button>
+    </div>
+
+    <div class="header-right">
+      <button class="btn-reset" id="resetBtn" onclick="resetAll()">← main menu</button>
+
+      <!-- Auth: sign-in button (shown when logged out) -->
+      <button class="auth-btn" id="authSignInBtn" onclick="firebaseSignIn()" style="display:none">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+        </svg>
+        sign in
+      </button>
+
+      <!-- Auth: profile (shown when logged in) -->
+      <div class="auth-profile" id="authProfile" style="display:none" onclick="toggleAuthDropdown(event)">
+        <img class="auth-avatar" id="authAvatar" src="" alt="">
+        <span class="auth-name" id="authName"></span>
+        <div class="auth-dropdown" id="authDropdown">
+          <button class="auth-dropdown-item" onclick="firebaseSignOut()">sign out</button>
+        </div>
+      </div>
+
+      <!-- History button -->
+      <button class="btn-history" onclick="toggleHistoryPanel()" title="History">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        history
+      </button>
+
+      <button class="btn-key" onclick="openSetup()" title="API key settings">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6"/><path d="M15.5 7.5l3 3L22 7l-3-3"/>
+        </svg>
+        api key
+      </button>
+      <div class="brain-badge" onclick="openSystem()" title="solar system">
+        <span class="brain-dot"></span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8" stroke-dasharray="2 3"/><circle cx="12" cy="12" r="11" stroke-dasharray="1.5 4"/>
+        </svg>
+        <span>system</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── WRITER SECTION ── -->
+  <div id="section-writer" style="display:contents">
+
+    <!-- Step 1: Type Selection -->
+    <div class="step-center" id="step-type">
+      <div class="step-inner">
+        <div class="step-label">assignment type</div>
+        <div class="glass-card">
+          <div class="type-grid">
+
+            <button class="type-btn" onclick="selectType('essay','Essay')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+                <polyline points="13 2 13 9 20 9"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+              </svg>
+              Essay
+            </button>
+
+            <button class="type-btn" onclick="selectType('discussion','Classwork')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+              </svg>
+              Classwork
+            </button>
+
+            <button class="type-btn" onclick="selectType('frq','FRQ / Lab')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+              </svg>
+              FRQ / Lab
+            </button>
+
+            <button class="type-btn" onclick="selectType('email','Email to Teacher')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+              Email to Teacher
+            </button>
+
+            <button class="type-btn" onclick="selectType('short','Short Response')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="17" y1="10" x2="3" y2="10"/>
+                <line x1="21" y1="6" x2="3" y2="6"/>
+                <line x1="21" y1="14" x2="3" y2="14"/>
+                <line x1="17" y1="18" x2="3" y2="18"/>
+              </svg>
+              Short Response
+            </button>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Plans section (visible below the fold on main screen) -->
+    <div id="plans-section">
+      <div class="plans-inner">
+        <div class="step-label">plans</div>
+        <div class="plans-usage-row" id="plansUsageRow"></div>
+        <div class="plans-grid">
+
+          <!-- Free -->
+          <div class="plan-card plan-active" id="planCard-free">
+            <div class="plan-name">free</div>
+            <div class="plan-price">$0</div>
+            <div class="plan-period">forever</div>
+            <ul class="plan-features">
+              <li>1,000 words / month</li>
+              <li>Groq AI model</li>
+              <li>Humanizer</li>
+              <li>Drip writing</li>
+              <li>History saved</li>
+            </ul>
+            <div class="plan-current-label" id="planCurrentLabel-free">current plan</div>
+          </div>
+
+          <!-- Starter -->
+          <div class="plan-card" id="planCard-starter">
+            <div class="plan-name">starter</div>
+            <div class="plan-price">$15</div>
+            <div class="plan-period">/ month</div>
+            <ul class="plan-features">
+              <li>5,000 words / month</li>
+              <li>Claude AI model</li>
+              <li>Humanizer</li>
+              <li>Drip writing</li>
+              <li>History saved</li>
+            </ul>
+            <button class="plan-btn" onclick="handleUpgrade('starter')">Starter · $15/mo</button>
+          </div>
+
+          <!-- Pro -->
+          <div class="plan-card" id="planCard-pro">
+            <div class="plan-name">pro</div>
+            <div class="plan-price">$25</div>
+            <div class="plan-period">/ month</div>
+            <ul class="plan-features">
+              <li>15,000 words / month</li>
+              <li>Claude AI model</li>
+              <li>Humanizer</li>
+              <li>Drip writing</li>
+              <li>History saved</li>
+            </ul>
+            <button class="plan-btn" onclick="handleUpgrade('pro')">Pro · $25/mo</button>
+          </div>
+
+          <!-- Unlimited -->
+          <div class="plan-card" id="planCard-unlimited">
+            <div class="plan-badge-top">most popular</div>
+            <div class="plan-name">unlimited</div>
+            <div class="plan-price">$40</div>
+            <div class="plan-period">/ month</div>
+            <ul class="plan-features">
+              <li>Unlimited words</li>
+              <li>Claude AI model</li>
+              <li>Humanizer</li>
+              <li>Drip writing</li>
+              <li>Priority support</li>
+            </ul>
+            <button class="plan-btn plan-btn-accent" onclick="handleUpgrade('unlimited')">Unlimited · $40/mo</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Steps 2 + 3 -->
+    <div class="container">
+
+      <!-- Step 2: Details -->
+      <div id="step-details" style="display:none">
+        <div class="type-badge" id="typeBadge"></div>
+
+        <div class="form-group">
+          <label class="form-label">class</label>
+          <div class="class-chips" id="classChips"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">assignment prompt</label>
+          <textarea class="textarea-prompt" id="promptInput" placeholder="paste the assignment prompt or describe what you need to write..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">sources, notes, or data <span class="label-opt">optional</span></label>
+          <textarea class="textarea-context" id="contextInput" placeholder="paste quotes, data tables, source material, rubric details..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">complicated punctuation</label>
+          <div class="class-chips" id="punctChips">
+            <button class="chip active" onclick="setPunctuation(true)">On</button>
+            <button class="chip" onclick="setPunctuation(false)">Off</button>
+          </div>
+        </div>
+
+        <button class="btn-generate" id="generateBtn" disabled onclick="generate()">write it</button>
+      </div>
+
+      <!-- Step 3: Output -->
+      <div id="step-output" style="display:none">
+        <div id="loadingIndicator" class="loading" style="display:none">
+          <div class="spinner"></div>
+          <span id="loadingText">writing...</span>
+        </div>
+        <div id="errorBox" class="error-box" style="display:none"></div>
+        <div id="outputContent" style="display:none">
+          <div class="output-box" id="outputBox"></div>
+          <div class="action-bar">
+            <button class="btn-humanize" id="humanizeBtn" onclick="humanize()">humanize</button>
+            <button class="btn-copy" id="copyBtn" onclick="copyOutput()">copy</button>
+            <button class="btn-drip-this" onclick="dripThis()">drip this →</button>
+          </div>
+          <div id="detectorCard" class="detector-card" style="display:none"></div>
+          <div id="changesBox" class="changes-box" style="display:none">
+            <div class="changes-label">what changed</div>
+            <div class="changes-content" id="changesContent"></div>
+          </div>
+          <div class="followup-bar">
+            <input type="text" id="followUpInput" placeholder="make it shorter, change the hook, add more evidence..." onkeydown="if(event.key==='Enter')revise()">
+            <button class="btn-revise" id="reviseBtn" onclick="revise()">revise</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- end section-writer -->
+
+  <!-- ── DRIP SECTION ── -->
+  <div id="section-drip" style="display:none">
+    <div class="drip-inner">
+
+      <!-- Google sign-in -->
+      <div class="form-group">
+        <label class="form-label">google docs access</label>
+        <p class="google-auth-help" id="googleAuthHelp">Sign in to allow drip writing to your Google Docs.</p>
+        <div class="google-auth-row">
+          <button class="btn-google-signin" id="googleSignInBtn" onclick="googleOAuthSignIn()">
+            <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+            Sign in with Google
+          </button>
+          <div class="token-status" id="tokenStatus" style="display:none"></div>
+        </div>
+      </div>
+
+      <!-- Doc URL -->
+      <div class="form-group">
+        <label class="form-label">google doc url</label>
+        <input type="text" id="dripDocUrl" placeholder="docs.google.com/document/d/..." oninput="onDocUrlInput()" onblur="detectDoc()">
+        <div id="detectStatus" style="display:none"></div>
+      </div>
+
+      <!-- Context (table fill) -->
+      <div class="form-group" id="dripContextGroup" style="display:none">
+        <label class="form-label">context / notes <span class="label-opt">optional</span></label>
+        <textarea id="dripContext" class="textarea-context" placeholder="background info to help claude answer the form questions..."></textarea>
+      </div>
+
+      <!-- Text (drip mode) -->
+      <div class="form-group" id="dripTextGroup" style="display:none">
+        <label class="form-label">text to drip</label>
+        <button class="btn-use-output" id="useOutputBtn" onclick="useWriterOutput()" style="display:none">← use writer output</button>
+        <textarea id="dripText" class="textarea-prompt" placeholder="paste the text you want dripped in..."></textarea>
+      </div>
+
+      <!-- Duration -->
+      <div class="form-group" id="dripDurationGroup" style="display:none">
+        <label class="form-label">duration</label>
+        <div class="duration-row">
+          <input type="range" id="dripDuration" min="5" max="90" value="30" oninput="updateDurationLabel()">
+          <span class="duration-val" id="durationLabel">30 min</span>
+        </div>
+      </div>
+
+      <!-- Start button -->
+      <button class="btn-generate" id="dripStartBtn" style="display:none" onclick="startDrip()">start drip</button>
+
+      <!-- Progress -->
+      <div id="dripProgressWrap" style="display:none" class="drip-progress-wrap">
+        <div class="progress-label" id="dripProgressLabel">Preparing...</div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="dripProgressFill" style="width:0%"></div>
+        </div>
+        <div class="progress-sub" id="dripProgressSub"></div>
+        <button class="btn-cancel" onclick="cancelDrip()">cancel</button>
+      </div>
+
+      <!-- Done -->
+      <div id="dripDoneWrap" style="display:none" class="drip-done">
+        <div class="done-check">✓</div>
+        <div>Done. Check <strong>File → Version history</strong> to confirm it looks natural.</div>
+        <br>
+        <button class="btn-copy" onclick="resetDrip()">drip another</button>
+      </div>
+
+      <!-- Error -->
+      <div id="dripError" class="error-box" style="display:none;margin-top:12px"></div>
+
+    </div>
+  </div>
+
+</div><!-- end app -->
+
+<!-- API Key Setup Overlay -->
+<!-- Solar System Modal -->
+<div class="brain-modal system-modal" id="systemModal" style="display:none">
+  <div class="brain-modal-header">
+    <span class="brain-modal-title">solar system</span>
+    <button class="brain-modal-close" onclick="closeSystem()">×</button>
+  </div>
+  <div class="brain-canvas-wrap" id="systemWrap">
+    <div id="system-label-container" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;"></div>
+    <div id="system-info-card">
+      <h2 id="sys-card-title"></h2>
+      <div class="badge" id="sys-card-badge"></div>
+      <p id="sys-card-body"></p>
+    </div>
+    <div class="brain-hint">hover planets to explore · scroll to zoom · esc to close</div>
+  </div>
+</div>
+
+<!-- History Panel -->
+<div class="history-panel" id="historyPanel">
+  <div class="history-header">
+    <span class="history-title">History</span>
+    <button class="history-close" onclick="toggleHistoryPanel()">×</button>
+  </div>
+  <div class="history-body" id="historyBody">
+    <div class="history-empty" id="historyEmpty">Loading...</div>
+  </div>
+</div>
+
+<!-- Upgrade Modal -->
+<div class="setup-overlay" id="upgradeModal" style="display:none">
+  <div class="setup-card" style="max-width:460px">
+    <button class="setup-dismiss" onclick="closeUpgradeModal()" title="Close">×</button>
+    <div class="setup-title">word limit reached</div>
+    <div class="setup-sub" id="upgradeUsage"></div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button class="btn-generate" style="margin:0;font-size:12px;padding:13px" onclick="handleUpgrade('starter')">Starter · $15/mo · 5,000 words</button>
+      <button class="btn-generate" style="margin:0;font-size:12px;padding:13px" onclick="handleUpgrade('pro')">Pro · $25/mo · 15,000 words</button>
+      <button class="btn-generate" style="margin:0;font-size:12px;padding:13px" onclick="handleUpgrade('unlimited')">Unlimited · $40/mo</button>
+    </div>
+  </div>
+</div>
+
+<div class="setup-overlay" id="setupOverlay" style="display:none">
+  <div class="setup-card">
+    <button class="setup-dismiss" onclick="document.getElementById('setupOverlay').style.display='none'" title="Close">×</button>
+    <div class="setup-title">set your api keys</div>
+    <div class="setup-sub">
+      Claude: get a key at <a href="https://console.anthropic.com/keys" target="_blank">console.anthropic.com ↗</a> — powers paid tier writing.<br>
+      Groq: free key at <a href="https://console.groq.com/keys" target="_blank">console.groq.com ↗</a> — powers <strong>free tier</strong> writing.<br>
+      Winston AI: free key at <a href="https://dev.gowinston.ai" target="_blank">dev.gowinston.ai ↗</a> — <strong>required for humanizer</strong> to verify and retry until it passes.<br>
+      Google OAuth Client ID: create one at <a href="https://console.cloud.google.com/apis/credentials" target="_blank">Google Cloud Console ↗</a> — required for drip to Google Docs.
+    </div>
+    <div class="setup-row">
+      <input type="password" id="apiKeyInput" placeholder="Claude key (sk-ant-...)" autocomplete="off" onkeydown="if(event.key==='Enter')saveApiKey()">
+      <button class="btn-save-key" onclick="saveApiKey()">Save</button>
+    </div>
+    <div class="setup-row" style="margin-top:8px">
+      <input type="password" id="gptzeroKeyInput" placeholder="Winston AI key (required for humanizer)" autocomplete="off" onkeydown="if(event.key==='Enter')saveApiKey()">
+    </div>
+    <div class="setup-row" style="margin-top:8px">
+      <input type="password" id="undKeyInput" placeholder="Undetectable.ai key" autocomplete="off" onkeydown="if(event.key==='Enter')saveApiKey()">
+    </div>
+    <div class="setup-row" style="margin-top:8px">
+      <input type="password" id="groqKeyInput" placeholder="Groq key (gsk_...) — free tier uses Groq" autocomplete="off" onkeydown="if(event.key==='Enter')saveApiKey()">
+    </div>
+    <div class="setup-row" style="margin-top:8px">
+      <input type="text" id="googleClientIdInput" placeholder="Google OAuth Client ID (xxxxx.apps.googleusercontent.com)" autocomplete="off" onkeydown="if(event.key==='Enter')saveApiKey()">
+    </div>
+    <div class="setup-error" id="setupError"></div>
+  </div>
+</div>
+
+
+<script>
+// ══════════════════════════════════════════════════
+//  FIREBASE
+// ══════════════════════════════════════════════════
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCOAjeY0nWQicACyyUXHlFB0WkjCPzdjRU",
+  authDomain: "schoolmax-8fd2c.firebaseapp.com",
+  projectId: "schoolmax-8fd2c",
+  storageBucket: "schoolmax-8fd2c.firebasestorage.app",
+  messagingSenderId: "814880834",
+  appId: "1:814880834:web:481798908405de1016f5db",
+  measurementId: "G-1W49CPCS9S",
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+let currentUser = null;
+
+// ── Auth UI ──
+
+auth.onAuthStateChanged(user => {
+  currentUser = user;
+  const signInBtn = document.getElementById('authSignInBtn');
+  const profile = document.getElementById('authProfile');
+  if (user) {
+    signInBtn.style.display = 'none';
+    profile.style.display = 'flex';
+    document.getElementById('authAvatar').src = user.photoURL || '';
+    const name = (user.displayName || user.email || '').slice(0, 12);
+    document.getElementById('authName').textContent = name;
+    loadHistory();
+    loadUsage();
+  } else {
+    userUsage = { wordsUsed: 0, tier: 'free', stripeCustomerId: '' };
+    signInBtn.style.display = 'flex';
+    profile.style.display = 'none';
+    renderHistoryEmpty();
+    updatePlansSection();
+  }
+});
+
+function firebaseSignIn() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider).catch(err => {
+    console.error('Sign-in failed:', err.message);
+  });
+}
+
+function firebaseSignOut() {
+  auth.signOut();
+  document.getElementById('authDropdown').classList.remove('open');
+}
+
+function toggleAuthDropdown(e) {
+  e.stopPropagation();
+  document.getElementById('authDropdown').classList.toggle('open');
+}
+
+document.addEventListener('click', () => {
+  document.getElementById('authDropdown').classList.remove('open');
+});
+
+// ── Save conversation ──
+
+async function saveConversation() {
+  if (!currentUser) return;
+  const prompt = document.getElementById('promptInput')?.value?.trim() || '';
+  const output = writerState.output || '';
+  if (!output) return;
+  try {
+    await db.collection('users').doc(currentUser.uid)
+      .collection('conversations').add({
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        class: writerState.selectedClass || '',
+        type: writerState.typeLabel || '',
+        prompt: prompt,
+        output: output,
+        title: output.slice(0, 60),
+        wordCount: countWords(output),
+      });
+    loadHistory();
+  } catch (err) {
+    console.error('Failed to save conversation:', err.message);
+  }
+}
+
+// ── History panel ──
+
+function toggleHistoryPanel() {
+  document.getElementById('historyPanel').classList.toggle('open');
+}
+
+function renderHistoryEmpty() {
+  const body = document.getElementById('historyBody');
+  body.innerHTML = '<div class="history-empty">Sign in with Google to save and view history</div>';
+}
+
+async function loadHistory() {
+  if (!currentUser) { renderHistoryEmpty(); return; }
+  const body = document.getElementById('historyBody');
+  body.innerHTML = '<div class="history-empty">Loading...</div>';
+  try {
+    const snap = await db.collection('users').doc(currentUser.uid)
+      .collection('conversations').orderBy('createdAt', 'desc').limit(50).get();
+    if (snap.empty) {
+      body.innerHTML = '<div class="history-empty">No conversations yet. Write something to get started.</div>';
+      return;
+    }
+    // Group by class
+    const groups = {};
+    snap.forEach(doc => {
+      const d = doc.data();
+      const cls = d.class || 'Uncategorized';
+      if (!groups[cls]) groups[cls] = [];
+      groups[cls].push({ id: doc.id, ...d });
+    });
+    let html = '';
+    for (const [cls, items] of Object.entries(groups)) {
+      html += `<div class="history-group-label">${cls}</div>`;
+      for (const item of items) {
+        const date = item.createdAt?.toDate ? item.createdAt.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+        const promptSnip = (item.prompt || '').slice(0, 60) || '(no prompt)';
+        const wc = item.wordCount ? `${item.wordCount}w` : '';
+        html += `<button class="history-item" onclick="loadConversation('${item.id}')">
+          <div class="history-item-meta">
+            <span class="history-item-type">${item.type || ''}</span>
+            <span class="history-item-date">${date}${wc ? ' · ' + wc : ''}</span>
+          </div>
+          <div class="history-item-prompt">${promptSnip}</div>
+        </button>`;
+      }
+    }
+    body.innerHTML = html;
+  } catch (err) {
+    body.innerHTML = `<div class="history-empty">Error loading history</div>`;
+    console.error('History load error:', err.message);
+  }
+}
+
+async function loadConversation(docId) {
+  if (!currentUser) return;
+  try {
+    const doc = await db.collection('users').doc(currentUser.uid)
+      .collection('conversations').doc(docId).get();
+    if (!doc.exists) return;
+    const data = doc.data();
+    // Navigate to output view
+    writerState.typeLabel = data.type || '';
+    writerState.selectedClass = data.class || '';
+    writerState.output = data.output || '';
+    document.getElementById('step-type').style.display = 'none';
+    document.getElementById('step-details').style.display = 'none';
+    document.getElementById('step-output').style.display = 'block';
+    document.getElementById('step-output').classList.add('step-entering');
+    document.getElementById('step-output').addEventListener('animationend', function h() {
+      document.getElementById('step-output').classList.remove('step-entering');
+      document.getElementById('step-output').removeEventListener('animationend', h);
+    });
+    document.getElementById('loadingIndicator').style.display = 'none';
+    document.getElementById('outputContent').style.display = 'block';
+    document.getElementById('outputBox').textContent = data.output || '';
+    document.getElementById('errorBox').style.display = 'none';
+    document.getElementById('detectorCard').style.display = 'none';
+    document.getElementById('changesBox').style.display = 'none';
+    document.getElementById('resetBtn').classList.add('visible');
+    // Switch to writer tab if not already
+    switchTab('writer');
+    // Close history panel
+    document.getElementById('historyPanel').classList.remove('open');
+  } catch (err) {
+    console.error('Failed to load conversation:', err.message);
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  USAGE TRACKING & TIERS
+// ══════════════════════════════════════════════════
+
+const TIER_LIMITS = { free: 1000, starter: 5000, pro: 15000, unlimited: 999999 };
+let userUsage = { wordsUsed: 0, tier: 'free', stripeCustomerId: '' };
+
+async function loadUsage() {
+  if (!currentUser) return;
+  try {
+    const doc = await db.collection('users').doc(currentUser.uid).get();
+    if (doc.exists) {
+      const d = doc.data();
+      userUsage.wordsUsed = d.wordsUsed || 0;
+      userUsage.tier = d.tier || 'free';
+      userUsage.stripeCustomerId = d.stripeCustomerId || '';
+    } else {
+      await db.collection('users').doc(currentUser.uid).set({
+        wordsUsed: 0,
+        tier: 'free',
+        stripeCustomerId: '',
+      });
+    }
+  } catch (err) {
+    console.error('Failed to load usage:', err.message);
+  }
+  updatePlansSection();
+}
+
+async function addWordsUsed(wordCount) {
+  if (!currentUser || wordCount <= 0) return;
+  userUsage.wordsUsed += wordCount;
+  try {
+    await db.collection('users').doc(currentUser.uid).update({
+      wordsUsed: firebase.firestore.FieldValue.increment(wordCount),
+    });
+  } catch (err) {
+    console.error('Failed to update word count:', err.message);
+  }
+}
+
+function countWords(text) {
+  return text.trim().split(/\s+/).filter(w => w.length > 0).length;
+}
+
+function getUserTier() {
+  return userUsage.tier || 'free';
+}
+
+function isOverLimit() {
+  const limit = TIER_LIMITS[getUserTier()] || TIER_LIMITS.free;
+  return userUsage.wordsUsed >= limit;
+}
+
+function showUpgradeModal() {
+  document.getElementById('upgradeModal').style.display = 'flex';
+  const limit = TIER_LIMITS[getUserTier()] || TIER_LIMITS.free;
+  document.getElementById('upgradeUsage').textContent =
+    `You've used ${userUsage.wordsUsed.toLocaleString()} of ${limit.toLocaleString()} words on the ${getUserTier()} tier.`;
+}
+
+function closeUpgradeModal() {
+  document.getElementById('upgradeModal').style.display = 'none';
+}
+
+function handleUpgrade(tier) {
+  const btn = event.target;
+  btn.textContent = 'coming soon';
+  btn.disabled = true;
+  const labels = { starter: 'Starter · $15/mo', pro: 'Pro · $25/mo', unlimited: 'Unlimited · $40/mo' };
+  setTimeout(() => { btn.textContent = labels[tier] || tier; btn.disabled = false; }, 2000);
+}
+
+function updatePlansSection() {
+  const tier = getUserTier();
+  const limit = TIER_LIMITS[tier] || TIER_LIMITS.free;
+  const used = userUsage.wordsUsed || 0;
+
+  const usageRow = document.getElementById('plansUsageRow');
+  if (usageRow) {
+    if (currentUser) {
+      usageRow.style.display = 'block';
+      usageRow.textContent = `${used.toLocaleString()} of ${limit === 999999 ? 'unlimited' : limit.toLocaleString()} words used · ${tier} plan`;
+    } else {
+      usageRow.style.display = 'none';
+    }
+  }
+
+  ['free', 'starter', 'pro', 'unlimited'].forEach(t => {
+    const card = document.getElementById(`planCard-${t}`);
+    const label = document.getElementById(`planCurrentLabel-${t}`);
+    if (card) card.classList.toggle('plan-active', t === tier);
+    if (label) label.style.display = t === tier ? 'block' : 'none';
+  });
+}
+
+// ══════════════════════════════════════════════════
+//  API KEY
+// ══════════════════════════════════════════════════
+
+function getApiKey() {
+  return localStorage.getItem('claudeKey') || '';
+}
+
+function getWinstonKey() {
+  return localStorage.getItem('winstonKey') || '';
+}
+
+function getUndKey() {
+  return localStorage.getItem('undKey') || '';
+}
+
+function getGoogleClientId() {
+  return localStorage.getItem('googleClientId') || '';
+}
+
+function getGroqKey() {
+  return localStorage.getItem('groqKey') || '';
+}
+
+function openSetup() {
+  const key = getApiKey();
+  if (key) document.getElementById('apiKeyInput').value = key;
+  const gz = getWinstonKey();
+  if (gz) document.getElementById('gptzeroKeyInput').value = gz;
+  const und = getUndKey();
+  if (und) document.getElementById('undKeyInput').value = und;
+  const grq = getGroqKey();
+  if (grq) document.getElementById('groqKeyInput').value = grq;
+  const gci = getGoogleClientId();
+  if (gci) document.getElementById('googleClientIdInput').value = gci;
+  document.getElementById('setupOverlay').style.display = 'flex';
+  setTimeout(() => document.getElementById('apiKeyInput').focus(), 50);
+}
+
+function saveApiKey() {
+  const val = document.getElementById('apiKeyInput').value.trim();
+  const gz = document.getElementById('gptzeroKeyInput').value.trim();
+  const und = document.getElementById('undKeyInput').value.trim();
+  const grq = document.getElementById('groqKeyInput').value.trim();
+  const gci = document.getElementById('googleClientIdInput').value.trim();
+  const errEl = document.getElementById('setupError');
+  // Need at least a Claude key or Groq key
+  if (val.length < 10 && grq.length < 10) {
+    errEl.style.display = 'block';
+    errEl.textContent = 'Enter at least a Claude or Groq API key';
+    return;
+  }
+  if (val) localStorage.setItem('claudeKey', val);
+  if (gz) localStorage.setItem('winstonKey', gz);
+  if (und) localStorage.setItem('undKey', und);
+  if (grq) localStorage.setItem('groqKey', grq);
+  if (gci) localStorage.setItem('googleClientId', gci);
+  document.getElementById('setupOverlay').style.display = 'none';
+  errEl.style.display = 'none';
+  updateGoogleSignInState();
+}
+
+async function checkAIScore(text) {
+  try {
+    const r = await fetch('http://localhost:3001/check', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text })
+    });
+    if (!r.ok) return null;
+    const data = await r.json();
+    return data?.score ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function humanizeViaUndetectable(text) {
+  const res = await fetch('http://localhost:3001/humanize', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ content: text })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `Proxy error ${res.status}`);
+  }
+  const data = await res.json();
+  return data.output || '';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (!getApiKey()) openSetup();
+});
+
+// ── Claude API helper ──
+
+async function callGroq(messages, systemPrompt, maxTokens = 4000, temperature = 0.8) {
+  if (!getGroqKey()) {
+    openSetup();
+    throw new Error('Enter your Groq API key to continue (free tier).');
+  }
+  const groqMessages = [];
+  if (systemPrompt) groqMessages.push({ role: 'system', content: systemPrompt });
+  groqMessages.push(...messages);
+  const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${getGroqKey()}`,
+    },
+    body: JSON.stringify({
+      model: 'llama-3.3-70b-versatile',
+      max_tokens: maxTokens,
+      temperature: temperature,
+      messages: groqMessages,
+    })
+  });
+  const data = await r.json();
+  if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+  return data.choices?.[0]?.message?.content || '';
+}
+
+async function callClaude(messages, systemPrompt, maxTokens = 4000, temperature = 1.0) {
+  if (!getApiKey()) {
+    openSetup();
+    throw new Error('Enter your Claude API key to continue.');
+  }
+  const body = {
+    model: 'claude-opus-4-6',
+    max_tokens: maxTokens,
+    temperature: temperature,
+    messages: messages
+  };
+  if (systemPrompt) {
+    body.system = [
+      {
+        type: 'text',
+        text: systemPrompt,
+        cache_control: { type: 'ephemeral' }
+      }
+    ];
+  }
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': getApiKey(),
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify(body)
+  });
+  const data = await r.json();
+  if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+  return data.content?.[0]?.text || '';
+}
+
+async function callAI(messages, systemPrompt, maxTokens = 4000, temperature = 1.0) {
+  const tier = getUserTier();
+  if (tier === 'free') {
+    return callGroq(messages, systemPrompt, maxTokens, temperature);
+  }
+  return callClaude(messages, systemPrompt, maxTokens, temperature);
+}
+
+// ══════════════════════════════════════════════════
+//  WRITER
+// ══════════════════════════════════════════════════
+
+const SYSTEM_PROMPT = `You are Max Kremen's school writing agent. You write EXACTLY like Max — a high school senior at Los Altos High School taking American Lit, US History, AP Environmental Science, Photography, and Trig.
+
+Your ONLY job is to produce school writing that sounds authentically like Max wrote it. Not like an AI. Not like a teacher. Like Max.
+
+## VOICE EXAMPLES
+
+AI default: "The symbolism in this novel serves as a powerful reminder of the enduring human struggle against oppression."
+Max: "The symbol basically spells out the whole theme — Steinbeck doesn't trust you to miss it."
+
+AI default: "This multifaceted issue highlights the nuanced interplay between economic factors and social inequality."
+Max: "It's mostly about money. That part's pretty obvious once you look at who actually gets hurt."
+
+## MAX'S WRITING DNA
+
+### Sentence Structure
+- Leads with short, punchy sentences. Follows with slightly longer ones that explain.
+- Never stacks long sentences back to back. Breaks rhythm often.
+- Uses occasional fragments for effect.
+- Average sentence ~15-20 words, but varies — some short, some long, never metronomic.
+
+### Word Choice
+- Normal, everyday words. "shows" not "illustrates." "uses" not "employs." "keeps" not "maintains" — unless the specific word actually adds meaning.
+- NEVER use: delve, tapestry, multifaceted, nuanced, pivotal, crucial, robust, seamless, vibrant, testament, underscore, foster, garner, showcase, realm, paradigm, synergy, holistic, transformative, leverage, utilize, facilitate, spearhead, cutting-edge, groundbreaking, myriad, plethora, furthermore, moreover, additionally, consequently, nevertheless, notably, ultimately, essentially, interplay, highlight (as verb), align (metaphorical), navigate (metaphorical), "it is important to note," "in today's society," "throughout history," "since the dawn of time," "in conclusion it is clear that," "this begs the question."
+- Contractions are fine in discussion posts. Limit in formal essays but don't eliminate entirely — at least one contraction per body paragraph.
+- Says "a lot" not "a plethora." Says "big" not "monumental." Says "shows" not "underscores."
+
+### Transitions
+- NEVER: "Furthermore," "Moreover," "Additionally," "In addition," "It is also worth noting."
+- Instead: "This means..." / "What this shows is..." / "The same idea appears when..." / "Since [X], [Y]" / just start the next point directly.
+- Topic sentences do the transitional work — no separate transition sentence needed.
+
+### Introductions (formal essays)
+- Opens with a concrete, relatable scenario — NOT a broad philosophical statement.
+- Hook is personal or specific, not generic.
+- Moves from hook to thesis in 4-6 sentences. Doesn't over-explain.
+
+### Conclusions
+- Circles back to opening hook/example.
+- Ends with a practical, real takeaway — not vague inspiration.
+- NEVER starts with "In conclusion" or "To sum up."
+
+### Tone
+- Confident, not arrogant. "This shows" not "This might suggest."
+- Occasionally addresses reader: "we all," "at some point."
+- Informal edge even in formal essays — start one sentence per essay with "But" or "And." Use at least one contraction in every body paragraph. Don't over-explain transitions.
+
+## BY ASSIGNMENT TYPE
+
+**Formal Essays:** MLA format, proper citations, hook→context→thesis intros, quote+analysis in every body paragraph, conclusion circles back to intro hook. ~5 paragraphs unless specified otherwise.
+
+Thesis guidance: A strong thesis is specific and arguable — not a fact statement, not an announcement ("In this essay I will argue..."). It stakes a claim someone could push back on. Bad: "Steinbeck uses symbolism in Of Mice and Men." Good: "Steinbeck's symbols are so heavy-handed they undercut the tragedy — by the time Lennie dies, the reader has been told exactly how to feel."
+
+Body paragraph structure: Topic sentence carries the transitional work and states the paragraph's claim. Evidence gets a one-sentence setup with context before the quote — never dropped in cold. Analysis explains what the quote *proves*, not what it *says*. The paragraph ends when the point is made, not with a restatement.
+
+Analysis pattern for literary essays:
+[Claim] → [Quote/Evidence with context] → [What this means in plain language] → [Why it matters for the thesis]
+- After quoting, explain what the quote shows — don't paraphrase.
+- Connect literary devices back to the argument — never just identify a device.
+
+**Discussion Posts & Short Responses (Classwork):** Get to the point immediately. 3-6 sentences typical. Lead with the answer, back it up. Contractions and casual phrasing OK.
+
+**APES / Science (FRQs, Labs):** Data first, interpretation second. Actual numbers from data. Cause→effect with "because" or "since." Keep it tight. Occasional minor grammar looseness is natural.
+
+**Emails to Teachers:** Short, respectful, direct. "Hey [name]," or "Hi [name]," opener. 3-5 sentences max. Sign off with "Thanks," or "Thank you,"
+
+## ANTI-PATTERNS — NEVER DO THESE
+1. Triple adjective: "a powerful, moving, and transformative experience" → pick one
+2. Em-dash asides that add nothing
+3. Starting paragraphs with "It is evident that..."
+4. "Not only X, but also Y" — Max doesn't write like this
+5. Every paragraph flowing perfectly into the next — some natural jumpiness is fine
+6. Thesaurus syndrome — use the normal word
+7. Grand statements about humanity: "This reminds us all that the human spirit endures"
+8. Perfect grammar in casual writing — comma splices and run-ons are natural in short responses
+9. Restating the question in the answer
+10. Saying the same thing twice in different words to fill space
+
+## CALIBRATION — scan for these before delivering
+
+Go through the output and check each item. Fix any that apply:
+- [ ] Any sentence starting with a transition word (Furthermore, Moreover, Additionally, Consequently, Nevertheless, Thus, Hence, Notably, Ultimately) → rewrite it
+- [ ] Any word from the banned list → replace with the plain version
+- [ ] Any grand statement about humanity, history, or society ("Throughout history...", "Since the dawn of time...", "This reminds us all...") → cut or ground it
+- [ ] Any triple adjective ("powerful, moving, and transformative") → pick one
+- [ ] Any paragraph that ends by restating the thesis → cut the last sentence
+- [ ] Any body paragraph where the quote is dropped without a setup sentence → add context
+- [ ] Any "-ing phrase, the subject verbed" opener ("Highlighting this theme, the author...") → restructure
+- [ ] Any sentence starting with "It is evident/clear/obvious that" → rewrite
+- [ ] Does the intro open with a broad philosophical statement? → replace with specific hook
+- [ ] Does the conclusion start with "In conclusion" or "To sum up"? → rewrite the opener
+- [ ] Is there at least one contraction in every body paragraph? → add one if missing
+- [ ] Does at least one sentence start with "But" or "And"? → add if missing in formal essays`;
+
+const CLASSES = ['American Literature','US History','AP Environmental Science','Photography','Trigonometry'];
+
+let writerState = {
+  type: null, typeLabel: '', selectedClass: '',
+  conversationHistory: [], output: '',
+  complicatedPunctuation: true
+};
+
+function renderClassChips() {
+  const container = document.getElementById('classChips');
+  container.innerHTML = CLASSES.map(c =>
+    `<button class="chip${writerState.selectedClass === c ? ' active' : ''}" onclick="selectClass('${c}')">${c}</button>`
+  ).join('');
+}
+
+function animateStep(outEl, inEl, inDisplay) {
+  outEl.classList.add('step-exiting');
+  outEl.addEventListener('animationend', function handler() {
+    outEl.classList.remove('step-exiting');
+    outEl.style.display = 'none';
+    inEl.style.display = inDisplay || 'block';
+    inEl.classList.add('step-entering');
+    inEl.addEventListener('animationend', function h2() {
+      inEl.classList.remove('step-entering');
+      inEl.removeEventListener('animationend', h2);
+    });
+    outEl.removeEventListener('animationend', handler);
+  });
+}
+
+function selectType(type, label) {
+  writerState.type = type;
+  writerState.typeLabel = label;
+  const stepType = document.getElementById('step-type');
+  const stepDetails = document.getElementById('step-details');
+  animateStep(stepType, stepDetails, 'block');
+  document.getElementById('typeBadge').textContent = label;
+  document.getElementById('resetBtn').classList.add('visible');
+  document.getElementById('plans-section').style.display = 'none';
+  renderClassChips();
+  updateGenerateBtn();
+  document.getElementById('promptInput').addEventListener('input', updateGenerateBtn);
+}
+
+function selectClass(cls) {
+  writerState.selectedClass = cls;
+  renderClassChips();
+  updateGenerateBtn();
+}
+
+function updateGenerateBtn() {
+  const btn = document.getElementById('generateBtn');
+  const hasPrompt = document.getElementById('promptInput').value.trim().length > 0;
+  btn.disabled = !(hasPrompt && writerState.selectedClass.length > 0);
+}
+
+function setLoadingText(msg) {
+  document.getElementById('loadingText').textContent = msg;
+}
+
+async function generate() {
+  // Check word limit before generating
+  if (currentUser && isOverLimit()) {
+    showUpgradeModal();
+    return;
+  }
+
+  const prompt = document.getElementById('promptInput').value.trim();
+  const context = document.getElementById('contextInput').value.trim();
+  let userMsg = `Assignment type: ${writerState.typeLabel}\nClass: ${writerState.selectedClass}\n\nPrompt/Assignment:\n${prompt}`;
+  if (context) userMsg += `\n\nAdditional context (sources, notes, data):\n${context}`;
+  userMsg += `\n\nWrite this in Max's voice. Match the assignment type format. Don't explain what you did — just deliver the writing.`;
+
+  const stepDetails = document.getElementById('step-details');
+  const stepOutput = document.getElementById('step-output');
+  animateStep(stepDetails, stepOutput, 'block');
+  document.getElementById('loadingIndicator').style.display = 'flex';
+  document.getElementById('outputContent').style.display = 'none';
+  document.getElementById('errorBox').style.display = 'none';
+  document.getElementById('detectorCard').style.display = 'none';
+  setLoadingText('writing...');
+
+  try {
+    const text = await callAI([{ role: 'user', content: userMsg }], SYSTEM_PROMPT, 4000, 0.8);
+    writerState.output = text;
+    writerState.conversationHistory = [
+      { role: 'user', content: userMsg },
+      { role: 'assistant', content: text }
+    ];
+
+    // Track word usage
+    addWordsUsed(countWords(text));
+
+    // Auto-humanize pipeline
+    await autoHumanize(text);
+    saveConversation();
+  } catch(e) { showWriterError(e.message || 'Failed to connect. Try again.'); }
+}
+
+async function autoHumanize(rawText) {
+  let lastHumanized = rawText;
+  let lastChanges = null;
+  let finalScore = null;
+  const hasUnd = !!getUndKey();
+
+  try {
+    if (hasUnd) {
+      // Undetectable.ai path
+      setLoadingText('humanizing via undetectable.ai...');
+      lastHumanized = await humanizeViaUndetectable(rawText);
+    } else {
+      // Claude humanizer fallback
+      const MAX_ATTEMPTS = 3;
+      for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+        setLoadingText(attempt === 1 ? 'humanizing...' : `humanizing (attempt ${attempt}/${MAX_ATTEMPTS})...`);
+
+        const retryNote = attempt > 1
+          ? `\n\nNOTE: A previous version of this was still detected as AI (score: ${finalScore}%). You must go harder. Break every sentence length pattern. Kill every remaining dead word. Make it rougher, more personal, more uneven. The previous version was too clean.\n`
+          : '';
+        const userMsg = `Assignment type: ${writerState.typeLabel || 'essay'}\nClass: ${writerState.selectedClass || 'unknown'}${retryNote}\n\nHere is the text to humanize. Rebuild it from scratch. Every rule in your instructions applies.\n\n${lastHumanized}`;
+        const result = await callAI([{ role: 'user', content: userMsg }], HUMANIZER_PROMPT, 4000);
+
+        const SEP = '---CHANGES---';
+        const sepIdx = result.indexOf(SEP);
+        lastHumanized = sepIdx !== -1 ? result.slice(0, sepIdx).trim() : result.trim();
+        lastChanges = sepIdx !== -1 ? result.slice(sepIdx + SEP.length).trim() : null;
+
+        writerState.conversationHistory.push(
+          { role: 'user', content: userMsg },
+          { role: 'assistant', content: result }
+        );
+
+        setLoadingText(`checking detector (attempt ${attempt}/${MAX_ATTEMPTS})...`);
+        const score = await checkAIScore(lastHumanized);
+        finalScore = score;
+        if (score !== null && score >= 95) break;
+        if (attempt === MAX_ATTEMPTS) break;
+      }
+    }
+
+    // Score check (for Undetectable path, or if Claude path didn't get a score)
+    if (finalScore === null) {
+      setLoadingText('checking detector...');
+      finalScore = await checkAIScore(lastHumanized);
+    }
+
+    writerState.output = lastHumanized;
+    showOutput(lastHumanized);
+
+    if (lastChanges) {
+      document.getElementById('changesContent').textContent = lastChanges;
+      document.getElementById('changesBox').style.display = 'block';
+    }
+
+    if (finalScore !== null) {
+      showScoreBadge(finalScore);
+    }
+  } catch(e) {
+    writerState.output = rawText;
+    showOutput(rawText);
+    showWriterError('Humanize failed: ' + (e.message || 'Unknown error') + '. Showing raw output.');
+  }
+}
+
+function showScoreBadge(score) {
+  const card = document.getElementById('detectorCard');
+  const humanPct = Math.round(score);
+  const aiPct = 100 - humanPct;
+  const mixedPct = 0;
+  const isHuman = humanPct >= 95;
+  const circleClass = isHuman ? 'human' : 'ai';
+  const circleLabel = isHuman ? 'Human' : 'AI';
+  const confidence = isHuman
+    ? 'We are highly confident this text is entirely human'
+    : humanPct >= 80
+      ? 'This text contains mixed signals of AI and human writing'
+      : 'We are highly confident this text is AI generated';
+
+  const circumference = 2 * Math.PI * 25;
+  const dashoffset = circumference - (circumference * humanPct / 100);
+  card.innerHTML = `
+    <div class="detector-ring-wrap">
+      <svg viewBox="0 0 60 60">
+        <circle class="detector-ring-bg" cx="30" cy="30" r="25"/>
+        <circle class="detector-ring-fill ${circleClass}" cx="30" cy="30" r="25"
+          stroke-dasharray="${circumference}"
+          stroke-dashoffset="${circumference}"
+          style="transition: stroke-dashoffset 1.2s ease;"/>
+      </svg>
+      <div class="detector-ring-label ${circleClass}">${circleLabel}</div>
+    </div>
+    <div class="detector-body">
+      <div class="detector-label">${confidence}</div>
+      <div class="detector-pills">
+        <span class="detector-pill ai">AI ${aiPct}%</span>
+        <span class="detector-pill mixed">Mixed ${mixedPct}%</span>
+        <span class="detector-pill human">Human ${humanPct}%</span>
+      </div>
+    </div>
+  `;
+  // Trigger animation after paint
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      const ring = card.querySelector('.detector-ring-fill');
+      if (ring) ring.style.strokeDashoffset = dashoffset;
+    });
+  });
+  card.style.display = 'flex';
+}
+
+async function revise() {
+  const followUp = document.getElementById('followUpInput').value.trim();
+  if (!followUp) return;
+  document.getElementById('reviseBtn').disabled = true;
+  document.getElementById('reviseBtn').textContent = '...';
+  const newHistory = [...writerState.conversationHistory, { role: 'user', content: followUp }];
+  try {
+    const text = await callAI(newHistory, SYSTEM_PROMPT, 4000, 0.8);
+    writerState.output = text;
+    writerState.conversationHistory = [...newHistory, { role: 'assistant', content: text }];
+    showOutput(text);
+    document.getElementById('followUpInput').value = '';
+  } catch(e) { showWriterError(e.message || 'Failed to connect. Try again.'); }
+  document.getElementById('reviseBtn').disabled = false;
+  document.getElementById('reviseBtn').textContent = 'revise';
+}
+
+function setPunctuation(on) {
+  writerState.complicatedPunctuation = on;
+  const chips = document.getElementById('punctChips').querySelectorAll('.chip');
+  chips[0].classList.toggle('active', on);
+  chips[1].classList.toggle('active', !on);
+}
+
+function cleanPunctuation(text) {
+  let out = text;
+  // Remove parenthetical asides: " (something)" or "(something) "
+  out = out.replace(/\s*\([^)]*\)\s*/g, ' ');
+  // Replace ellipses with a period
+  out = out.replace(/\.{2,}/g, '.');
+  out = out.replace(/…/g, '.');
+  // Replace em dashes and en dashes used as clause separators
+  out = out.replace(/\s*[—–]\s*/g, ', ');
+  // Replace semicolons: split into period+capitalize or comma
+  const independentStarters = /^(he|she|it|they|we|i|the|this|that|these|those|there|however|but|and|so|yet|or|in|on|at|for|a|an|some|many|most|all|each|every|no|not|if|when|while|since|because|although|after|before|as|its|his|her|their|our|my|your|people|students|one|what|how|where|who|why)/i;
+  const parts = out.split(/;\s*/);
+  if (parts.length > 1) {
+    out = parts[0];
+    for (let i = 1; i < parts.length; i++) {
+      const chunk = parts[i];
+      const firstWord = chunk.match(/^([a-zA-Z]+)/);
+      if (firstWord && independentStarters.test(firstWord[1])) {
+        out += '. ' + chunk.charAt(0).toUpperCase() + chunk.slice(1);
+      } else {
+        out += ', ' + chunk;
+      }
+    }
+  }
+  // Clean up double spaces
+  out = out.replace(/ {2,}/g, ' ');
+  // Clean up double periods
+  out = out.replace(/\.{2,}/g, '.');
+  // Clean up space before period/comma
+  out = out.replace(/ ([.,])/g, '$1');
+  // Capitalize first letter after every period
+  out = out.replace(/\.\s+([a-z])/g, (m, c) => '. ' + c.toUpperCase());
+  return out.trim();
+}
+
+function showOutput(text) {
+  const cleaned = writerState.complicatedPunctuation ? text : cleanPunctuation(text);
+  writerState.output = cleaned;
+  document.getElementById('loadingIndicator').style.display = 'none';
+  document.getElementById('outputContent').style.display = 'block';
+  document.getElementById('outputBox').textContent = cleaned;
+  // Show "use writer output" btn in drip tab if we have output
+  document.getElementById('useOutputBtn').style.display = 'block';
+}
+
+function showWriterError(msg) {
+  document.getElementById('loadingIndicator').style.display = 'none';
+  document.getElementById('errorBox').style.display = 'block';
+  document.getElementById('errorBox').textContent = msg;
+}
+
+function copyOutput() {
+  const btn = document.getElementById('copyBtn');
+  navigator.clipboard.writeText(writerState.output).then(() => {
+    btn.textContent = 'copied';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 1500);
+  });
+}
+
+const HUMANIZER_PROMPT = `You are rewriting AI-generated student work so it passes AI detectors like Winston AI, Originality.ai, and Turnitin. Your job is to fully rebuild the text — not edit it — so it reads as a real student wrote it. The output must score 95+ on Winston AI's human score (0-100 scale).
+
+━━━ WHY AI TEXT GETS CAUGHT ━━━
+
+Detectors measure three things:
+1. PERPLEXITY — AI picks the most statistically likely word at every step. Detectors spot this. You must make word choices that are correct but unexpected. Not fancy — just not the obvious pick.
+2. BURSTINESS — AI writes all sentences at the same pace (usually 15-22 words, clean SVO structure). Humans don't. Humans write a short burst, then a long winding one, then maybe a fragment. Detectors look at sentence length standard deviation. Yours must be 9+.
+3. PHRASE PATTERNS — AI reuses certain n-grams constantly. Rebuilding from scratch breaks this. Never use the same sentence skeleton twice.
+
+━━━ YOUR STRICT RULES ━━━
+
+SENTENCE LENGTH (most important rule):
+You MUST include all of these in every paragraph:
+- At least one sentence under 7 words
+- At least one sentence over 38 words
+- No two consecutive sentences within 6 words of each other in length
+- Count the words. If consecutive sentences are too close in length, rewrite one.
+
+DEAD WORDS — never use any of these:
+additionally, moreover, furthermore, consequently, nevertheless, arguably, notably, ultimately, essentially, certainly, undoubtedly, undeniably, importantly, significantly, evidently, clearly, obviously, interestingly, surprisingly, admittedly, granted, indeed, therefore, thus, hence, meanwhile, nonetheless, regardless, subsequently, accordingly, conversely, alternatively, similarly, likewise, delve, pivotal, crucial, nuanced, multifaceted, robust, seamless, tapestry, vibrant, testament, underscore, foster, garner, showcase, realm, landscape (metaphorical), paradigm, synergy, holistic, transformative, leverage, utilize, facilitate, navigate (metaphorical), spearhead, align (metaphorical), cutting-edge, game-changer, groundbreaking, myriad, plethora, highlight (as verb), interplay, in today's society, throughout history, since the dawn of time, it is important to note, it is worth noting, this begs the question
+
+DEAD PATTERNS — never use:
+- "Not only X but also Y"
+- "serves as a", "stands as a", "acts as a"
+- "is a testament to"
+- "In conclusion" / "In summary" / "To summarize" / "In essence"
+- Lists of exactly three parallel items (the AI triplet)
+- Starting consecutive sentences with "This"
+- "From X to Y" as a way to show range
+- "-ing phrase, the subject verbed" (e.g. "Highlighting the issue, the author...")
+- Any sentence where the main clause is "this shows/demonstrates/illustrates/suggests/indicates"
+- Any grand statement about humanity or history ("Throughout history...", "This reminds us all...", "Since the dawn of time...")
+- Triple adjective constructions ("powerful, moving, and transformative")
+- "It is evident/clear/obvious that"
+
+STRUCTURE TELLS — break all of these:
+- No perfect topic→evidence→analysis→transition paragraph structure
+- No mirrored intro/conclusion
+- Not every paragraph the same length — vary it, including one single-sentence paragraph if natural
+- Not every sentence the same formality level
+
+━━━ WHAT HUMAN STUDENT WRITING ACTUALLY LOOKS LIKE ━━━
+
+1. It's uneven. Some sentences are dense and analytical, then one is two words. That's real.
+2. It has a personality. There's a point of view, not just reporting. "The thing that stands out to me is..." or "What actually happened was..."
+3. It's specific. Not "research shows" — "a 2019 study from Johns Hopkins" or "the stat that surprised me was 73%."
+4. Transitions are rough. Humans don't say "furthermore." They say "On top of that" or "also" or just start a new thought without transitioning.
+5. It has one semi-embarrassing sentence — an overreach, a slightly awkward phrasing, a thought that could've been cut. That's what makes it real.
+6. Contractions are inconsistent. Sometimes "it's", sometimes "it is". Never perfectly uniform.
+7. Paragraphs vary in length. One paragraph might be one sentence. Another is six.
+
+━━━ YOUR PROCESS ━━━
+
+Step 1: Read the full text. Understand the core argument and facts. Do not start writing yet.
+Step 2: Identify the assignment type and apparent student voice.
+Step 3: THROW AWAY the original text. Write a brand new version using only the facts/argument, not the words or sentence structures.
+Step 4: After writing the first draft, run the pre-delivery checklist below. Fix every item that fails.
+Step 5: Add the human imperfections. One short paragraph. One sentence with a clear opinion. One specific number or reference.
+
+━━━ PRE-DELIVERY CHECKLIST — fix everything that fails ━━━
+
+Scan the output sentence by sentence before writing ---CHANGES---:
+
+- [ ] Any sentence starting with a transition word (Furthermore, Moreover, Additionally, Consequently, Nevertheless, Thus, Hence, Notably, Ultimately, Similarly, Conversely) → rewrite it
+- [ ] Any word from the dead words list → replace with plain language
+- [ ] Any grand statement about humanity/history/society → cut or ground it in a specific fact
+- [ ] Any triple adjective → pick one
+- [ ] Any paragraph ending with a thesis restatement → cut the last sentence
+- [ ] Any "-ing phrase, the subject verbed" opener → restructure
+- [ ] Any sentence starting with "It is evident/clear/obvious that" → rewrite
+- [ ] Two consecutive sentences within 6 words of each other in length → rewrite one
+- [ ] No sentence under 7 words in the whole piece → add one short sentence or fragment
+- [ ] No sentence over 38 words in the whole piece → expand one
+- [ ] Does every paragraph sound like the same robot voice? → break one paragraph's formality
+- [ ] Any "Not only X but also Y" or "serves as a" or "is a testament to" → rewrite
+- [ ] Any list of exactly three parallel items → remove one or make them unparallel
+
+━━━ OUTPUT FORMAT ━━━
+
+Write the final humanized version. Then on a new line write exactly:
+---CHANGES---
+Then a short bullet list of what you did: sentence length SD achieved, dead words killed, structural tells broken.
+
+IMPORTANT: Keep the same core argument, facts, and academic content. Match the student's assignment type (essay, discussion post, classwork, etc.) and grade level. Same length as the original, roughly.`;
+
+
+async function humanize() {
+  const btn = document.getElementById('humanizeBtn');
+  let currentText = document.getElementById('outputBox').textContent.trim();
+  if (!currentText) return;
+
+  btn.disabled = true;
+  document.getElementById('changesBox').style.display = 'none';
+  document.getElementById('detectorCard').style.display = 'none';
+
+  let lastChanges = null;
+  let lastHumanized = currentText;
+  let finalScore = null;
+  const hasUnd = !!getUndKey();
+
+  try {
+    if (hasUnd) {
+      // Undetectable.ai path
+      btn.textContent = 'humanizing...';
+      lastHumanized = await humanizeViaUndetectable(currentText);
+    } else {
+      // Claude humanizer fallback
+      const MAX_ATTEMPTS = 3;
+      for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+        btn.textContent = attempt === 1 ? 'humanizing...' : `retry ${attempt}/${MAX_ATTEMPTS}...`;
+
+        const retryNote = attempt > 1
+          ? `\n\nNOTE: A previous version of this was still detected as AI (score: ${finalScore}%). You must go harder. Break every sentence length pattern. Kill every remaining dead word. Make it rougher, more personal, more uneven. The previous version was too clean.\n`
+          : '';
+        const userMsg = `Assignment type: ${writerState.typeLabel || 'essay'}\nClass: ${writerState.selectedClass || 'unknown'}${retryNote}\n\nHere is the text to humanize. Rebuild it from scratch. Every rule in your instructions applies.\n\n${lastHumanized}`;
+        const result = await callAI([{ role: 'user', content: userMsg }], HUMANIZER_PROMPT, 4000);
+
+        const SEP = '---CHANGES---';
+        const sepIdx = result.indexOf(SEP);
+        lastHumanized = sepIdx !== -1 ? result.slice(0, sepIdx).trim() : result.trim();
+        lastChanges = sepIdx !== -1 ? result.slice(sepIdx + SEP.length).trim() : null;
+
+        writerState.conversationHistory.push(
+          { role: 'user', content: userMsg },
+          { role: 'assistant', content: result }
+        );
+
+        btn.textContent = `checking detector (${attempt}/${MAX_ATTEMPTS})...`;
+        const score = await checkAIScore(lastHumanized);
+        finalScore = score;
+        if (score !== null && score >= 95) break;
+        if (attempt === MAX_ATTEMPTS) break;
+      }
+    }
+
+    // Score check (for Undetectable path, or if Claude path didn't get a score)
+    if (finalScore === null) {
+      btn.textContent = 'checking detector...';
+      finalScore = await checkAIScore(lastHumanized);
+    }
+
+    const finalText = writerState.complicatedPunctuation ? lastHumanized : cleanPunctuation(lastHumanized);
+    document.getElementById('outputBox').textContent = finalText;
+    writerState.output = finalText;
+
+    if (lastChanges) {
+      document.getElementById('changesContent').textContent = lastChanges;
+      document.getElementById('changesBox').style.display = 'block';
+    }
+
+    if (finalScore !== null) {
+      showScoreBadge(finalScore);
+    }
+
+    btn.textContent = 'humanized ✓';
+    addWordsUsed(countWords(finalText));
+    saveConversation();
+    setTimeout(() => { btn.textContent = 'humanize'; btn.disabled = false; }, 2500);
+  } catch(e) {
+    btn.textContent = 'failed';
+    setTimeout(() => { btn.textContent = 'humanize'; btn.disabled = false; }, 2000);
+    showWriterError(e.message || 'Humanize failed.');
+  }
+}
+
+function dripThis() {
+  switchTab('drip');
+  if (writerState.output) {
+    document.getElementById('dripText').value = writerState.output;
+    // Show the text group if not already visible (will be set once a doc is detected as plain)
+    document.getElementById('dripTextGroup').style.display = 'block';
+  }
+}
+
+function resetAll() {
+  writerState = { type: null, typeLabel: '', selectedClass: '', conversationHistory: [], output: '', complicatedPunctuation: true };
+  const stepType = document.getElementById('step-type');
+  const stepDetails = document.getElementById('step-details');
+  const stepOutput = document.getElementById('step-output');
+  stepDetails.style.display = 'none';
+  stepOutput.style.display = 'none';
+  stepType.style.display = 'flex';
+  stepType.classList.add('step-entering');
+  stepType.addEventListener('animationend', function h() {
+    stepType.classList.remove('step-entering');
+    stepType.removeEventListener('animationend', h);
+  });
+  document.getElementById('resetBtn').classList.remove('visible');
+  document.getElementById('plans-section').style.display = '';
+  document.getElementById('promptInput').value = '';
+  document.getElementById('contextInput').value = '';
+  document.getElementById('followUpInput').value = '';
+  document.getElementById('errorBox').style.display = 'none';
+}
+
+// ── Tab switching ──
+function switchTab(tab) {
+  const isWriter = tab === 'writer';
+  document.getElementById('tab-writer').classList.toggle('active', isWriter);
+  document.getElementById('tab-drip').classList.toggle('active', !isWriter);
+  document.getElementById('section-writer').style.display = isWriter ? 'contents' : 'none';
+  document.getElementById('section-drip').style.display = isWriter ? 'none' : 'flex';
+  document.getElementById('resetBtn').style.display = isWriter ? '' : 'none';
+}
+
+
+// ══════════════════════════════════════════════════
+//  DRIP WRITER
+// ══════════════════════════════════════════════════
+
+const drip = {
+  token: sessionStorage.getItem('gToken') || '',
+  docId: '',
+  mode: 'auto', // auto | plain | table
+  tablePairs: [],
+  cancelFlag: false,
+};
+
+// ── Google OAuth sign-in ──
+
+function updateGoogleSignInState() {
+  const btn = document.getElementById('googleSignInBtn');
+  const statusEl = document.getElementById('tokenStatus');
+  const helpEl = document.getElementById('googleAuthHelp');
+
+  if (!getGoogleClientId()) {
+    btn.disabled = true;
+    helpEl.textContent = 'Set your Google OAuth Client ID in API key settings first.';
+    statusEl.style.display = 'none';
+    return;
+  }
+
+  btn.disabled = false;
+
+  if (drip.token) {
+    statusEl.style.display = 'flex';
+    statusEl.className = 'token-status connected';
+    statusEl.textContent = '✓ signed in';
+    helpEl.textContent = 'Connected to Google Docs.';
+  } else {
+    statusEl.style.display = 'none';
+    helpEl.textContent = 'Sign in to allow drip writing to your Google Docs.';
+  }
+}
+
+function googleOAuthSignIn() {
+  const clientId = getGoogleClientId();
+  if (!clientId) {
+    openSetup();
+    return;
+  }
+
+  const tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: clientId,
+    scope: 'https://www.googleapis.com/auth/documents',
+    callback: (response) => {
+      if (response.error) {
+        const statusEl = document.getElementById('tokenStatus');
+        statusEl.style.display = 'flex';
+        statusEl.className = 'token-status error';
+        statusEl.textContent = 'Sign-in failed';
+        return;
+      }
+      drip.token = response.access_token;
+      sessionStorage.setItem('gToken', response.access_token);
+      updateGoogleSignInState();
+      updateDripStartBtn();
+      // Re-detect doc if URL already entered
+      const docUrl = document.getElementById('dripDocUrl').value.trim();
+      if (docUrl) detectDoc();
+    },
+  });
+
+  tokenClient.requestAccessToken();
+}
+
+// Restore token from session on load
+window.addEventListener('load', () => {
+  const saved = sessionStorage.getItem('gToken');
+  if (saved) {
+    drip.token = saved;
+  }
+  updateGoogleSignInState();
+});
+
+// ── Doc URL ──
+
+function extractDocId(url) {
+  const m = url.match(/\/document\/d\/([a-zA-Z0-9_-]+)/);
+  return m ? m[1] : url.trim();
+}
+
+let detectTimeout = null;
+function onDocUrlInput() {
+  clearTimeout(detectTimeout);
+  const url = document.getElementById('dripDocUrl').value.trim();
+  if (!url) {
+    document.getElementById('detectStatus').style.display = 'none';
+    setDripMode(null);
+    return;
+  }
+  detectTimeout = setTimeout(detectDoc, 600);
+}
+
+async function detectDoc() {
+  const url = document.getElementById('dripDocUrl').value.trim();
+  if (!url || !drip.token) { updateDripStartBtn(); return; }
+
+  drip.docId = extractDocId(url);
+  if (!drip.docId) { updateDripStartBtn(); return; }
+
+  const statusEl = document.getElementById('detectStatus');
+  statusEl.style.display = 'flex';
+  statusEl.className = 'detect-status detecting';
+  statusEl.innerHTML = '<span class="detect-dot"></span> Reading doc...';
+
+  try {
+    const doc = await googleGet(`/documents/${drip.docId}`);
+    const pairs = extractTablePairs(doc);
+
+    if (pairs.length > 0) {
+      drip.tablePairs = pairs;
+      setDripMode('table');
+      statusEl.className = 'detect-status table';
+      statusEl.innerHTML = `<span class="detect-dot"></span> Smart fill — ${pairs.length} question${pairs.length !== 1 ? 's' : ''} found`;
+    } else {
+      drip.tablePairs = [];
+      setDripMode('plain');
+      statusEl.className = 'detect-status plain';
+      statusEl.innerHTML = '<span class="detect-dot"></span> Drip mode — plain text doc';
+    }
+  } catch(e) {
+    statusEl.className = 'detect-status detecting';
+    statusEl.innerHTML = '<span class="detect-dot"></span> ' + (e.message || 'Could not read doc');
+    setDripMode(null);
+  }
+  updateDripStartBtn();
+}
+
+function setDripMode(mode) {
+  drip.mode = mode;
+  const showTable = mode === 'table';
+  const showPlain = mode === 'plain';
+  document.getElementById('dripContextGroup').style.display = showTable ? 'block' : 'none';
+  document.getElementById('dripTextGroup').style.display = showPlain ? 'block' : 'none';
+  document.getElementById('dripDurationGroup').style.display = mode ? 'block' : 'none';
+  document.getElementById('dripStartBtn').style.display = mode ? 'block' : 'none';
+  updateDripStartBtn();
+}
+
+function updateDurationLabel() {
+  document.getElementById('durationLabel').textContent = document.getElementById('dripDuration').value + ' min';
+}
+
+function useWriterOutput() {
+  if (writerState.output) {
+    document.getElementById('dripText').value = writerState.output;
+  }
+}
+
+function updateDripStartBtn() {
+  const btn = document.getElementById('dripStartBtn');
+  const hasToken = drip.token.length > 0;
+  const hasDoc = drip.docId.length > 0;
+  const hasMode = drip.mode === 'table' || (drip.mode === 'plain' && document.getElementById('dripText')?.value?.trim().length > 0);
+  btn.disabled = !(hasToken && hasDoc && hasMode);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('dripText')?.addEventListener('input', updateDripStartBtn);
+});
+
+// ── Google Docs API ──
+
+async function googleGet(path) {
+  const r = await fetch(`https://docs.googleapis.com/v1${path}`, {
+    headers: { Authorization: `Bearer ${drip.token}` }
+  });
+  const data = await r.json();
+  if (data.error) throw new Error(data.error.message || `Error ${r.status}`);
+  return data;
+}
+
+async function googleInsert(docId, requests, retries = 2) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    const r = await fetch(`https://docs.googleapis.com/v1/documents/${docId}:batchUpdate`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${drip.token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ requests })
+    });
+    const data = await r.json();
+    if (r.status === 429 && attempt < retries) {
+      await sleep(2000 * (attempt + 1));
+      continue;
+    }
+    if (data.error) throw new Error(data.error.message || `Error ${r.status}`);
+    return data;
+  }
+}
+
+// ── Table parsing ──
+
+function getCellText(cell) {
+  return (cell.content || [])
+    .flatMap(p => p.paragraph?.elements || [])
+    .map(e => e.textRun?.content || '')
+    .join('').replace(/\n/g, '').trim();
+}
+
+function getCellInsertIndex(cell) {
+  const para = cell.content?.[0]?.paragraph;
+  return para?.elements?.[0]?.startIndex ?? null;
+}
+
+function extractTablePairs(doc) {
+  const pairs = [];
+  for (const el of (doc.body?.content || [])) {
+    if (!el.table) continue;
+    for (const row of (el.table.tableRows || [])) {
+      const cells = row.tableCells || [];
+      if (cells.length >= 2) {
+        const q = getCellText(cells[0]);
+        const a = getCellText(cells[1]);
+        if (q && !a) {
+          const idx = getCellInsertIndex(cells[1]);
+          if (idx !== null) pairs.push({ question: q, insertIndex: idx });
+        }
+      }
+    }
+  }
+  // Descending order so filling back→front keeps indices stable
+  pairs.sort((a, b) => b.insertIndex - a.insertIndex);
+  return pairs;
+}
+
+// ── Claude answer generation ──
+
+async function generateTableAnswers(pairs, context) {
+  const questions = pairs.map((p, i) => `${i + 1}. ${p.question}`).join('\n');
+  const contextBlock = context ? `Context:\n${context}\n\n` : '';
+  const raw = await callAI([{
+    role: 'user',
+    content: `${contextBlock}You are filling in a student's form or table as Max Kremen. Answer each question naturally and concisely. Respond ONLY with a JSON array of strings in the same order as the questions — no markdown, no explanation.\n\nQuestions:\n${questions}`
+  }], '', 1200);
+  return JSON.parse(raw.trim().replace(/^```json\n?/, '').replace(/\n?```$/, ''));
+}
+
+// ── Drip execution ──
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+async function startDrip() {
+  drip.cancelFlag = false;
+  const durationMin = parseInt(document.getElementById('dripDuration').value);
+
+  // Switch to progress UI
+  document.getElementById('dripStartBtn').style.display = 'none';
+  document.getElementById('dripProgressWrap').style.display = 'block';
+  document.getElementById('dripDoneWrap').style.display = 'none';
+  document.getElementById('dripError').style.display = 'none';
+
+  try {
+    if (drip.mode === 'table') {
+      await runTableFill(durationMin);
+    } else {
+      await runDripText(durationMin);
+    }
+    if (!drip.cancelFlag) {
+      document.getElementById('dripProgressWrap').style.display = 'none';
+      document.getElementById('dripDoneWrap').style.display = 'block';
+    }
+  } catch(e) {
+    document.getElementById('dripProgressWrap').style.display = 'none';
+    document.getElementById('dripError').style.display = 'block';
+    document.getElementById('dripError').textContent = e.message || 'Something went wrong.';
+    document.getElementById('dripStartBtn').style.display = 'block';
+    document.getElementById('dripStartBtn').disabled = false;
+  }
+}
+
+async function runDripText(durationMin) {
+  const text = document.getElementById('dripText').value.trim();
+  const words = text.split(/\s+/);
+  const CHUNK = 6;
+  const chunks = [];
+  for (let i = 0; i < words.length; i += CHUNK) chunks.push(words.slice(i, i + CHUNK).join(' '));
+
+  setProgress(0, chunks.length, 'drip', 'Reading doc...');
+  const doc = await googleGet(`/documents/${drip.docId}`);
+  let insertIdx = doc.body.content[doc.body.content.length - 1].endIndex - 1;
+  const totalMs = durationMin * 60 * 1000;
+  const baseInterval = totalMs / chunks.length;
+
+  for (let i = 0; i < chunks.length; i++) {
+    if (drip.cancelFlag) return;
+    const piece = (i > 0 ? ' ' : '') + chunks[i];
+    await googleInsert(drip.docId, [{ insertText: { location: { index: insertIdx }, text: piece } }]);
+    insertIdx += piece.length;
+    setProgress(i + 1, chunks.length, 'drip', `Chunk ${i + 1} of ${chunks.length}`);
+    let pause = baseInterval * (0.5 + Math.random());
+    if (chunks[i].match(/[.!?]$/)) pause *= (1.5 + Math.random());
+    await sleep(pause);
+  }
+}
+
+async function runTableFill(durationMin) {
+  const context = document.getElementById('dripContext').value.trim();
+  const pairs = drip.tablePairs;
+
+  setProgress(0, pairs.length, 'table', 'Generating answers...');
+  const answers = await generateTableAnswers(pairs, context);
+
+  const totalMs = durationMin * 60 * 1000;
+  const timePerCell = totalMs / answers.length;
+
+  for (let ci = 0; ci < answers.length; ci++) {
+    if (drip.cancelFlag) return;
+    const { insertIndex, question } = pairs[ci];
+    const answer = answers[ci] || '';
+    const subLabel = `Filling: "${question.slice(0, 50)}${question.length > 50 ? '…' : ''}"`;
+    setProgress(ci, answers.length, 'table', subLabel);
+
+    const CHUNK = 3;
+    const charDelay = Math.min(timePerCell / Math.max(answer.length / CHUNK, 1), 1000);
+
+    for (let j = 0; j < answer.length; j += CHUNK) {
+      if (drip.cancelFlag) return;
+      const slice = answer.slice(j, j + CHUNK);
+      await googleInsert(drip.docId, [{ insertText: { location: { index: insertIndex + j }, text: slice } }]);
+      await sleep(charDelay * (0.6 + Math.random() * 0.8));
+    }
+
+    setProgress(ci + 1, answers.length, 'table', subLabel);
+    const betweenPause = timePerCell * (0.2 + Math.random() * 0.3);
+    await sleep(betweenPause);
+  }
+}
+
+function setProgress(current, total, type, sub) {
+  const pct = total > 0 ? Math.round((current / total) * 100) : 0;
+  document.getElementById('dripProgressFill').style.width = pct + '%';
+  document.getElementById('dripProgressLabel').textContent =
+    type === 'table'
+      ? `Cell ${current} of ${total} — ${pct}%`
+      : `Chunk ${current} of ${total} — ${pct}%`;
+  document.getElementById('dripProgressSub').textContent = sub || '';
+}
+
+function cancelDrip() {
+  drip.cancelFlag = true;
+  document.getElementById('dripProgressWrap').style.display = 'none';
+  document.getElementById('dripStartBtn').style.display = 'block';
+  document.getElementById('dripStartBtn').disabled = false;
+}
+
+function resetDrip() {
+  document.getElementById('dripDoneWrap').style.display = 'none';
+  document.getElementById('dripDocUrl').value = '';
+  document.getElementById('detectStatus').style.display = 'none';
+  document.getElementById('dripText').value = '';
+  document.getElementById('dripContext').value = '';
+  setDripMode(null);
+  drip.docId = '';
+  drip.tablePairs = [];
+}
+
+
+
+
+// ══════════════════════════════════════════════════
+//  SOLAR SYSTEM (open/close wired from regular script)
+// ══════════════════════════════════════════════════
+
+window.openSystem = function() {
+  document.getElementById('systemModal').style.display = 'flex';
+  window.dispatchEvent(new Event('systemOpen'));
+};
+window.closeSystem = function() {
+  document.getElementById('systemModal').style.display = 'none';
+  window.dispatchEvent(new Event('systemClose'));
+};
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSystem(); });
+
+// ══════════════════════════════════════════════════
+//  STARFIELD BACKGROUND
+// ══════════════════════════════════════════════════
+
+(function() {
+  const canvas = document.getElementById('starfieldCanvas');
+  const ctx = canvas.getContext('2d');
+  let w, h;
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const STAR_COUNT = 800;
+  const stars = [];
+  for (let i = 0; i < STAR_COUNT; i++) {
+    stars.push({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      size: 0.5 + Math.random() * 1.5,
+      baseOpacity: 0.2 + Math.random() * 0.6,
+      opacity: 0,
+      speed: 0.01 + Math.random() * 0.04,
+      twinkle: Math.random() < 0.08,
+      twinklePhase: Math.random() * Math.PI * 2,
+      twinkleSpeed: 0.5 + Math.random() * 2,
+    });
+  }
+
+  let time = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    time += 0.016;
+
+    ctx.clearRect(0, 0, w, h);
+
+    for (const star of stars) {
+      star.x -= star.speed;
+      star.y -= star.speed * 0.3;
+
+      if (star.x < -2) star.x += w + 4;
+      if (star.y < -2) star.y += h + 4;
+
+      let opacity = star.baseOpacity;
+      if (star.twinkle) {
+        opacity *= 0.5 + 0.5 * Math.sin(time * star.twinkleSpeed + star.twinklePhase);
+      }
+
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(210,220,255,${opacity})`;
+      ctx.fill();
+    }
+  }
+  animate();
+})();
+
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+let systemReady = false, systemRunning = false, systemAnimFrame = null, systemAnimate = null;
+
+window.addEventListener('systemOpen', () => { systemRunning = true; if (!systemReady) initSolarSystem(); else if (!systemAnimFrame) systemAnimate(); });
+window.addEventListener('systemClose', () => { systemRunning = false; if (systemAnimFrame) { cancelAnimationFrame(systemAnimFrame); systemAnimFrame = null; } });
+
+function initSolarSystem() {
+  systemReady = true;
+  const wrap = document.getElementById('systemWrap');
+  const BLOOM_LAYER = 1;
+  const bloomLayer = new THREE.Layers(); bloomLayer.set(BLOOM_LAYER);
+  const TEX = 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/';
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.0;
+  wrap.insertBefore(renderer.domElement, wrap.firstChild);
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x000000);
+
+  const camera = new THREE.PerspectiveCamera(60, wrap.clientWidth / wrap.clientHeight, 1, 20000);
+  camera.position.set(0, 500, 900);
+  camera.lookAt(0, 0, 0);
+
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.05;
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 0.25;
+  controls.minDistance = 80;
+  controls.maxDistance = 5000;
+  controls.maxPolarAngle = Math.PI * 0.85;
+
+  // Selective bloom
+  const renderPass = new RenderPass(scene, camera);
+  const bloomPass = new UnrealBloomPass(new THREE.Vector2(wrap.clientWidth, wrap.clientHeight), 1.0, 0.4, 0.0);
+  const bloomComp = new EffectComposer(renderer);
+  bloomComp.renderToScreen = false;
+  bloomComp.addPass(renderPass);
+  bloomComp.addPass(bloomPass);
+  const mixPass = new ShaderPass(new THREE.ShaderMaterial({
+    uniforms: { baseTexture: { value: null }, bloomTexture: { value: bloomComp.renderTarget2.texture } },
+    vertexShader: `varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+    fragmentShader: `uniform sampler2D baseTexture;uniform sampler2D bloomTexture;varying vec2 vUv;void main(){gl_FragColor=texture2D(baseTexture,vUv)+texture2D(bloomTexture,vUv);}`,
+  }), 'baseTexture');
+  mixPass.needsSwap = true;
+  const finalComp = new EffectComposer(renderer);
+  finalComp.addPass(renderPass);
+  finalComp.addPass(mixPass);
+  finalComp.addPass(new OutputPass());
+  const darkMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+  const stored = {};
+  function darkenNonBloom(obj) {
+    if ((obj.isMesh || obj.isSprite || obj.isLine) && !bloomLayer.test(obj.layers)) { stored[obj.uuid] = obj.material; obj.material = darkMat; }
+  }
+  function restoreMats(obj) {
+    if (stored[obj.uuid]) { obj.material = stored[obj.uuid]; delete stored[obj.uuid]; }
+  }
+
+  // GLSL noise
+  const noiseGLSL = `
+vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}
+vec4 mod289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}
+vec4 permute(vec4 x){return mod289(((x*34.0)+1.0)*x);}
+vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-0.85373472095314*r;}
+vec3 fade(vec3 t){return t*t*t*(t*(t*6.0-15.0)+10.0);}
+float cnoise(vec3 P){
+  vec3 Pi0=floor(P),Pi1=Pi0+vec3(1.0);Pi0=mod289(Pi0);Pi1=mod289(Pi1);
+  vec3 Pf0=fract(P),Pf1=Pf0-vec3(1.0);
+  vec4 ix=vec4(Pi0.x,Pi1.x,Pi0.x,Pi1.x),iy=vec4(Pi0.yy,Pi1.yy),iz0=Pi0.zzzz,iz1=Pi1.zzzz;
+  vec4 ixy=permute(permute(ix)+iy),ixy0=permute(ixy+iz0),ixy1=permute(ixy+iz1);
+  vec4 gx0=ixy0*(1.0/7.0),gy0=fract(floor(gx0)*(1.0/7.0))-0.5;gx0=fract(gx0);
+  vec4 gz0=vec4(0.5)-abs(gx0)-abs(gy0),sz0=step(gz0,vec4(0.0));
+  gx0-=sz0*(step(0.0,gx0)-0.5);gy0-=sz0*(step(0.0,gy0)-0.5);
+  vec4 gx1=ixy1*(1.0/7.0),gy1=fract(floor(gx1)*(1.0/7.0))-0.5;gx1=fract(gx1);
+  vec4 gz1=vec4(0.5)-abs(gx1)-abs(gy1),sz1=step(gz1,vec4(0.0));
+  gx1-=sz1*(step(0.0,gx1)-0.5);gy1-=sz1*(step(0.0,gy1)-0.5);
+  vec3 g000=vec3(gx0.x,gy0.x,gz0.x),g100=vec3(gx0.y,gy0.y,gz0.y),
+       g010=vec3(gx0.z,gy0.z,gz0.z),g110=vec3(gx0.w,gy0.w,gz0.w),
+       g001=vec3(gx1.x,gy1.x,gz1.x),g101=vec3(gx1.y,gy1.y,gz1.y),
+       g011=vec3(gx1.z,gy1.z,gz1.z),g111=vec3(gx1.w,gy1.w,gz1.w);
+  vec4 norm0=taylorInvSqrt(vec4(dot(g000,g000),dot(g010,g010),dot(g100,g100),dot(g110,g110)));
+  g000*=norm0.x;g010*=norm0.y;g100*=norm0.z;g110*=norm0.w;
+  vec4 norm1=taylorInvSqrt(vec4(dot(g001,g001),dot(g011,g011),dot(g101,g101),dot(g111,g111)));
+  g001*=norm1.x;g011*=norm1.y;g101*=norm1.z;g111*=norm1.w;
+  float n000=dot(g000,Pf0),n100=dot(g100,vec3(Pf1.x,Pf0.yz)),n010=dot(g010,vec3(Pf0.x,Pf1.y,Pf0.z)),
+        n110=dot(g110,vec3(Pf1.xy,Pf0.z)),n001=dot(g001,vec3(Pf0.xy,Pf1.z)),
+        n101=dot(g101,vec3(Pf1.x,Pf0.y,Pf1.z)),n011=dot(g011,vec3(Pf0.x,Pf1.yz)),n111=dot(g111,Pf1);
+  vec3 fade_xyz=fade(Pf0);
+  vec4 n_z=mix(vec4(n000,n100,n010,n110),vec4(n001,n101,n011,n111),fade_xyz.z);
+  vec2 n_yz=mix(n_z.xy,n_z.zw,fade_xyz.y);
+  return 2.2*mix(n_yz.x,n_yz.y,fade_xyz.x);
+}
+float fbm(vec3 p){float f=0.0,a=0.5;for(int i=0;i<5;i++){f+=a*cnoise(p);p*=2.0;a*=0.5;}return f;}`;
+
+  const pVert = `varying vec2 vUv;varying vec3 vNormal;varying vec3 vPosition;
+void main(){vUv=uv;vNormal=normalize(normalMatrix*normal);vPosition=(modelViewMatrix*vec4(position,1.0)).xyz;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`;
+
+  // Textures
+  const tl = new THREE.TextureLoader();
+  const earthMap = tl.load(TEX + 'earth_atmos_2048.jpg');
+  const earthNorm = tl.load(TEX + 'earth_normal_2048.jpg');
+  const earthSpec = tl.load(TEX + 'earth_specular_2048.jpg');
+  const earthClouds = tl.load(TEX + 'earth_clouds_1024.png');
+  const moonMap = tl.load(TEX + 'moon_1024.jpg');
+  const earthLightsMap = tl.load(TEX + 'earth_lights_2048.png');
+  earthMap.colorSpace = THREE.SRGBColorSpace;
+  earthClouds.colorSpace = THREE.SRGBColorSpace;
+  moonMap.colorSpace = THREE.SRGBColorSpace;
+  earthLightsMap.colorSpace = THREE.SRGBColorSpace;
+
+  // Lights
+  const sunLight = new THREE.PointLight(0xfff0cc, 3.0, 3000, 0.2);
+  scene.add(sunLight);
+  scene.add(new THREE.AmbientLight(0x0a0a1a, 0.06));
+
+  // Starfield
+  const starCount = 10000;
+  const sPos = new Float32Array(starCount*3), sCol = new Float32Array(starCount*3);
+  for (let i = 0; i < starCount; i++) {
+    const r = 3000+Math.random()*7000, th = Math.random()*Math.PI*2, ph = Math.acos(2*Math.random()-1);
+    sPos[i*3]=r*Math.sin(ph)*Math.cos(th); sPos[i*3+1]=r*Math.sin(ph)*Math.sin(th); sPos[i*3+2]=r*Math.cos(ph);
+    const roll = Math.random();
+    if (roll<0.1){sCol[i*3]=1;sCol[i*3+1]=0.85;sCol[i*3+2]=0.63;}
+    else if(roll<0.3){sCol[i*3]=0.78;sCol[i*3+1]=0.85;sCol[i*3+2]=1;}
+    else{sCol[i*3]=1;sCol[i*3+1]=1;sCol[i*3+2]=1;}
+  }
+  const sGeo = new THREE.BufferGeometry();
+  sGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
+  sGeo.setAttribute('color', new THREE.BufferAttribute(sCol, 3));
+  scene.add(new THREE.Points(sGeo, new THREE.PointsMaterial({size:1.8,sizeAttenuation:true,vertexColors:true,transparent:true,opacity:0.9})));
+
+  const brightStars = [];
+  for (let i = 0; i < 400; i++) {
+    const r=2500+Math.random()*5000, th=Math.random()*Math.PI*2, ph=Math.acos(2*Math.random()-1);
+    const m = new THREE.Mesh(new THREE.SphereGeometry(0.5+Math.random()*1.5,6,6), new THREE.MeshBasicMaterial({color:0xffffff}));
+    m.position.set(r*Math.sin(ph)*Math.cos(th),r*Math.sin(ph)*Math.sin(th),r*Math.cos(ph));
+    m.layers.enable(BLOOM_LAYER); scene.add(m);
+    if (i<60) brightStars.push({mesh:m,phase:Math.random()*6.28,speed:0.8+Math.random()*3,base:0.5+Math.random()*0.5});
+  }
+
+  // Shooting stars
+  const shootingStars = [];
+  let nextShoot = 3;
+  function spawnShootingStar() {
+    const start = new THREE.Vector3((Math.random()-0.5)*4000,500+Math.random()*2000,(Math.random()-0.5)*4000);
+    const dir = new THREE.Vector3((Math.random()-0.5)*2,-0.5-Math.random(),(Math.random()-0.5)*2).normalize();
+    const trail = dir.clone().multiplyScalar(120);
+    const geo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0), trail]);
+    const colorRoll = Math.random();
+    const color = colorRoll<0.15?0x6699ff:colorRoll<0.25?0xffcc44:0xffffff;
+    const mat = new THREE.LineBasicMaterial({color,transparent:true,opacity:0.9});
+    const line = new THREE.Line(geo,mat);
+    line.position.copy(start); line.layers.enable(BLOOM_LAYER); scene.add(line);
+    const headGeo = new THREE.SphereGeometry(1.5,6,6);
+    const headMat = new THREE.MeshBasicMaterial({color,transparent:true,opacity:0.7,blending:THREE.AdditiveBlending});
+    const head = new THREE.Mesh(headGeo,headMat);
+    head.position.copy(start); head.layers.enable(BLOOM_LAYER); scene.add(head);
+    shootingStars.push({line,head,dir:dir.clone().multiplyScalar(30),life:0,maxLife:1.5});
+  }
+
+  // Sun
+  const sunCore = new THREE.Mesh(new THREE.SphereGeometry(45,64,64), new THREE.MeshBasicMaterial({color:0xfff8e7}));
+  sunCore.layers.enable(BLOOM_LAYER); scene.add(sunCore);
+  const plasmaMat = new THREE.ShaderMaterial({
+    uniforms:{uTime:{value:0}},
+    vertexShader:`varying vec2 vUv;varying vec3 vPos;void main(){vUv=uv;vPos=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+    fragmentShader: noiseGLSL+`
+      uniform float uTime;varying vec2 vUv;varying vec3 vPos;
+      void main(){vec3 p=vPos*0.04+vec3(0.0,0.0,uTime*0.15);float n=fbm(p)*0.5+0.5;float n2=fbm(p*2.0+vec3(uTime*0.08))*0.5+0.5;
+      vec3 deep=vec3(0.85,0.3,0.0);vec3 mid=vec3(1.0,0.75,0.2);vec3 hot=vec3(1.0,0.98,0.85);
+      vec3 col=mix(deep,mid,n);col=mix(col,hot,n2*n);gl_FragColor=vec4(col,1.0);}`,
+    transparent:false, blending:THREE.AdditiveBlending,
+  });
+  const plasmaSphere = new THREE.Mesh(new THREE.SphereGeometry(48,48,48), plasmaMat);
+  plasmaSphere.layers.enable(BLOOM_LAYER); scene.add(plasmaSphere);
+  const sunAtmoMat = new THREE.ShaderMaterial({
+    vertexShader:`varying vec3 vN;varying vec3 vP;void main(){vN=normalize(normalMatrix*normal);vP=(modelViewMatrix*vec4(position,1.0)).xyz;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+    fragmentShader:`varying vec3 vN;varying vec3 vP;void main(){float f=pow(1.0-abs(dot(normalize(-vP),vN)),2.5);gl_FragColor=vec4(1.0,0.9,0.6,f*0.5);}`,
+    transparent:true, blending:THREE.AdditiveBlending, side:THREE.BackSide, depthWrite:false,
+  });
+  const sunAtmoMesh = new THREE.Mesh(new THREE.SphereGeometry(56,32,32), sunAtmoMat);
+  sunAtmoMesh.layers.enable(BLOOM_LAYER); scene.add(sunAtmoMesh);
+  const coronaOuterMat = new THREE.ShaderMaterial({
+    uniforms:{uTime:{value:0}},
+    vertexShader:`varying vec3 vN;varying vec3 vP;void main(){vN=normalize(normalMatrix*normal);vP=(modelViewMatrix*vec4(position,1.0)).xyz;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+    fragmentShader:`uniform float uTime;varying vec3 vN;varying vec3 vP;void main(){float f=pow(1.0-abs(dot(normalize(-vP),vN)),3.0);float breathe=0.5+0.5*sin(uTime*1.57);gl_FragColor=vec4(1.0,0.92,0.7,f*0.12*breathe);}`,
+    transparent:true, blending:THREE.AdditiveBlending, side:THREE.BackSide, depthWrite:false,
+  });
+  const coronaOuterMesh = new THREE.Mesh(new THREE.SphereGeometry(68,32,32), coronaOuterMat);
+  coronaOuterMesh.layers.enable(BLOOM_LAYER); scene.add(coronaOuterMesh);
+
+  // Solar flares
+  const flares = [];
+  function spawnFlare() {
+    const angle = Math.random()*Math.PI*2;
+    const geo = new THREE.SphereGeometry(3,8,8); geo.scale(1,2.5,1);
+    const mat = new THREE.MeshBasicMaterial({color:0xffcc66,transparent:true,opacity:0.6,blending:THREE.AdditiveBlending});
+    const m = new THREE.Mesh(geo,mat);
+    m.position.set(Math.cos(angle)*48,Math.sin(angle)*48,0);
+    m.layers.enable(BLOOM_LAYER); scene.add(m);
+    flares.push({mesh:m,angle,life:0,maxLife:2,vr:18+Math.random()*10});
+  }
+  let nextFlare = 6+Math.random()*6;
+
+  // Solar wind
+  const windCount = 2000;
+  const windPos = new Float32Array(windCount*3), windVel = [];
+  for (let i=0;i<windCount;i++){
+    const dir = new THREE.Vector3(Math.random()-0.5,Math.random()-0.5,Math.random()-0.5).normalize();
+    const d = 50+Math.random()*200;
+    windPos[i*3]=dir.x*d;windPos[i*3+1]=dir.y*d;windPos[i*3+2]=dir.z*d;
+    windVel.push(dir.clone().multiplyScalar(1.5+Math.random()*2));
+  }
+  const windGeo = new THREE.BufferGeometry();
+  windGeo.setAttribute('position', new THREE.BufferAttribute(windPos,3));
+  scene.add(new THREE.Points(windGeo, new THREE.PointsMaterial({color:0xccddff,size:0.6,sizeAttenuation:true,transparent:true,opacity:0.15})));
+
+  // Planet shaders
+  function mkShader(frag){
+    return new THREE.ShaderMaterial({uniforms:{uTime:{value:0},sunPos:{value:new THREE.Vector3()}},vertexShader:pVert,fragmentShader:noiseGLSL+frag});
+  }
+  const mercuryFrag=`uniform float uTime;uniform vec3 sunPos;varying vec2 vUv;varying vec3 vNormal;varying vec3 vPosition;
+void main(){float n=cnoise(vec3(vUv*14.0,1.0))*0.5+0.5;float c=1.0;
+for(int i=0;i<10;i++){vec2 cp=vec2(sin(float(i)*2.3+0.5)*0.4+0.5,cos(float(i)*1.7+0.3)*0.4+0.5);float d=length(vUv-cp);float sz=0.015+sin(float(i)*3.1)*0.012;c*=smoothstep(sz*0.4,sz,d)*0.3+0.7;}
+float b=0.17+n*0.15;vec3 col=vec3(b)*c;col=mix(col,vec3(0.22,0.2,0.19),0.3);
+vec3 ld=normalize(sunPos-vPosition);float diff=max(dot(vNormal,ld),0.0);col*=diff*0.95+0.05;gl_FragColor=vec4(col,1.0);}`;
+  const venusFrag=`uniform float uTime;uniform vec3 sunPos;varying vec2 vUv;varying vec3 vNormal;varying vec3 vPosition;
+void main(){float n=fbm(vec3(vUv*3.0+uTime*0.006,uTime*0.004))*0.5+0.5;float n2=fbm(vec3(vUv*6.0-uTime*0.01,uTime*0.002))*0.3;
+vec3 col=mix(vec3(0.92,0.84,0.62),vec3(0.97,0.92,0.78),n+n2);col+=vec3(0.04)*cnoise(vec3(vUv*12.0,uTime*0.008));
+vec3 ld=normalize(sunPos-vPosition);float diff=max(dot(vNormal,ld),0.0);col*=diff*0.8+0.2;gl_FragColor=vec4(col,1.0);}`;
+  const marsFrag=`uniform float uTime;uniform vec3 sunPos;varying vec2 vUv;varying vec3 vNormal;varying vec3 vPosition;
+void main(){float n=cnoise(vec3(vUv*8.0,0.5))*0.5+0.5;float n2=cnoise(vec3(vUv*16.0,1.5))*0.3;
+vec3 c1=vec3(0.76,0.27,0.06),c2=vec3(0.88,0.48,0.22),c3=vec3(0.55,0.2,0.08);vec3 col=mix(c1,c2,n);col=mix(col,c3,n2);
+float polar=smoothstep(0.88,0.97,vUv.y)+smoothstep(0.12,0.03,vUv.y);col=mix(col,vec3(0.92,0.9,0.87),polar*0.75);
+vec3 ld=normalize(sunPos-vPosition);float diff=max(dot(vNormal,ld),0.0);col*=diff*0.92+0.08;gl_FragColor=vec4(col,1.0);}`;
+  const jupiterFrag=`uniform float uTime;uniform vec3 sunPos;varying vec2 vUv;varying vec3 vNormal;varying vec3 vPosition;
+void main(){float lat=vUv.y;float band=sin(lat*30.0)*0.5+0.5;band+=sin(lat*15.0+1.5)*0.3;
+band+=cnoise(vec3(vUv.x*8.0+uTime*0.02,lat*12.0,uTime*0.008))*0.15;
+vec3 c1=vec3(0.82,0.55,0.25),c2=vec3(0.95,0.87,0.68),c3=vec3(0.62,0.32,0.12),c4=vec3(0.92,0.78,0.52);
+vec3 col=mix(mix(c1,c2,band),mix(c3,c4,band),sin(lat*7.0)*0.5+0.5);
+float spot=1.0-smoothstep(0.025,0.07,length((vUv-vec2(0.65,0.55))*vec2(1.5,1.0)));
+float swirl=cnoise(vec3(vUv*30.0+uTime*0.03,uTime*0.02));
+col=mix(col,vec3(0.75,0.25,0.15),spot*0.65*(0.8+swirl*0.2));
+vec3 ld=normalize(sunPos-vPosition);float diff=max(dot(vNormal,ld),0.0);col*=diff*0.88+0.12;gl_FragColor=vec4(col,1.0);}`;
+  const saturnFrag=`uniform float uTime;uniform vec3 sunPos;varying vec2 vUv;varying vec3 vNormal;varying vec3 vPosition;
+void main(){float lat=vUv.y;float band=sin(lat*24.0)*0.5+0.5;band+=cnoise(vec3(vUv.x*5.0+uTime*0.012,lat*10.0,0.0))*0.1;
+vec3 c1=vec3(0.92,0.85,0.65),c2=vec3(0.87,0.78,0.58);vec3 col=mix(c1,c2,band);col+=vec3(0.04,0.025,0.0)*sin(lat*44.0);
+vec3 ld=normalize(sunPos-vPosition);float diff=max(dot(vNormal,ld),0.0);col*=diff*0.88+0.12;gl_FragColor=vec4(col,1.0);}`;
+  const uranusFrag=`uniform float uTime;uniform vec3 sunPos;varying vec2 vUv;varying vec3 vNormal;varying vec3 vPosition;
+void main(){float lat=abs(vUv.y-0.5)*2.0;vec3 eq=vec3(0.49,0.91,0.91),po=vec3(0.4,0.78,0.82);
+vec3 col=mix(eq,po,lat);col+=cnoise(vec3(vUv*5.0,uTime*0.003))*0.02;
+vec3 ld=normalize(sunPos-vPosition);float diff=max(dot(vNormal,ld),0.0);col*=diff*0.88+0.12;gl_FragColor=vec4(col,1.0);}`;
+  const neptuneFrag=`uniform float uTime;uniform vec3 sunPos;varying vec2 vUv;varying vec3 vNormal;varying vec3 vPosition;
+void main(){float lat=vUv.y;vec3 base=vec3(0.12,0.22,0.7),lt=vec3(0.22,0.38,0.85);
+float band=sin(lat*18.0)*0.5+0.5;vec3 col=mix(base,lt,band*0.3);
+float wisps=cnoise(vec3(vUv.x*12.0+uTime*0.025,lat*8.0,uTime*0.012));col+=vec3(0.08,0.12,0.18)*wisps*0.5;
+float spot=1.0-smoothstep(0.02,0.055,length(vUv-vec2(0.3,0.45)));col=mix(col,vec3(0.08,0.12,0.45),spot*0.55);
+vec3 ld=normalize(sunPos-vPosition);float diff=max(dot(vNormal,ld),0.0);col*=diff*0.88+0.12;gl_FragColor=vec4(col,1.0);}`;
+  const plutoFrag=`uniform float uTime;uniform vec3 sunPos;varying vec2 vUv;varying vec3 vNormal;varying vec3 vPosition;
+void main(){float n=cnoise(vec3(vUv*6.0,0.0))*0.5+0.5;vec3 base=mix(vec3(0.45,0.38,0.32),vec3(0.55,0.48,0.42),n);
+float h=length((vUv-vec2(0.5,0.5))*vec2(1.0,1.3));float hs=smoothstep(0.22,0.14,h);
+float l1=smoothstep(0.17,0.09,length((vUv-vec2(0.44,0.52))*vec2(1.0,1.2)));
+float l2=smoothstep(0.17,0.09,length((vUv-vec2(0.56,0.52))*vec2(1.0,1.2)));
+base=mix(base,vec3(0.88,0.8,0.72),max(hs,max(l1,l2))*0.7);
+vec3 ld=normalize(sunPos-vPosition);float diff=max(dot(vNormal,ld),0.0);base*=diff*0.9+0.1;gl_FragColor=vec4(base,1.0);}`;
+
+  // Saturn ring texture
+  function makeSaturnRingTex(){
+    const c=document.createElement('canvas');c.width=1024;c.height=64;const ctx=c.getContext('2d');
+    for(let x=0;x<1024;x++){const t=x/1024;const b=Math.sin(t*80)*0.3+Math.sin(t*40)*0.2+Math.sin(t*120)*0.1;
+    const g1=Math.abs(t-0.45)<0.015?0:1,g2=Math.abs(t-0.65)<0.01?0:1;
+    const r=Math.floor((205+b*40)*g1*g2),g=Math.floor((185+b*30)*g1*g2),bl=Math.floor((145+b*20)*g1*g2);
+    const a=Math.floor((0.3+Math.abs(b)*0.5)*255*g1*g2*(t>0.05&&t<0.95?1:0));
+    ctx.fillStyle=`rgba(${r},${g},${bl},${a/255})`;ctx.fillRect(x,0,1,64);}
+    const tx=new THREE.CanvasTexture(c);tx.colorSpace=THREE.SRGBColorSpace;return tx;
+  }
+
+  // Atmosphere helper
+  function addAtmo(parent,radius,color){
+    const mat=new THREE.ShaderMaterial({
+      vertexShader:`varying vec3 vN;varying vec3 vP;void main(){vN=normalize(normalMatrix*normal);vP=(modelViewMatrix*vec4(position,1.0)).xyz;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+      fragmentShader:`varying vec3 vN;varying vec3 vP;uniform vec3 uColor;void main(){float f=pow(1.0-abs(dot(normalize(-vP),vN)),3.0);gl_FragColor=vec4(uColor,f*0.45);}`,
+      uniforms:{uColor:{value:new THREE.Color(color)}},
+      transparent:true,blending:THREE.AdditiveBlending,side:THREE.BackSide,depthWrite:false,
+    });
+    const m=new THREE.Mesh(new THREE.SphereGeometry(radius,32,32),mat);parent.add(m);return m;
+  }
+
+  // Planet data
+  const planetDefs = [
+    {name:'Email',body:'mercury',orbit:160,speed:0.8,radius:12,rotSpeed:0.002,type:'assignment type',info:'Hey [name], 3-5 sentences, direct ask'},
+    {name:'Classwork',body:'venus',orbit:210,speed:0.6,radius:12,rotSpeed:-0.003,type:'assignment type',info:'Discussion posts, short answers, in-class writing'},
+    {name:'Essay',body:'earth',orbit:260,speed:0.5,radius:24,rotSpeed:0.01,type:'assignment type',info:'5-paragraph structure, thesis-driven, MLA format'},
+    {name:'Short Response',body:'moon',orbit:310,speed:0.4,radius:12,rotSpeed:0.002,type:'assignment type',info:'Lead with the answer, back it up, done'},
+    {name:'FRQ / Lab',body:'mars',orbit:360,speed:0.35,radius:12,rotSpeed:0.009,type:'assignment type',info:'Data-first, cause→effect, tight and precise'},
+    {name:'American Lit',body:'jupiter',orbit:480,speed:0.22,radius:12,rotSpeed:0.006,type:'class',info:'Hook → thesis, quote + analysis every paragraph',moons:[{n:'hook',r:2,o:22},{n:'voice',r:1.5,o:30}]},
+    {name:'US History',body:'saturn',orbit:540,speed:0.18,radius:12,rotSpeed:0.005,type:'class',info:'Evidence-based argument, context matters',moons:[{n:'thesis',r:2,o:22},{n:'evidence',r:1.5,o:30}]},
+    {name:'APES',body:'uranus',orbit:600,speed:0.15,radius:12,rotSpeed:0.003,axisTilt:98,type:'class',info:'Data first, numbers, cause and effect',moons:[{n:'analysis',r:1.5,o:22},{n:'data',r:1,o:28}]},
+    {name:'Photography',body:'neptune',orbit:660,speed:0.12,radius:12,rotSpeed:0.003,type:'class',info:'Observation and visual analysis'},
+    {name:'Trigonometry',body:'pluto',orbit:720,speed:0.09,radius:12,rotSpeed:0.001,type:'class',info:'Problem sets, show your work'},
+  ];
+
+  // Build planets
+  const planets = [], planetMeshes = [], shaderMats = [];
+  const labelContainer = document.getElementById('system-label-container');
+
+  planetDefs.forEach(def => {
+    const group = new THREE.Group(); scene.add(group);
+    const oGeo = new THREE.RingGeometry(def.orbit-0.4,def.orbit+0.4,180);
+    const oMat = new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.07,side:THREE.DoubleSide});
+    const oMesh = new THREE.Mesh(oGeo,oMat); oMesh.rotation.x=-Math.PI/2; scene.add(oMesh);
+    const geo = new THREE.SphereGeometry(def.radius,48,48);
+    let mat; const extras = [];
+
+    switch(def.body){
+      case 'earth':
+        mat = new THREE.MeshPhongMaterial({map:earthMap,normalMap:earthNorm,specularMap:earthSpec,specular:new THREE.Color(0x333333),shininess:25});
+        { const cg=new THREE.SphereGeometry(24.6,48,48);
+          const cm=new THREE.MeshPhongMaterial({map:earthClouds,alphaMap:earthClouds,transparent:true,opacity:0.4,depthWrite:false,side:THREE.DoubleSide});
+          const cmesh=new THREE.Mesh(cg,cm); extras.push({mesh:cmesh,type:'clouds',rotSpeed:0.0115});
+          const lgm=new THREE.MeshBasicMaterial({map:earthLightsMap,transparent:true,opacity:0.8,blending:THREE.AdditiveBlending,depthWrite:false});
+          const lgmesh=new THREE.Mesh(new THREE.SphereGeometry(24.15,48,48),lgm);
+          extras.push({mesh:lgmesh,type:'lights'});
+          addAtmo(group,27,0x8ab4f8); addAtmo(group,29,0x4488ff);
+          const auroraMat=new THREE.ShaderMaterial({
+            uniforms:{uTime:{value:0}},
+            vertexShader:`varying vec3 vN;varying vec3 vP;varying vec2 vUv;void main(){vN=normalize(normalMatrix*normal);vP=(modelViewMatrix*vec4(position,1.0)).xyz;vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+            fragmentShader:noiseGLSL+`uniform float uTime;varying vec3 vN;varying vec3 vP;varying vec2 vUv;
+            void main(){float lat=abs(vUv.y-0.5)*2.0;float polar=smoothstep(0.6,0.95,lat);
+            float n=cnoise(vec3(vUv.x*12.0+uTime*0.5,lat*4.0,uTime*0.3));float curtain=polar*max(0.0,n)*0.7;
+            vec3 col=mix(vec3(0.1,1.0,0.4),vec3(0.2,0.5,1.0),n*0.5+0.5);
+            float f=pow(1.0-abs(dot(normalize(-vP),vN)),2.0);gl_FragColor=vec4(col,curtain*f);}`,
+            transparent:true,blending:THREE.AdditiveBlending,side:THREE.BackSide,depthWrite:false,
+          });
+          extras.push({mesh:new THREE.Mesh(new THREE.SphereGeometry(26,48,48),auroraMat),type:'aurora'});
+          shaderMats.push(auroraMat);
+        } break;
+      case 'moon':
+        mat=new THREE.MeshPhongMaterial({map:moonMap,bumpMap:moonMap,bumpScale:0.4,shininess:3}); break;
+      case 'mercury': mat=mkShader(mercuryFrag); shaderMats.push(mat); break;
+      case 'venus': mat=mkShader(venusFrag); shaderMats.push(mat); addAtmo(group,def.radius*1.08,0xddcc88); break;
+      case 'mars': mat=mkShader(marsFrag); shaderMats.push(mat); addAtmo(group,def.radius*1.04,0xcc8844); break;
+      case 'jupiter': mat=mkShader(jupiterFrag); shaderMats.push(mat); addAtmo(group,def.radius*1.05,0xcc9944); break;
+      case 'saturn':
+        mat=mkShader(saturnFrag); shaderMats.push(mat);
+        { const rg=new THREE.RingGeometry(17,29,128);
+          const pos=rg.attributes.position,uv=rg.attributes.uv;
+          for(let i=0;i<pos.count;i++){const x=pos.getX(i),y=pos.getY(i);const d=Math.sqrt(x*x+y*y);uv.setXY(i,(d-17)/(29-17),0.5);}
+          const rm=new THREE.MeshBasicMaterial({map:makeSaturnRingTex(),transparent:true,side:THREE.DoubleSide,depthWrite:false});
+          const rmesh=new THREE.Mesh(rg,rm); rmesh.rotation.x=-27*Math.PI/180;
+          extras.push({mesh:rmesh,type:'ring'});
+        }
+        addAtmo(group,def.radius*1.06,0xccaa55); break;
+      case 'uranus':
+        mat=mkShader(uranusFrag); shaderMats.push(mat);
+        { const urg=new THREE.RingGeometry(def.radius*1.8,def.radius*1.85,64);
+          const urm=new THREE.MeshBasicMaterial({color:0x445566,transparent:true,opacity:0.12,side:THREE.DoubleSide,depthWrite:false});
+          extras.push({mesh:new THREE.Mesh(urg,urm),type:'ring'});
+        }
+        addAtmo(group,def.radius*1.06,0x7de8e8); break;
+      case 'neptune': mat=mkShader(neptuneFrag); shaderMats.push(mat); addAtmo(group,def.radius*1.06,0x2b65d9); break;
+      case 'pluto': mat=mkShader(plutoFrag); shaderMats.push(mat); break;
+    }
+
+    const mesh = new THREE.Mesh(geo,mat); group.add(mesh);
+    for(const e of extras) group.add(e.mesh);
+    if(def.axisTilt) mesh.rotation.z=def.axisTilt*Math.PI/180;
+
+    const label=document.createElement('div'); label.className='planet-label'; label.textContent=def.name;
+    labelContainer.appendChild(label);
+
+    const moonObjs=[];
+    if(def.moons){
+      def.moons.forEach((md,mi)=>{
+        const mg=new THREE.SphereGeometry(md.r,12,12);
+        const mm=new THREE.MeshPhongMaterial({color:0xbbbbbb,emissive:0x444444,emissiveIntensity:0.3,shininess:5});
+        const mmesh=new THREE.Mesh(mg,mm); group.add(mmesh);
+        const ml=document.createElement('div');ml.className='planet-label';ml.style.fontSize='9px';ml.textContent=md.n;
+        labelContainer.appendChild(ml);
+        moonObjs.push({mesh:mmesh,label:ml,orbitRadius:md.o,speed:2+mi*0.5,phase:mi*(Math.PI*2/(def.moons.length))});
+      });
+    }
+    planets.push({def,group,mesh,mat,label,moons:moonObjs,extras,angle:Math.random()*Math.PI*2});
+    planetMeshes.push(mesh);
+  });
+
+  // Sun label
+  const sunLabel=document.createElement('div'); sunLabel.className='sun-label'; sunLabel.textContent='Max';
+  labelContainer.appendChild(sunLabel);
+
+  // Asteroid belt
+  const asteroids=[];
+  for(let i=0;i<1200;i++){
+    const r=400+Math.random()*30,angle=Math.random()*Math.PI*2,tilt=(Math.random()-0.5)*0.17;
+    const size=0.4+Math.random()*1.6;
+    const geo=new THREE.IcosahedronGeometry(size,0);
+    const pos=geo.attributes.position;
+    for(let j=0;j<pos.count;j++){pos.setX(j,pos.getX(j)+(Math.random()-0.5)*size*0.4);pos.setY(j,pos.getY(j)+(Math.random()-0.5)*size*0.4);pos.setZ(j,pos.getZ(j)+(Math.random()-0.5)*size*0.4);}
+    geo.computeVertexNormals();
+    const grey=0.25+Math.random()*0.2;
+    const mat=new THREE.MeshPhongMaterial({color:new THREE.Color(grey,grey*0.95,grey*0.9),shininess:2});
+    const mesh=new THREE.Mesh(geo,mat);
+    const y=Math.sin(tilt)*r;
+    mesh.position.set(Math.cos(angle)*r,y,Math.sin(angle)*r);
+    mesh.rotation.set(Math.random()*6,Math.random()*6,Math.random()*6);
+    scene.add(mesh); asteroids.push({mesh,angle,r,tilt,speed:0.06+Math.random()*0.04});
+  }
+
+  // Comet
+  const cometNucleus=new THREE.Mesh(new THREE.SphereGeometry(2,8,8),new THREE.MeshBasicMaterial({color:0xddeeff}));
+  cometNucleus.scale.set(1,1,1.8); scene.add(cometNucleus);
+  const cometTailCount=500;
+  const cTailPos=new Float32Array(cometTailCount*3);
+  const cTailGeo=new THREE.BufferGeometry();
+  cTailGeo.setAttribute('position',new THREE.BufferAttribute(cTailPos,3));
+  const cometTail=new THREE.Points(cTailGeo,new THREE.PointsMaterial({color:0xaaccff,size:1.2,sizeAttenuation:true,transparent:true,opacity:0.4}));
+  cometTail.layers.enable(BLOOM_LAYER); scene.add(cometTail);
+  let cometAngle=0; const cometA=800,cometB=400,cometOffX=-300;
+
+  // Satellites
+  const earthPlanet=planets[2];
+  const issBody=new THREE.Group();
+  const issCore=new THREE.Mesh(new THREE.BoxGeometry(0.6,0.6,2),new THREE.MeshPhongMaterial({color:0xcccccc,shininess:40}));
+  const issP1=new THREE.Mesh(new THREE.BoxGeometry(6,0.1,1.5),new THREE.MeshPhongMaterial({color:0x224488,shininess:30}));
+  const issP2=issP1.clone(); issP2.position.z=1;issP1.position.z=-1;
+  issBody.add(issCore,issP1,issP2);
+  const issLight=new THREE.Mesh(new THREE.SphereGeometry(0.2,6,6),new THREE.MeshBasicMaterial({color:0xff3333}));
+  issLight.layers.enable(BLOOM_LAYER); issBody.add(issLight); scene.add(issBody);
+
+  const hubbleBody=new THREE.Group();
+  const hubbleTube=new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.4,2.5,8),new THREE.MeshPhongMaterial({color:0xaaaaaa,shininess:50}));
+  const hubbleP1=new THREE.Mesh(new THREE.BoxGeometry(3,0.05,1),new THREE.MeshPhongMaterial({color:0x2244aa}));
+  const hubbleP2=hubbleP1.clone(); hubbleP1.position.x=1.8;hubbleP2.position.x=-1.8;
+  hubbleBody.add(hubbleTube,hubbleP1,hubbleP2); scene.add(hubbleBody);
+
+  const gpsSats=[];
+  for(let i=0;i<6;i++){
+    const sat=new THREE.Mesh(new THREE.BoxGeometry(0.4,0.4,0.4),new THREE.MeshPhongMaterial({color:0xdddddd}));
+    const panel=new THREE.Mesh(new THREE.BoxGeometry(2,0.05,0.8),new THREE.MeshPhongMaterial({color:0x1a3366}));
+    const g=new THREE.Group();g.add(sat,panel);scene.add(g);
+    gpsSats.push({group:g,phase:(i/6)*Math.PI*2});
+  }
+
+  // Nebula
+  const nebulaMat=new THREE.ShaderMaterial({
+    uniforms:{uTime:{value:0}},
+    vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+    fragmentShader:noiseGLSL+`
+      uniform float uTime;varying vec2 vUv;
+      void main(){vec2 p=vUv*2.0-1.0;float edge=1.0-smoothstep(0.3,1.0,length(p));
+      float n1=fbm(vec3(p*1.5,uTime*0.01))*0.5+0.5;float n2=fbm(vec3(p*2.5+3.0,uTime*0.008))*0.5+0.5;float n3=fbm(vec3(p*1.8-5.0,uTime*0.012))*0.5+0.5;
+      vec3 col=vec3(0.12,0.02,0.18)*n1+vec3(0.04,0.02,0.12)*n2+vec3(0.02,0.06,0.16)*n3;
+      float a=max(n1*0.25,max(n2*0.15,n3*0.2))*0.4*edge;gl_FragColor=vec4(col,a);}`,
+    transparent:true,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,depthWrite:false,
+  });
+  for(let i=0;i<4;i++){
+    const plane=new THREE.Mesh(new THREE.PlaneGeometry(8000,8000),nebulaMat.clone());
+    plane.material.uniforms.uTime=nebulaMat.uniforms.uTime;
+    const angle=(i/4)*Math.PI*2+0.4;
+    plane.position.set(Math.cos(angle)*7000,(Math.random()-0.5)*3000,Math.sin(angle)*7000);
+    plane.lookAt(0,0,0); shaderMats.push(plane.material); scene.add(plane);
+  }
+
+  // Jupiter lightning
+  const jupiterLightning=[]; let nextLightning=3+Math.random()*2;
+
+  // Space debris
+  const debris=[];
+  for(let i=0;i<150;i++){
+    const size=0.15+Math.random()*0.4;
+    const geo=new THREE.TetrahedronGeometry(size,0);
+    const mat=new THREE.MeshPhongMaterial({color:new THREE.Color(0.4+Math.random()*0.3,0.4+Math.random()*0.3,0.4+Math.random()*0.3),shininess:10});
+    const mesh=new THREE.Mesh(geo,mat);
+    scene.add(mesh);
+    debris.push({mesh,altitude:28+Math.random()*20,inclination:(Math.random()-0.5)*Math.PI*0.6,phase:Math.random()*Math.PI*2,speed:0.3+Math.random()*0.7,tumbleX:Math.random()*0.05,tumbleY:Math.random()*0.05});
+  }
+
+  // Info card
+  const infoCard=document.getElementById('system-info-card');
+  const cardTitle=document.getElementById('sys-card-title');
+  const cardBadge=document.getElementById('sys-card-badge');
+  const cardBody=document.getElementById('sys-card-body');
+
+  // Raycasting
+  const raycaster=new THREE.Raycaster();
+  const mouse=new THREE.Vector2();
+  let hoveredPlanet=null;
+  renderer.domElement.addEventListener('mousemove', e=>{
+    const rect=wrap.getBoundingClientRect();
+    mouse.x=((e.clientX-rect.left)/rect.width)*2-1;
+    mouse.y=-((e.clientY-rect.top)/rect.height)*2+1;
+    raycaster.setFromCamera(mouse,camera);
+    const hits=raycaster.intersectObjects(planetMeshes);
+    if(hits.length>0){
+      const idx=planetMeshes.indexOf(hits[0].object);
+      if(idx!==-1&&hoveredPlanet!==idx){
+        hoveredPlanet=idx;renderer.domElement.style.cursor='pointer';
+        const p=planets[idx];cardTitle.textContent=p.def.name;cardBadge.textContent=p.def.type;cardBody.textContent=p.def.info;
+        infoCard.classList.add('visible');
+      }
+      if(hoveredPlanet!==null){infoCard.style.left=Math.min(e.clientX-rect.left+20,rect.width-320)+'px';infoCard.style.top=Math.min(e.clientY-rect.top-20,rect.height-160)+'px';}
+    } else if(hoveredPlanet!==null){hoveredPlanet=null;renderer.domElement.style.cursor='default';infoCard.classList.remove('visible');}
+  });
+
+  // Label projection
+  const toScreen = pos => {
+    const v=pos.clone().project(camera);
+    const rect=wrap.getBoundingClientRect();
+    return {x:(v.x*0.5+0.5)*rect.width,y:(-v.y*0.5+0.5)*rect.height,z:v.z};
+  };
+
+  // Resize
+  window.addEventListener('resize', ()=>{
+    if(!systemRunning) return;
+    const w=wrap.clientWidth,h=wrap.clientHeight;
+    camera.aspect=w/h; camera.updateProjectionMatrix();
+    renderer.setSize(w,h); bloomComp.setSize(w,h); finalComp.setSize(w,h);
+    bloomPass.resolution.set(w,h);
+  });
+
+  // Animate
+  const clock=new THREE.Clock();
+  function animate(){
+    if(!systemRunning){ systemAnimFrame=null; return; }
+    systemAnimFrame=requestAnimationFrame(animate);
+    const t=clock.getElapsedTime();
+    const dt=Math.min(clock.getDelta(),0.05);
+
+    camera.position.y=500+Math.sin(t*0.314)*12;
+
+    sunCore.rotation.y=t*0.03;
+    plasmaMat.uniforms.uTime.value=t;
+    coronaOuterMat.uniforms.uTime.value=t;
+
+    // Flares
+    nextFlare-=dt;
+    if(nextFlare<=0){spawnFlare();nextFlare=6+Math.random()*6;}
+    for(let i=flares.length-1;i>=0;i--){
+      const f=flares[i];f.life+=dt;const prog=f.life/f.maxLife;
+      const r=48+prog*f.vr;f.mesh.position.set(Math.cos(f.angle)*r,Math.sin(f.angle)*r,0);
+      f.mesh.material.opacity=0.6*(1-prog);f.mesh.scale.setScalar(1+prog*2);
+      if(f.life>=f.maxLife){scene.remove(f.mesh);flares.splice(i,1);}
+    }
+
+    // Shooting stars
+    nextShoot-=dt;
+    if(nextShoot<=0){spawnShootingStar();nextShoot=2+Math.random()*4;}
+    for(let i=shootingStars.length-1;i>=0;i--){
+      const s=shootingStars[i];s.life+=dt;s.line.position.add(s.dir);s.head.position.copy(s.line.position);
+      const fade=1-s.life/s.maxLife;s.line.material.opacity=0.9*fade;s.head.material.opacity=0.7*fade;
+      if(s.life>=s.maxLife){scene.remove(s.line);scene.remove(s.head);shootingStars.splice(i,1);}
+    }
+
+    // Star twinkle
+    for(const s of brightStars) s.mesh.material.opacity=s.base*(0.6+0.4*Math.sin(t*s.speed+s.phase));
+
+    // Solar wind
+    const wp2=windGeo.attributes.position;
+    for(let i=0;i<windCount;i++){
+      wp2.array[i*3]+=windVel[i].x;wp2.array[i*3+1]+=windVel[i].y;wp2.array[i*3+2]+=windVel[i].z;
+      const d=Math.sqrt(wp2.array[i*3]**2+wp2.array[i*3+1]**2+wp2.array[i*3+2]**2);
+      if(d>600){const dir=windVel[i].clone().normalize();const nd=50+Math.random()*30;
+      wp2.array[i*3]=dir.x*nd;wp2.array[i*3+1]=dir.y*nd;wp2.array[i*3+2]=dir.z*nd;}
+    }
+    wp2.needsUpdate=true;
+
+    for(const sm of shaderMats) sm.uniforms.uTime.value=t;
+
+    // Planets
+    planets.forEach((p,i)=>{
+      p.angle+=p.def.speed*0.002;
+      const x=Math.cos(p.angle)*p.def.orbit,z=Math.sin(p.angle)*p.def.orbit;
+      p.mesh.position.set(x,0,z); p.mesh.rotation.y+=p.def.rotSpeed;
+      if(p.mat.uniforms&&p.mat.uniforms.sunPos) p.mat.uniforms.sunPos.value.set(-x,0,-z);
+      for(const e of p.extras){
+        e.mesh.position.copy(p.mesh.position);
+        if(e.type==='clouds') e.mesh.rotation.y+=e.rotSpeed;
+        if(e.type==='lights') e.mesh.rotation.y=p.mesh.rotation.y;
+      }
+      if(hoveredPlanet===i) p.label.classList.add('bright'); else p.label.classList.remove('bright');
+      const wp3=new THREE.Vector3();p.mesh.getWorldPosition(wp3);wp3.y+=p.def.radius+6;
+      const sc=toScreen(wp3);
+      if(sc.z>0&&sc.z<1){p.label.style.display='';p.label.style.left=sc.x+'px';p.label.style.top=sc.y+'px';p.label.style.transform='translate(-50%,-100%)';}
+      else p.label.style.display='none';
+      p.moons.forEach(m=>{
+        const mx=x+Math.cos(t*m.speed+m.phase)*m.orbitRadius,mz=z+Math.sin(t*m.speed+m.phase)*m.orbitRadius;
+        m.mesh.position.set(mx,0,mz);
+        const mw=new THREE.Vector3();m.mesh.getWorldPosition(mw);mw.y+=4;
+        const ms=toScreen(mw);
+        if(ms.z>0&&ms.z<1){m.label.style.display='';m.label.style.left=ms.x+'px';m.label.style.top=ms.y+'px';m.label.style.transform='translate(-50%,-100%)';}
+        else m.label.style.display='none';
+      });
+    });
+
+    // Asteroids
+    for(const a of asteroids){a.angle+=a.speed*0.001;const y=Math.sin(a.tilt)*a.r;a.mesh.position.set(Math.cos(a.angle)*a.r,y,Math.sin(a.angle)*a.r);a.mesh.rotation.y+=0.01;}
+
+    // Comet
+    cometAngle+=0.003;
+    const cx=Math.cos(cometAngle)*cometA+cometOffX,cz=Math.sin(cometAngle)*cometB;
+    cometNucleus.position.set(cx,10,cz);
+    const sunDist=Math.sqrt(cx*cx+cz*cz);const tailLen=Math.max(20,200-sunDist*0.15);
+    const tailDir=new THREE.Vector3(cx,0,cz).normalize();
+    const tp=cTailGeo.attributes.position;
+    for(let i=0;i<cometTailCount;i++){const prog=i/cometTailCount;tp.array[i*3]=cx+tailDir.x*prog*tailLen+(Math.random()-0.5)*3;tp.array[i*3+1]=10+(Math.random()-0.5)*3;tp.array[i*3+2]=cz+tailDir.z*prog*tailLen+(Math.random()-0.5)*3;}
+    tp.needsUpdate=true;cometTail.material.opacity=Math.min(0.5,120/sunDist);
+
+    // Sun label
+    const ss=toScreen(new THREE.Vector3(0,58,0));
+    sunLabel.style.left=ss.x+'px';sunLabel.style.top=ss.y+'px';sunLabel.style.transform='translate(-50%,-100%)';
+
+    // Satellites
+    const ep=earthPlanet.mesh.position;
+    const issAngle=t*2.5;
+    issBody.position.set(ep.x+Math.cos(issAngle)*30,ep.y+Math.sin(issAngle*0.3)*3,ep.z+Math.sin(issAngle)*30);
+    issBody.rotation.y=issAngle; issLight.material.opacity=Math.sin(t*8)>0?1:0.1;
+    const hubbleAngle=t*1.2,hubbleTilt=15*Math.PI/180;
+    hubbleBody.position.set(ep.x+Math.cos(hubbleAngle)*40,ep.y+Math.sin(hubbleAngle)*Math.sin(hubbleTilt)*40,ep.z+Math.sin(hubbleAngle)*Math.cos(hubbleTilt)*40);
+    hubbleBody.rotation.x=t*0.4;hubbleBody.rotation.z=t*0.3;
+    for(const gps of gpsSats){const ga=t*0.8+gps.phase;gps.group.position.set(ep.x+Math.cos(ga)*55,ep.y+Math.sin(ga*0.2)*5,ep.z+Math.sin(ga)*55);gps.group.rotation.y=ga;}
+
+    // Jupiter lightning
+    nextLightning-=dt;
+    if(nextLightning<=0){
+      const jp=planets[5].mesh.position;
+      const flash=new THREE.Mesh(new THREE.SphereGeometry(1.5,8,8),new THREE.MeshBasicMaterial({color:0xffffaa,transparent:true,opacity:1.0,blending:THREE.AdditiveBlending}));
+      const theta=Math.random()*Math.PI*2,phi=(Math.random()-0.5)*Math.PI*0.6;
+      flash.position.set(jp.x+Math.cos(theta)*Math.cos(phi)*12.5,jp.y+Math.sin(phi)*12.5,jp.z+Math.sin(theta)*Math.cos(phi)*12.5);
+      flash.layers.enable(BLOOM_LAYER);scene.add(flash);
+      jupiterLightning.push({mesh:flash,life:0,maxLife:0.3});nextLightning=3+Math.random()*2;
+    }
+    for(let i=jupiterLightning.length-1;i>=0;i--){
+      const jl=jupiterLightning[i];jl.life+=dt;const prog=jl.life/jl.maxLife;
+      jl.mesh.scale.setScalar(1+prog*3);jl.mesh.material.opacity=1.0-prog;
+      if(jl.life>=jl.maxLife){scene.remove(jl.mesh);jupiterLightning.splice(i,1);}
+    }
+
+    // Space debris
+    for(const d of debris){
+      const da=t*d.speed+d.phase;
+      d.mesh.position.set(ep.x+Math.cos(da)*d.altitude*Math.cos(d.inclination),ep.y+Math.sin(d.inclination)*Math.sin(da)*d.altitude,ep.z+Math.sin(da)*d.altitude*Math.cos(d.inclination));
+      d.mesh.rotation.x+=d.tumbleX;d.mesh.rotation.y+=d.tumbleY;
+    }
+
+    nebulaMat.uniforms.uTime.value=t;
+
+    controls.update();
+    scene.traverse(darkenNonBloom);bloomComp.render();scene.traverse(restoreMats);finalComp.render();
+  }
+  systemAnimate = animate;
+  animate();
+}
+</script>
+</body>
+</html>
