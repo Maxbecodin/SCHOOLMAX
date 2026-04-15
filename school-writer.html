@@ -2257,7 +2257,6 @@ async function humanizeViaUndetectable(text) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  if (!getApiKey()) openSetup();
   if (new URLSearchParams(window.location.search).get('upgraded')) {
     history.replaceState({}, '', '/');
     auth.onAuthStateChanged(user => {
@@ -2268,73 +2267,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ── Claude API helper ──
 
-async function callGroq(messages, systemPrompt, maxTokens = 4000, temperature = 0.8) {
-  if (!getGroqKey()) {
-    openSetup();
-    throw new Error('Enter your Groq API key to continue (free tier).');
-  }
-  const groqMessages = [];
-  if (systemPrompt) groqMessages.push({ role: 'system', content: systemPrompt });
-  groqMessages.push(...messages);
-  const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${getGroqKey()}`,
-    },
-    body: JSON.stringify({
-      model: 'llama-3.3-70b-versatile',
-      max_tokens: maxTokens,
-      temperature: temperature,
-      messages: groqMessages,
-    })
-  });
-  const data = await r.json();
-  if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
-  return data.choices?.[0]?.message?.content || '';
-}
-
-async function callClaude(messages, systemPrompt, maxTokens = 4000, temperature = 1.0) {
-  if (!getApiKey()) {
-    openSetup();
-    throw new Error('Enter your Claude API key to continue.');
-  }
-  const body = {
-    model: 'claude-opus-4-6',
-    max_tokens: maxTokens,
-    temperature: temperature,
-    messages: messages
-  };
-  if (systemPrompt) {
-    body.system = [
-      {
-        type: 'text',
-        text: systemPrompt,
-        cache_control: { type: 'ephemeral' }
-      }
-    ];
-  }
-  const r = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': getApiKey(),
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
-    },
-    body: JSON.stringify(body)
-  });
-  const data = await r.json();
-  if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
-  return data.content?.[0]?.text || '';
-}
+const API_BASE = 'https://schoolmax-production.up.railway.app';
 
 async function callAI(messages, systemPrompt, maxTokens = 4000, temperature = 1.0) {
   const tier = getUserTier();
-  if (tier === 'free') {
-    return callGroq(messages, systemPrompt, maxTokens, temperature);
-  }
-  return callClaude(messages, systemPrompt, maxTokens, temperature);
+  const model = tier === 'free' ? 'groq' : 'claude';
+  const r = await fetch(`${API_BASE}/generate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages, systemPrompt, maxTokens, temperature, model }),
+  });
+  const data = await r.json();
+  if (data.error) throw new Error(data.error);
+  return data.text || '';
 }
 
 // ══════════════════════════════════════════════════

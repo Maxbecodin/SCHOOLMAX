@@ -136,6 +136,61 @@ app.post('/check', async (req, res) => {
   }
 });
 
+// ── AI generate (proxied) ──
+app.post('/generate', async (req, res) => {
+  const { messages, systemPrompt, maxTokens = 4000, temperature = 1.0, model } = req.body;
+  if (!messages) return res.status(400).json({ error: 'messages is required' });
+
+  try {
+    if (model === 'groq') {
+      const groqKey = process.env.GROQ_KEY;
+      if (!groqKey) return res.status(500).json({ error: 'GROQ_KEY not configured' });
+
+      const groqMessages = [];
+      if (systemPrompt) groqMessages.push({ role: 'system', content: systemPrompt });
+      groqMessages.push(...messages);
+
+      const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${groqKey}` },
+        body: JSON.stringify({
+          model: 'llama-3.3-70b-versatile',
+          max_tokens: maxTokens,
+          temperature,
+          messages: groqMessages,
+        })
+      });
+      const data = await r.json();
+      if (data.error) return res.status(400).json({ error: data.error.message || JSON.stringify(data.error) });
+      return res.json({ text: data.choices?.[0]?.message?.content || '' });
+
+    } else {
+      const claudeKey = process.env.CLAUDE_KEY;
+      if (!claudeKey) return res.status(500).json({ error: 'CLAUDE_KEY not configured' });
+
+      const body = { model: 'claude-opus-4-6', max_tokens: maxTokens, temperature, messages };
+      if (systemPrompt) {
+        body.system = [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }];
+      }
+
+      const r = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': claudeKey,
+          'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify(body)
+      });
+      const data = await r.json();
+      if (data.error) return res.status(400).json({ error: data.error.message || JSON.stringify(data.error) });
+      return res.json({ text: data.content?.[0]?.text || '' });
+    }
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // ── Create Stripe checkout session ──
 app.post('/create-checkout', async (req, res) => {
   const { tier, userId, userEmail } = req.body;
