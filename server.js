@@ -5,9 +5,16 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const admin = require('firebase-admin');
 
 // Firebase Admin init
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
-const db = admin.firestore();
+let db;
+try {
+  const raw = process.env.FIREBASE_SERVICE_ACCOUNT || '{}';
+  const serviceAccount = JSON.parse(raw);
+  admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+  db = admin.firestore();
+  console.log('Firebase Admin initialized');
+} catch (e) {
+  console.error('Firebase Admin init failed:', e.message);
+}
 
 const PRICE_IDS = {
   starter:   'price_1TMXbgCO0CtAyaoTg6XpZ42f',
@@ -29,6 +36,8 @@ const ALLOWED_ORIGINS = [
 // Raw body for Stripe webhook — must come before express.json()
 app.use('/stripe-webhook', express.raw({ type: 'application/json' }));
 app.use(express.json());
+
+app.get('/', (req, res) => res.json({ status: 'ok', firebase: !!db }));
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;
