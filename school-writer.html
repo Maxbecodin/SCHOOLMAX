@@ -2480,44 +2480,12 @@ async function generate() {
 
 async function autoHumanize(rawText) {
   let lastHumanized = rawText;
-  let lastChanges = null;
   let finalScore = null;
-  const hasUnd = !!getUndKey();
 
   try {
-    if (hasUnd) {
-      // Undetectable.ai path
-      setLoadingText('humanizing via undetectable.ai...');
-      lastHumanized = await humanizeViaUndetectable(rawText);
-    } else {
-      // Claude humanizer fallback
-      const MAX_ATTEMPTS = 3;
-      for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-        setLoadingText(attempt === 1 ? 'humanizing...' : `humanizing (attempt ${attempt}/${MAX_ATTEMPTS})...`);
-
-        const retryNote = attempt > 1
-          ? `\n\nNOTE: A previous version of this was still detected as AI (score: ${finalScore}%). You must go harder. Break every sentence length pattern. Kill every remaining dead word. Make it rougher, more personal, more uneven. The previous version was too clean.\n`
-          : '';
-        const userMsg = `Assignment type: ${writerState.typeLabel || 'essay'}\nClass: ${writerState.selectedClass || 'unknown'}${retryNote}\n\nHere is the text to humanize. Rebuild it from scratch. Every rule in your instructions applies.\n\n${lastHumanized}`;
-        const result = await callAI([{ role: 'user', content: userMsg }], HUMANIZER_PROMPT, 4000);
-
-        const SEP = '---CHANGES---';
-        const sepIdx = result.indexOf(SEP);
-        lastHumanized = sepIdx !== -1 ? result.slice(0, sepIdx).trim() : result.trim();
-        lastChanges = sepIdx !== -1 ? result.slice(sepIdx + SEP.length).trim() : null;
-
-        writerState.conversationHistory.push(
-          { role: 'user', content: userMsg },
-          { role: 'assistant', content: result }
-        );
-
-        setLoadingText(`checking detector (attempt ${attempt}/${MAX_ATTEMPTS})...`);
-        const score = await checkAIScore(lastHumanized);
-        finalScore = score;
-        if (score !== null && score >= 95) break;
-        if (attempt === MAX_ATTEMPTS) break;
-      }
-    }
+    // Always use Undetectable.ai via server
+    setLoadingText('humanizing via undetectable.ai...');
+    lastHumanized = await humanizeViaUndetectable(rawText);
 
     // Score check (for Undetectable path, or if Claude path didn't get a score)
     if (finalScore === null) {
@@ -2527,11 +2495,6 @@ async function autoHumanize(rawText) {
 
     writerState.output = lastHumanized;
     showOutput(lastHumanized);
-
-    if (lastChanges) {
-      document.getElementById('changesContent').textContent = lastChanges;
-      document.getElementById('changesBox').style.display = 'block';
-    }
 
     if (finalScore !== null) {
       showScoreBadge(finalScore);
@@ -2768,7 +2731,6 @@ async function humanize() {
   document.getElementById('changesBox').style.display = 'none';
   document.getElementById('detectorCard').style.display = 'none';
 
-  let lastChanges = null;
   let lastHumanized = currentText;
   let finalScore = null;
   try {
@@ -2776,20 +2738,12 @@ async function humanize() {
     btn.textContent = 'humanizing...';
     lastHumanized = await humanizeViaUndetectable(currentText);
 
-    // Score check (for Undetectable path, or if Claude path didn't get a score)
-    if (finalScore === null) {
-      btn.textContent = 'checking detector...';
-      finalScore = await checkAIScore(lastHumanized);
-    }
+    btn.textContent = 'checking detector...';
+    finalScore = await checkAIScore(lastHumanized);
 
     const finalText = writerState.complicatedPunctuation ? lastHumanized : cleanPunctuation(lastHumanized);
     document.getElementById('outputBox').textContent = finalText;
     writerState.output = finalText;
-
-    if (lastChanges) {
-      document.getElementById('changesContent').textContent = lastChanges;
-      document.getElementById('changesBox').style.display = 'block';
-    }
 
     if (finalScore !== null) {
       showScoreBadge(finalScore);
