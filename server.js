@@ -4,7 +4,7 @@ const fetch = require('node-fetch');
 
 process.on('uncaughtException', e => console.error('UNCAUGHT:', e));
 process.on('unhandledRejection', e => console.error('UNHANDLED:', e));
-process.on('SIGTERM', () => console.log('GOT SIGTERM'));
+process.on('SIGTERM', () => { console.log('GOT SIGTERM'); process.exit(0); });
 
 let stripe, admin;
 
