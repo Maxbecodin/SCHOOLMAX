@@ -1520,12 +1520,6 @@
         history
       </button>
 
-      <button class="btn-key" onclick="openSetup()" title="API key settings">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6"/><path d="M15.5 7.5l3 3L22 7l-3-3"/>
-        </svg>
-        api key
-      </button>
       <div class="brain-badge" onclick="openSystem()" title="solar system">
         <span class="brain-dot"></span>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -1845,35 +1839,6 @@
   </div>
 </div>
 
-<div class="setup-overlay" id="setupOverlay" style="display:none">
-  <div class="setup-card">
-    <button class="setup-dismiss" onclick="document.getElementById('setupOverlay').style.display='none'" title="Close">×</button>
-    <div class="setup-title">set your api keys</div>
-    <div class="setup-sub">
-      Claude: get a key at <a href="https://console.anthropic.com/keys" target="_blank">console.anthropic.com ↗</a> — powers paid tier writing.<br>
-      Groq: free key at <a href="https://console.groq.com/keys" target="_blank">console.groq.com ↗</a> — powers <strong>free tier</strong> writing.<br>
-      Winston AI: free key at <a href="https://dev.gowinston.ai" target="_blank">dev.gowinston.ai ↗</a> — <strong>required for humanizer</strong> to verify and retry until it passes.<br>
-      Google OAuth Client ID: create one at <a href="https://console.cloud.google.com/apis/credentials" target="_blank">Google Cloud Console ↗</a> — required for drip to Google Docs.
-    </div>
-    <div class="setup-row">
-      <input type="password" id="apiKeyInput" placeholder="Claude key (sk-ant-...)" autocomplete="off" onkeydown="if(event.key==='Enter')saveApiKey()">
-      <button class="btn-save-key" onclick="saveApiKey()">Save</button>
-    </div>
-    <div class="setup-row" style="margin-top:8px">
-      <input type="password" id="gptzeroKeyInput" placeholder="Winston AI key (required for humanizer)" autocomplete="off" onkeydown="if(event.key==='Enter')saveApiKey()">
-    </div>
-    <div class="setup-row" style="margin-top:8px">
-      <input type="password" id="undKeyInput" placeholder="Undetectable.ai key" autocomplete="off" onkeydown="if(event.key==='Enter')saveApiKey()">
-    </div>
-    <div class="setup-row" style="margin-top:8px">
-      <input type="password" id="groqKeyInput" placeholder="Groq key (gsk_...) — free tier uses Groq" autocomplete="off" onkeydown="if(event.key==='Enter')saveApiKey()">
-    </div>
-    <div class="setup-row" style="margin-top:8px">
-      <input type="text" id="googleClientIdInput" placeholder="Google OAuth Client ID (xxxxx.apps.googleusercontent.com)" autocomplete="off" onkeydown="if(event.key==='Enter')saveApiKey()">
-    </div>
-    <div class="setup-error" id="setupError"></div>
-  </div>
-</div>
 
 
 <script>
@@ -2169,62 +2134,8 @@ function updatePlansSection() {
 //  API KEY
 // ══════════════════════════════════════════════════
 
-function getApiKey() {
-  return localStorage.getItem('claudeKey') || '';
-}
-
-function getWinstonKey() {
-  return localStorage.getItem('winstonKey') || '';
-}
-
-function getUndKey() {
-  return localStorage.getItem('undKey') || '';
-}
-
 function getGoogleClientId() {
   return localStorage.getItem('googleClientId') || '';
-}
-
-function getGroqKey() {
-  return localStorage.getItem('groqKey') || '';
-}
-
-function openSetup() {
-  const key = getApiKey();
-  if (key) document.getElementById('apiKeyInput').value = key;
-  const gz = getWinstonKey();
-  if (gz) document.getElementById('gptzeroKeyInput').value = gz;
-  const und = getUndKey();
-  if (und) document.getElementById('undKeyInput').value = und;
-  const grq = getGroqKey();
-  if (grq) document.getElementById('groqKeyInput').value = grq;
-  const gci = getGoogleClientId();
-  if (gci) document.getElementById('googleClientIdInput').value = gci;
-  document.getElementById('setupOverlay').style.display = 'flex';
-  setTimeout(() => document.getElementById('apiKeyInput').focus(), 50);
-}
-
-function saveApiKey() {
-  const val = document.getElementById('apiKeyInput').value.trim();
-  const gz = document.getElementById('gptzeroKeyInput').value.trim();
-  const und = document.getElementById('undKeyInput').value.trim();
-  const grq = document.getElementById('groqKeyInput').value.trim();
-  const gci = document.getElementById('googleClientIdInput').value.trim();
-  const errEl = document.getElementById('setupError');
-  // Need at least a Claude key or Groq key
-  if (val.length < 10 && grq.length < 10) {
-    errEl.style.display = 'block';
-    errEl.textContent = 'Enter at least a Claude or Groq API key';
-    return;
-  }
-  if (val) localStorage.setItem('claudeKey', val);
-  if (gz) localStorage.setItem('winstonKey', gz);
-  if (und) localStorage.setItem('undKey', und);
-  if (grq) localStorage.setItem('groqKey', grq);
-  if (gci) localStorage.setItem('googleClientId', gci);
-  document.getElementById('setupOverlay').style.display = 'none';
-  errEl.style.display = 'none';
-  updateGoogleSignInState();
 }
 
 async function checkAIScore(text) {
@@ -2822,7 +2733,7 @@ function updateGoogleSignInState() {
 
   if (!getGoogleClientId()) {
     btn.disabled = true;
-    helpEl.textContent = 'Set your Google OAuth Client ID in API key settings first.';
+    helpEl.textContent = 'Click "sign in to google" to enter your OAuth Client ID.';
     statusEl.style.display = 'none';
     return;
   }
@@ -2843,7 +2754,8 @@ function updateGoogleSignInState() {
 function googleOAuthSignIn() {
   const clientId = getGoogleClientId();
   if (!clientId) {
-    openSetup();
+    const id = prompt('Enter your Google OAuth Client ID for Docs access:');
+    if (id) localStorage.setItem('googleClientId', id);
     return;
   }
 
