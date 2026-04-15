@@ -2212,7 +2212,7 @@ function saveApiKey() {
 
 async function checkAIScore(text) {
   try {
-    const r = await fetch('http://localhost:3001/check', {
+    const r = await fetch('https://schoolmax-production.up.railway.app/check', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text })
@@ -2226,7 +2226,7 @@ async function checkAIScore(text) {
 }
 
 async function humanizeViaUndetectable(text) {
-  const res = await fetch('http://localhost:3001/humanize', {
+  const res = await fetch('https://schoolmax-production.up.railway.app/humanize', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ content: text })

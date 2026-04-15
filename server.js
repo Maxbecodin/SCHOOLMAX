@@ -5,8 +5,16 @@ const fetch = require('node-fetch');
 const app = express();
 app.use(express.json());
 
+const ALLOWED_ORIGINS = [
+  'http://localhost:8765',
+  'https://schoolmax.vercel.app',
+];
+
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:8765');
+  const origin = req.headers.origin;
+  if (ALLOWED_ORIGINS.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
   res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.sendStatus(204);
