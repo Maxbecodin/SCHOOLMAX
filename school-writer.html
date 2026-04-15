@@ -1328,6 +1328,26 @@
   }
 
   /* ── Plans section ── */
+  #about-section {
+    padding: 89px 34px 120px;
+    border-top: 1px solid var(--border);
+  }
+  .about-inner {
+    max-width: 520px;
+    margin: 0 auto;
+  }
+  .about-inner .step-label {
+    margin-bottom: 21px;
+  }
+  .about-text {
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--text-dim);
+  }
+  .about-text strong {
+    color: var(--text);
+    font-weight: 500;
+  }
   #plans-section {
     padding: 89px 34px 120px;
     border-top: 1px solid var(--border);
@@ -1656,6 +1676,19 @@
           </div>
 
         </div>
+      </div>
+    </div>
+
+    <div id="about-section">
+      <div class="about-inner">
+        <div class="step-label">about</div>
+        <p class="about-text">
+          i'm max. senior in high school. i built schoolmax because i was tired of spending my whole night on essays that nobody's gonna read twice.
+          <br><br>
+          i'm not a tech company. i'm a student who is legit just like you and learned to code. schoolmax writes like you — not like chatgpt. it passes <strong>real AI detection</strong> like gptzero and turnitin, drip-writes into your google docs so version history looks real, and actually handles the assignments you get.
+          <br><br>
+          free tier. no credit card. just paste your prompt and go.
+        </p>
       </div>
     </div>
 
@@ -2329,6 +2362,7 @@ function selectType(type, label) {
   document.getElementById('typeBadge').textContent = label;
   document.getElementById('resetBtn').classList.add('visible');
   document.getElementById('plans-section').style.display = 'none';
+  document.getElementById('about-section').style.display = 'none';
   renderClassChips();
   updateGenerateBtn();
   document.getElementById('promptInput').addEventListener('input', updateGenerateBtn);
@@ -2695,6 +2729,7 @@ function resetAll() {
   });
   document.getElementById('resetBtn').classList.remove('visible');
   document.getElementById('plans-section').style.display = '';
+  document.getElementById('about-section').style.display = '';
   document.getElementById('promptInput').value = '';
   document.getElementById('contextInput').value = '';
   document.getElementById('followUpInput').value = '';
