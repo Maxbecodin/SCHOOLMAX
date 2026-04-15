@@ -1,12 +1,24 @@
 require('dotenv').config();
 const express = require('express');
 const fetch = require('node-fetch');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const admin = require('firebase-admin');
 
-// Firebase Admin init
+process.on('uncaughtException', e => console.error('UNCAUGHT:', e));
+process.on('unhandledRejection', e => console.error('UNHANDLED:', e));
+process.on('SIGTERM', () => console.log('GOT SIGTERM'));
+
+let stripe, admin;
+
+// Lazy init
 let db;
 try {
+  stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+  console.log('Stripe initialized');
+} catch (e) {
+  console.error('Stripe init failed:', e.message);
+}
+
+try {
+  admin = require('firebase-admin');
   const raw = process.env.FIREBASE_SERVICE_ACCOUNT || '{}';
   const serviceAccount = JSON.parse(raw);
   admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
