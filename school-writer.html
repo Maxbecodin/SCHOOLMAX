@@ -2117,12 +2117,29 @@ function closeUpgradeModal() {
   document.getElementById('upgradeModal').style.display = 'none';
 }
 
-function handleUpgrade(tier) {
+async function handleUpgrade(tier) {
+  if (!currentUser) { firebaseSignIn(); return; }
   const btn = event.target;
-  btn.textContent = 'coming soon';
+  const origText = btn.textContent;
+  btn.textContent = 'redirecting...';
   btn.disabled = true;
-  const labels = { starter: 'Starter · $15/mo', pro: 'Pro · $25/mo', unlimited: 'Unlimited · $40/mo' };
-  setTimeout(() => { btn.textContent = labels[tier] || tier; btn.disabled = false; }, 2000);
+  try {
+    const res = await fetch('https://schoolmax-production.up.railway.app/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tier, userId: currentUser.uid, userEmail: currentUser.email }),
+    });
+    const data = await res.json();
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      throw new Error(data.error || 'No checkout URL returned');
+    }
+  } catch (e) {
+    btn.textContent = origText;
+    btn.disabled = false;
+    alert('Checkout failed: ' + e.message);
+  }
 }
 
 function updatePlansSection() {
@@ -2241,6 +2258,12 @@ async function humanizeViaUndetectable(text) {
 
 document.addEventListener('DOMContentLoaded', () => {
   if (!getApiKey()) openSetup();
+  if (new URLSearchParams(window.location.search).get('upgraded')) {
+    history.replaceState({}, '', '/');
+    auth.onAuthStateChanged(user => {
+      if (user) loadUsage().then(updatePlansSection);
+    }, { once: true });
+  }
 });
 
 // ── Claude API helper ──
