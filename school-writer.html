@@ -1914,6 +1914,10 @@
                 <input type="text" id="dripDocUrl" class="drip-doc-input" placeholder="paste google doc url..." oninput="onDocUrlInput()" onblur="detectDoc()">
                 <div id="detectStatus" style="display:none"></div>
               </div>
+              <div class="form-group" style="display:none" id="dripTextGroup">
+                <label class="form-label">text to drip <span class="label-opt">leave empty to use generated output</span></label>
+                <textarea id="dripCustomText" class="drip-doc-input" style="min-height:80px;resize:vertical" placeholder="paste your own text here, or leave empty to drip the output above..."></textarea>
+              </div>
               <div class="form-group" id="dripContextGroup" style="display:none">
                 <label class="form-label">context / notes <span class="label-opt">optional</span></label>
                 <textarea id="dripContext" class="textarea-context" placeholder="background info to help claude answer the form questions..."></textarea>
@@ -3496,6 +3500,7 @@ async function detectDoc() {
 function setDripMode(mode) {
   drip.mode = mode;
   document.getElementById('dripContextGroup').style.display = mode === 'table' ? 'block' : 'none';
+  document.getElementById('dripTextGroup').style.display = mode === 'plain' ? 'block' : 'none';
   document.getElementById('dripDurationGroup').style.display = mode ? 'flex' : 'none';
   updateDripStartBtn();
 }
@@ -3508,7 +3513,8 @@ function updateDripStartBtn() {
   const btn = document.getElementById('dripStartBtn');
   const hasToken = drip.token.length > 0;
   const hasDoc = drip.docId.length > 0;
-  const hasContent = drip.mode === 'table' || (drip.mode === 'plain' && writerState.output.length > 0);
+  const customText = document.getElementById('dripCustomText')?.value.trim() || '';
+  const hasContent = drip.mode === 'table' || (drip.mode === 'plain' && (writerState.output.length > 0 || customText.length > 0));
   btn.disabled = !(hasToken && hasDoc && hasContent);
 }
 
@@ -3621,7 +3627,8 @@ async function startDrip() {
 }
 
 async function runDripText(durationMin) {
-  const text = writerState.output.trim();
+  const customText = document.getElementById('dripCustomText').value.trim();
+  const text = customText || writerState.output.trim();
   const words = text.split(/\s+/);
   const CHUNK = 6;
   const chunks = [];
