@@ -678,11 +678,12 @@
 
   /* Drip section */
   .drip-section {
-    margin-top: 24px;
+    max-width: 618px;
+    margin: 0 auto;
+    padding: 0 34px;
     border: 1px solid var(--border);
     border-radius: 10px;
     overflow: hidden;
-    animation: fadeIn 0.4s ease;
   }
   .drip-section-header {
     padding: 14px 20px;
@@ -1701,6 +1702,57 @@
       </div>
     </div>
 
+    <!-- Drip section -->
+    <div id="dripInline" class="drip-section">
+      <div class="drip-section-header">
+        <span class="drip-section-title">drip to google docs</span>
+        <span class="drip-section-sub">types your text into a doc gradually, like a real student</span>
+      </div>
+      <div class="drip-section-body">
+        <div class="form-group" id="dripAuthGroup">
+          <div class="google-auth-row">
+            <button class="btn-google-signin" id="googleSignInBtn" onclick="googleOAuthSignIn()">
+              <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+              Sign in with Google
+            </button>
+            <div class="token-status" id="tokenStatus" style="display:none"></div>
+          </div>
+        </div>
+        <div class="form-group" style="display:none" id="dripDocGroup">
+          <input type="text" id="dripDocUrl" class="drip-doc-input" placeholder="paste google doc url..." oninput="onDocUrlInput()" onblur="detectDoc()">
+          <div id="detectStatus" style="display:none"></div>
+        </div>
+        <div class="form-group" style="display:none" id="dripTextGroup">
+          <label class="form-label">text to drip <span class="label-opt">leave empty to use generated output</span></label>
+          <textarea id="dripCustomText" class="drip-doc-input" style="min-height:80px;resize:vertical" placeholder="paste your own text here, or leave empty to drip the output above..."></textarea>
+        </div>
+        <div class="form-group" id="dripContextGroup" style="display:none">
+          <label class="form-label">context / notes <span class="label-opt">optional</span></label>
+          <textarea id="dripContext" class="textarea-context" placeholder="background info to help claude answer the form questions..."></textarea>
+        </div>
+        <div class="drip-controls" style="display:none" id="dripDurationGroup">
+          <div class="drip-duration-row">
+            <input type="range" id="dripDuration" min="5" max="90" value="30" oninput="updateDurationLabel()">
+            <span class="duration-val" id="durationLabel">30 min</span>
+          </div>
+          <button class="btn-drip-start" id="dripStartBtn" onclick="startDrip()">start drip</button>
+        </div>
+        <div id="dripProgressWrap" style="display:none" class="drip-progress-wrap">
+          <div class="progress-label" id="dripProgressLabel">Preparing...</div>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="dripProgressFill" style="width:0%"></div>
+          </div>
+          <div class="progress-sub" id="dripProgressSub"></div>
+          <button class="btn-cancel" onclick="cancelDrip()">cancel</button>
+        </div>
+        <div id="dripDoneWrap" style="display:none" class="drip-done">
+          <div class="done-check">✓</div>
+          <div>Done. Check <strong>File → Version history</strong> to confirm it looks natural.</div>
+        </div>
+        <div id="dripError" class="error-box" style="display:none;margin-top:8px"></div>
+      </div>
+    </div>
+
     <!-- Voice section -->
     <div id="voice-section">
       <div class="voice-inner">
@@ -1894,57 +1946,6 @@
             </div>
           </div>
 
-        </div>
-      </div>
-
-      <!-- Drip to Google Docs — always visible on writer page -->
-      <div id="dripInline" class="drip-section">
-        <div class="drip-section-header">
-          <span class="drip-section-title">drip to google docs</span>
-          <span class="drip-section-sub">types your text into a doc gradually, like a real student</span>
-        </div>
-        <div class="drip-section-body">
-          <div class="form-group" id="dripAuthGroup">
-            <div class="google-auth-row">
-              <button class="btn-google-signin" id="googleSignInBtn" onclick="googleOAuthSignIn()">
-                <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-                Sign in with Google
-              </button>
-              <div class="token-status" id="tokenStatus" style="display:none"></div>
-            </div>
-          </div>
-          <div class="form-group" style="display:none" id="dripDocGroup">
-            <input type="text" id="dripDocUrl" class="drip-doc-input" placeholder="paste google doc url..." oninput="onDocUrlInput()" onblur="detectDoc()">
-            <div id="detectStatus" style="display:none"></div>
-          </div>
-          <div class="form-group" style="display:none" id="dripTextGroup">
-            <label class="form-label">text to drip <span class="label-opt">leave empty to use generated output</span></label>
-            <textarea id="dripCustomText" class="drip-doc-input" style="min-height:80px;resize:vertical" placeholder="paste your own text here, or leave empty to drip the output above..."></textarea>
-          </div>
-          <div class="form-group" id="dripContextGroup" style="display:none">
-            <label class="form-label">context / notes <span class="label-opt">optional</span></label>
-            <textarea id="dripContext" class="textarea-context" placeholder="background info to help claude answer the form questions..."></textarea>
-          </div>
-          <div class="drip-controls" style="display:none" id="dripDurationGroup">
-            <div class="drip-duration-row">
-              <input type="range" id="dripDuration" min="5" max="90" value="30" oninput="updateDurationLabel()">
-              <span class="duration-val" id="durationLabel">30 min</span>
-            </div>
-            <button class="btn-drip-start" id="dripStartBtn" onclick="startDrip()">start drip</button>
-          </div>
-          <div id="dripProgressWrap" style="display:none" class="drip-progress-wrap">
-            <div class="progress-label" id="dripProgressLabel">Preparing...</div>
-            <div class="progress-bar-track">
-              <div class="progress-bar-fill" id="dripProgressFill" style="width:0%"></div>
-            </div>
-            <div class="progress-sub" id="dripProgressSub"></div>
-            <button class="btn-cancel" onclick="cancelDrip()">cancel</button>
-          </div>
-          <div id="dripDoneWrap" style="display:none" class="drip-done">
-            <div class="done-check">✓</div>
-            <div>Done. Check <strong>File → Version history</strong> to confirm it looks natural.</div>
-          </div>
-          <div id="dripError" class="error-box" style="display:none;margin-top:8px"></div>
         </div>
       </div>
 
@@ -2710,6 +2711,7 @@ function selectClass(cls) {
   renderTypeChips(cls);
   document.getElementById('resetBtn').classList.add('visible');
   document.getElementById('landing').style.display = 'none';
+  document.getElementById('dripInline').style.display = 'none';
   document.getElementById('plans-section').style.display = 'none';
   document.getElementById('about-section').style.display = 'none';
   document.getElementById('voice-section').style.display = 'none';
@@ -3353,6 +3355,7 @@ function resetAll() {
   });
   document.getElementById('resetBtn').classList.remove('visible');
   document.getElementById('landing').style.display = 'flex';
+  document.getElementById('dripInline').style.display = '';
   document.getElementById('plans-section').style.display = '';
   document.getElementById('about-section').style.display = '';
   document.getElementById('voice-section').style.display = '';
