@@ -445,6 +445,26 @@
 
   .action-bar { display: flex; gap: 8px; margin-top: 10px; }
 
+  .voice-banner { margin-top: 13px; animation: fadeIn 0.4s ease; }
+  .voice-banner p { color: var(--text-dim); font-size: 12px; margin-bottom: 8px; line-height: 1.5; }
+  .voice-banner textarea { width: 100%; min-height: 80px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--sans); font-size: 12px; padding: 8px 10px; resize: vertical; }
+  .voice-banner textarea:focus { outline: none; border-color: var(--accent-border); }
+  .voice-banner button { background: rgba(91,159,255,0.08); border: 1px solid var(--accent-border); color: var(--accent); font-family: var(--mono); font-size: 11px; padding: 6px 14px; border-radius: 5px; cursor: pointer; }
+  .voice-banner button:hover { background: rgba(91,159,255,0.15); }
+
+  .my-voice-toggle { background: none; border: 1px solid var(--border); color: var(--text-dim); font-family: var(--mono); font-size: 11px; padding: 5px 12px; border-radius: 5px; cursor: pointer; margin-bottom: 8px; }
+  .my-voice-toggle:hover { border-color: var(--border-hover); color: var(--text); }
+  .my-voice-section { margin-bottom: 13px; animation: fadeIn 0.3s ease; }
+  .my-voice-section .voice-sample-preview { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .my-voice-section .voice-sample-text { color: var(--text-dim); font-size: 11px; line-height: 1.4; flex: 1; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+  .my-voice-section .voice-sample-remove { background: none; border: none; color: var(--text-muted); font-size: 11px; cursor: pointer; padding: 0; font-family: var(--mono); }
+  .my-voice-section .voice-sample-remove:hover { color: #f55; }
+  .my-voice-section textarea { width: 100%; min-height: 70px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--sans); font-size: 12px; padding: 8px 10px; resize: vertical; }
+  .my-voice-section textarea:focus { outline: none; border-color: var(--accent-border); }
+  .my-voice-section .voice-add-btn { background: rgba(91,159,255,0.08); border: 1px solid var(--accent-border); color: var(--accent); font-family: var(--mono); font-size: 11px; padding: 5px 12px; border-radius: 5px; cursor: pointer; margin-top: 6px; }
+  .my-voice-section .voice-add-btn:hover { background: rgba(91,159,255,0.15); }
+  .my-voice-section .voice-limit-msg { color: var(--text-muted); font-size: 11px; margin-top: 6px; }
+
   .detector-card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -1651,6 +1671,11 @@
         </div>
 
         <div class="form-group">
+          <button class="my-voice-toggle" onclick="toggleMyVoice()">my voice</button>
+          <div id="myVoiceSection" class="my-voice-section" style="display:none"></div>
+        </div>
+
+        <div class="form-group">
           <label class="form-label">assignment prompt</label>
           <textarea class="textarea-prompt" id="promptInput" placeholder="paste the assignment prompt or describe what you need to write..."></textarea>
         </div>
@@ -1684,6 +1709,14 @@
             <button class="btn-humanize" id="humanizeBtn" onclick="humanize()">humanize</button>
             <button class="btn-copy" id="copyBtn" onclick="copyOutput()">copy</button>
             <button class="btn-drip-this" onclick="dripThis()">drip this →</button>
+          </div>
+          <div id="voiceBanner" class="voice-banner" style="display:none">
+            <p>this was written in a default voice. <strong>paste a sample of your writing</strong> and future outputs will match your style.</p>
+            <textarea id="voiceSampleInput" placeholder="paste an old essay, discussion post, or anything you've written for school... (200+ words is ideal)"></textarea>
+            <div style="display:flex;gap:8px;margin-top:6px">
+              <button onclick="saveVoiceSample()">save</button>
+              <button onclick="dismissVoiceBanner()">skip</button>
+            </div>
           </div>
           <div id="detectorCard" class="detector-card" style="display:none"></div>
           <div id="changesBox" class="changes-box" style="display:none">
@@ -1855,7 +1888,7 @@ auth.onAuthStateChanged(user => {
     loadHistory();
     loadUsage();
   } else {
-    userUsage = { wordsUsed: 0, tier: 'free', stripeCustomerId: '' };
+    userUsage = { wordsUsed: 0, tier: 'free', stripeCustomerId: '', writingSamples: [], hasSeenSamplePrompt: false, voicePreferences: [] };
     signInBtn.style.display = 'flex';
     profile.style.display = 'none';
     renderHistoryEmpty();
@@ -2001,7 +2034,7 @@ async function loadConversation(docId) {
 // ══════════════════════════════════════════════════
 
 const TIER_LIMITS = { free: 1000, starter: 5000, pro: 15000, unlimited: 999999 };
-let userUsage = { wordsUsed: 0, tier: 'free', stripeCustomerId: '' };
+let userUsage = { wordsUsed: 0, tier: 'free', stripeCustomerId: '', writingSamples: [], hasSeenSamplePrompt: false, voicePreferences: [] };
 
 async function loadUsage() {
   if (!currentUser) return;
@@ -2012,6 +2045,9 @@ async function loadUsage() {
       userUsage.wordsUsed = d.wordsUsed || 0;
       userUsage.tier = d.tier || 'free';
       userUsage.stripeCustomerId = d.stripeCustomerId || '';
+      userUsage.writingSamples = d.writingSamples || [];
+      userUsage.hasSeenSamplePrompt = d.hasSeenSamplePrompt || false;
+      userUsage.voicePreferences = d.voicePreferences || [];
     } else {
       await db.collection('users').doc(currentUser.uid).set({
         wordsUsed: 0,
@@ -2371,10 +2407,23 @@ async function generate() {
   document.getElementById('detectorCard').style.display = 'none';
   setLoadingText('writing...');
 
-  const classSkill = CLASS_SKILLS[writerState.selectedClass] || '';
-  const finalPrompt = classSkill
-    ? SYSTEM_PROMPT + '\n\n## CLASS-SPECIFIC RULES: ' + writerState.selectedClass + '\n' + classSkill
-    : SYSTEM_PROMPT;
+  let finalPrompt = SYSTEM_PROMPT;
+
+  if (userUsage.writingSamples?.length > 0) {
+    finalPrompt += '\n\n## VOICE REFERENCE — THIS IS HOW THE STUDENT ACTUALLY WRITES\nThe following are real samples from the student. Match this voice exactly —\nsentence length patterns, vocabulary level, how they transition, how formal\nor casual they are, how they handle evidence and analysis. This is your\n#1 priority — the output should be indistinguishable from the student\'s\nreal writing.\n';
+    userUsage.writingSamples.forEach((s, i) => {
+      finalPrompt += '\nSample ' + (i + 1) + ':\n' + s + '\n';
+    });
+  }
+
+  if (userUsage.voicePreferences?.length > 0) {
+    finalPrompt += '\n\n## LEARNED VOICE PREFERENCES\nBased on past revisions, this student prefers:\n' + userUsage.voicePreferences.map(p => '- ' + p).join('\n') + '\n\nApply these preferences to all writing. They take priority over default voice rules.';
+  }
+
+  const classSkill = CLASS_SKILLS[writerState.selectedClass];
+  if (classSkill) {
+    finalPrompt += '\n\n## CLASS-SPECIFIC RULES: ' + writerState.selectedClass + '\n' + classSkill;
+  }
 
   try {
     const text = await callAI([{ role: 'user', content: userMsg }], finalPrompt, 4000, 0.8);
@@ -2393,6 +2442,12 @@ async function generate() {
     } else {
       await autoHumanize(text);
     }
+
+    // Show voice sample banner once after first generation
+    if (currentUser && !userUsage.hasSeenSamplePrompt && userUsage.writingSamples.length === 0) {
+      document.getElementById('voiceBanner').style.display = 'block';
+    }
+
     saveConversation();
   } catch(e) { showWriterError(e.message || 'Failed to connect. Try again.'); }
 }
@@ -2476,17 +2531,59 @@ async function revise() {
   if (!followUp) return;
   document.getElementById('reviseBtn').disabled = true;
   document.getElementById('reviseBtn').textContent = '...';
+  const previousOutput = writerState.output;
   const newHistory = [...writerState.conversationHistory, { role: 'user', content: followUp }];
-  const reviseClassSkill = CLASS_SKILLS[writerState.selectedClass] || '';
-  const revisePrompt = reviseClassSkill
-    ? SYSTEM_PROMPT + '\n\n## CLASS-SPECIFIC RULES: ' + writerState.selectedClass + '\n' + reviseClassSkill
-    : SYSTEM_PROMPT;
+
+  let revisePrompt = SYSTEM_PROMPT;
+  if (userUsage.writingSamples?.length > 0) {
+    revisePrompt += '\n\n## VOICE REFERENCE — THIS IS HOW THE STUDENT ACTUALLY WRITES\nThe following are real samples from the student. Match this voice exactly —\nsentence length patterns, vocabulary level, how they transition, how formal\nor casual they are, how they handle evidence and analysis. This is your\n#1 priority — the output should be indistinguishable from the student\'s\nreal writing.\n';
+    userUsage.writingSamples.forEach((s, i) => {
+      revisePrompt += '\nSample ' + (i + 1) + ':\n' + s + '\n';
+    });
+  }
+  if (userUsage.voicePreferences?.length > 0) {
+    revisePrompt += '\n\n## LEARNED VOICE PREFERENCES\nBased on past revisions, this student prefers:\n' + userUsage.voicePreferences.map(p => '- ' + p).join('\n') + '\n\nApply these preferences to all writing. They take priority over default voice rules.';
+  }
+  const reviseClassSkill = CLASS_SKILLS[writerState.selectedClass];
+  if (reviseClassSkill) {
+    revisePrompt += '\n\n## CLASS-SPECIFIC RULES: ' + writerState.selectedClass + '\n' + reviseClassSkill;
+  }
+
   try {
     const text = await callAI(newHistory, revisePrompt, 4000, 0.8);
     writerState.output = text;
     writerState.conversationHistory = [...newHistory, { role: 'assistant', content: text }];
     showOutput(text);
+    const revisionRequest = followUp;
     document.getElementById('followUpInput').value = '';
+
+    // Passive voice learning from revisions
+    if (currentUser) {
+      const beforeText = previousOutput.slice(0, 500);
+      const afterText = text.slice(0, 500);
+      callAI(
+        [{ role: 'user', content: `Revision request: "${revisionRequest}"\n\nBefore (snippet):\n${beforeText}\n\nAfter (snippet):\n${afterText}` }],
+        'Compare these two versions of student writing. The student asked for a revision. Extract 1-2 short voice preferences (max 8 words each) that describe how the student wants to write differently. Format: one preference per line, no bullets, no numbering, no explanation. Examples:\nshorter sentences\nmore contractions\ncasual tone\navoids formal transitions\nJust the preferences, nothing else.',
+        200, 0.3
+      ).then(result => {
+        const newPrefs = result.split('\n').map(s => s.trim()).filter(s => s.length > 0 && s.length < 50);
+        if (newPrefs.length === 0) return;
+        const existing = userUsage.voicePreferences || [];
+        const combined = [...existing];
+        for (const pref of newPrefs) {
+          const isDuplicate = combined.some(p =>
+            p.toLowerCase().includes(pref.toLowerCase()) ||
+            pref.toLowerCase().includes(p.toLowerCase())
+          );
+          if (!isDuplicate) combined.push(pref);
+        }
+        userUsage.voicePreferences = combined.slice(-15);
+        db.collection('users').doc(currentUser.uid).set(
+          { voicePreferences: userUsage.voicePreferences },
+          { merge: true }
+        );
+      }).catch(() => {});
+    }
   } catch(e) { showWriterError(e.message || 'Failed to connect. Try again.'); }
   document.getElementById('reviseBtn').disabled = false;
   document.getElementById('reviseBtn').textContent = 'revise';
@@ -2497,6 +2594,86 @@ function setPunctuation(on) {
   const chips = document.getElementById('punctChips').querySelectorAll('.chip');
   chips[0].classList.toggle('active', on);
   chips[1].classList.toggle('active', !on);
+}
+
+function saveVoiceSample() {
+  const text = document.getElementById('voiceSampleInput').value.trim();
+  if (!text || !currentUser) return;
+  userUsage.writingSamples.push(text);
+  userUsage.hasSeenSamplePrompt = true;
+  db.collection('users').doc(currentUser.uid).set(
+    { writingSamples: userUsage.writingSamples, hasSeenSamplePrompt: true },
+    { merge: true }
+  );
+  document.getElementById('voiceBanner').style.display = 'none';
+}
+
+function dismissVoiceBanner() {
+  if (!currentUser) return;
+  userUsage.hasSeenSamplePrompt = true;
+  db.collection('users').doc(currentUser.uid).set(
+    { hasSeenSamplePrompt: true },
+    { merge: true }
+  );
+  document.getElementById('voiceBanner').style.display = 'none';
+}
+
+function toggleMyVoice() {
+  const section = document.getElementById('myVoiceSection');
+  if (section.style.display === 'none') {
+    section.style.display = 'block';
+    renderMyVoice();
+  } else {
+    section.style.display = 'none';
+  }
+}
+
+function renderMyVoice() {
+  const section = document.getElementById('myVoiceSection');
+  const samples = userUsage.writingSamples || [];
+  let html = '';
+
+  samples.forEach((s, i) => {
+    const preview = s.length > 200 ? s.slice(0, 200) + '...' : s;
+    html += `<div class="voice-sample-preview"><div class="voice-sample-text">${preview.replace(/</g, '&lt;')}</div><button class="voice-sample-remove" onclick="removeVoiceSample(${i})">remove</button></div>`;
+  });
+
+  if (samples.length < 2) {
+    html += `<textarea id="newVoiceSampleInput" placeholder="paste an old essay, discussion post, or anything you've written for school... (200+ words is ideal)"></textarea>`;
+    html += `<button class="voice-add-btn" onclick="addVoiceSample()">add sample</button>`;
+  } else {
+    html += `<div class="voice-limit-msg">remove one to add a new sample</div>`;
+  }
+
+  if (samples.length === 0) {
+    html = `<textarea id="newVoiceSampleInput" placeholder="paste an old essay, discussion post, or anything you've written for school... (200+ words is ideal)"></textarea>`;
+    html += `<button class="voice-add-btn" onclick="addVoiceSample()">add sample</button>`;
+  }
+
+  section.innerHTML = html;
+}
+
+function addVoiceSample() {
+  const input = document.getElementById('newVoiceSampleInput');
+  const text = input?.value?.trim();
+  if (!text || !currentUser) return;
+  if (userUsage.writingSamples.length >= 2) return;
+  userUsage.writingSamples.push(text);
+  db.collection('users').doc(currentUser.uid).set(
+    { writingSamples: userUsage.writingSamples },
+    { merge: true }
+  );
+  renderMyVoice();
+}
+
+function removeVoiceSample(index) {
+  if (!currentUser) return;
+  userUsage.writingSamples.splice(index, 1);
+  db.collection('users').doc(currentUser.uid).set(
+    { writingSamples: userUsage.writingSamples },
+    { merge: true }
+  );
+  renderMyVoice();
 }
 
 function cleanPunctuation(text) {
