@@ -1,4 +1,7 @@
 {
   "framework": null,
-  "rewrites": [{ "source": "/(.*)", "destination": "/school-writer.html" }]
+  "rewrites": [
+    { "source": "/privacy.html", "destination": "/privacy.html" },
+    { "source": "/(.*)", "destination": "/school-writer.html" }
+  ]
 }
