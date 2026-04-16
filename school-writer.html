@@ -2308,7 +2308,7 @@ let writerState = {
 
 function renderClassGrid() {
   const grid = document.getElementById('classGrid');
-  grid.innerHTML = CLASSES.map(c => {
+  grid.innerHTML = [...CLASSES].sort((a, b) => a.name.localeCompare(b.name)).map(c => {
     const escapedName = c.name.replace(/'/g, "\\'");
     return `<button class="type-btn" onclick="selectClass('${escapedName}')"><span class="class-dot" style="background:${c.color}"></span>${c.name}</button>`;
   }).join('');
