@@ -2,6 +2,7 @@
   "framework": null,
   "rewrites": [
     { "source": "/privacy.html", "destination": "/privacy.html" },
+    { "source": "/google788ccda609073807.html", "destination": "/google788ccda609073807.html" },
     { "source": "/(.*)", "destination": "/school-writer.html" }
   ]
 }
