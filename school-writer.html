@@ -726,8 +726,6 @@
     z-index: 0;
     overflow: hidden;
     pointer-events: none;
-    transform: translate(var(--nebula-px, 0), var(--nebula-py, 0));
-    transition: transform 0.3s ease-out;
   }
   .nebula-cloud {
     position: absolute;
@@ -739,27 +737,26 @@
     width: 800px; height: 600px;
     background: radial-gradient(circle, #0f1b5e 0%, transparent 70%);
     top: -15%; left: -10%;
-    animation: nebula-drift-1 45s ease-in-out infinite alternate, nebula-breathe 12s ease-in-out infinite;
+    opacity: 0.5;
+    animation: nebula-drift-1 45s ease-in-out infinite alternate;
   }
   .nebula-2 {
     width: 600px; height: 700px;
     background: radial-gradient(circle, #2d1050 0%, transparent 70%);
     bottom: -20%; right: -5%;
-    animation: nebula-drift-2 55s ease-in-out infinite alternate, nebula-breathe 15s ease-in-out infinite 3s;
+    opacity: 0.35;
+    animation: nebula-drift-2 55s ease-in-out infinite alternate;
   }
   .nebula-3 {
     width: 500px; height: 400px;
     background: radial-gradient(circle, #0d3b66 0%, transparent 70%);
     top: 30%; right: 25%;
-    animation: nebula-drift-3 40s ease-in-out infinite alternate, nebula-breathe 10s ease-in-out infinite 6s;
+    opacity: 0.25;
+    animation: nebula-drift-3 40s ease-in-out infinite alternate;
   }
   @keyframes nebula-drift-1 { from { transform: translate(0,0) scale(1); } to { transform: translate(40px,30px) scale(1.08); } }
   @keyframes nebula-drift-2 { from { transform: translate(0,0) scale(1); } to { transform: translate(-35px,-25px) scale(1.05); } }
   @keyframes nebula-drift-3 { from { transform: translate(0,0) scale(1); } to { transform: translate(25px,-20px) scale(0.95); } }
-  @keyframes nebula-breathe {
-    0%, 100% { opacity: var(--base-opacity, 0.35); }
-    50%      { opacity: calc(var(--base-opacity, 0.35) + 0.05); }
-  }
 
   #starCanvas {
     position: fixed;
@@ -767,6 +764,23 @@
     z-index: 1;
     pointer-events: none;
   }
+
+  .accent-stars {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .accent-star {
+    position: absolute;
+    width: var(--size); height: var(--size);
+    background: #e8e0ff;
+    border-radius: 50%;
+    box-shadow: 0 0 var(--glow) rgba(200,190,255,0.5);
+    animation: star-pulse 4s ease-in-out infinite alternate;
+    animation-delay: var(--delay);
+  }
+  @keyframes star-pulse { from { opacity: 0.6; transform: scale(1); } to { opacity: 1; transform: scale(1.2); } }
 
   /* API key setup overlay */
   .setup-overlay {
@@ -1363,11 +1377,19 @@
 </head>
 <body>
 <div class="nebula" aria-hidden="true">
-  <div class="nebula-cloud nebula-1" style="--base-opacity:0.5"></div>
-  <div class="nebula-cloud nebula-2" style="--base-opacity:0.35"></div>
-  <div class="nebula-cloud nebula-3" style="--base-opacity:0.25"></div>
+  <div class="nebula-cloud nebula-1"></div>
+  <div class="nebula-cloud nebula-2"></div>
+  <div class="nebula-cloud nebula-3"></div>
 </div>
-<canvas id="starCanvas"></canvas>
+<canvas id="starCanvas" aria-hidden="true"></canvas>
+<div class="accent-stars" aria-hidden="true">
+  <div class="accent-star" style="top:12%;left:8%;--size:3px;--glow:12px;--delay:0s"></div>
+  <div class="accent-star" style="top:25%;right:15%;--size:2.5px;--glow:10px;--delay:2s"></div>
+  <div class="accent-star" style="top:60%;left:22%;--size:2px;--glow:8px;--delay:4s"></div>
+  <div class="accent-star" style="bottom:20%;right:30%;--size:3px;--glow:14px;--delay:1s"></div>
+  <div class="accent-star" style="top:45%;right:8%;--size:2px;--glow:9px;--delay:3s"></div>
+  <div class="accent-star" style="bottom:35%;left:45%;--size:2.5px;--glow:11px;--delay:5s"></div>
+</div>
 <div class="app">
 
   <!-- Header -->
@@ -2218,21 +2240,24 @@ function initStarfield() {
   const ctx = canvas.getContext('2d');
   const dpr = window.devicePixelRatio || 1;
   let w, h, stars;
-  let mouseX = 0, mouseY = 0, lerpX = 0, lerpY = 0;
-  const particles = [];
+  let mouseX = -9999, mouseY = -9999;
+  let mouseActive = false;
   let shootingStar = null;
-  let nextShootTime = performance.now() + (15 + Math.random() * 15) * 1000;
+  let nextShootTime = performance.now() + (20 + Math.random() * 20) * 1000;
 
   function makeStars() {
     stars = [];
     for (let i = 0; i < 300; i++) {
-      stars.push({ x: Math.random() * w, y: Math.random() * h, baseSize: 0.5 + Math.random() * 0.5, baseAlpha: 0.2 + Math.random() * 0.3, currentAlpha: 0, twinkleSpeed: 0.3 + Math.random() * 1.2, twinkleOffset: Math.random() * Math.PI * 2, depth: 0.2, bright: false });
+      const hx = Math.random() * w, hy = Math.random() * h;
+      stars.push({ homeX: hx, homeY: hy, x: hx, y: hy, size: 0.5 + Math.random() * 0.5, alpha: 0.2 + Math.random() * 0.2, depth: 0.3, glow: false, twinkleSpeed: Math.random() * 0.8 + 0.3, twinkleOffset: Math.random() * Math.PI * 2 });
     }
-    for (let i = 0; i < 40; i++) {
-      stars.push({ x: Math.random() * w, y: Math.random() * h, baseSize: 1 + Math.random() * 0.5, baseAlpha: 0.5 + Math.random() * 0.25, currentAlpha: 0, twinkleSpeed: 0.3 + Math.random() * 1.2, twinkleOffset: Math.random() * Math.PI * 2, depth: 0.5, bright: false });
+    for (let i = 0; i < 50; i++) {
+      const hx = Math.random() * w, hy = Math.random() * h;
+      stars.push({ homeX: hx, homeY: hy, x: hx, y: hy, size: 1 + Math.random() * 0.8, alpha: 0.4 + Math.random() * 0.3, depth: 0.6, glow: false, twinkleSpeed: Math.random() * 0.8 + 0.3, twinkleOffset: Math.random() * Math.PI * 2 });
     }
-    for (let i = 0; i < 8; i++) {
-      stars.push({ x: Math.random() * w, y: Math.random() * h, baseSize: 2 + Math.random(), baseAlpha: 0.7 + Math.random() * 0.25, currentAlpha: 0, twinkleSpeed: 0.3 + Math.random() * 1.2, twinkleOffset: Math.random() * Math.PI * 2, depth: 1.0, bright: true });
+    for (let i = 0; i < 10; i++) {
+      const hx = Math.random() * w, hy = Math.random() * h;
+      stars.push({ homeX: hx, homeY: hy, x: hx, y: hy, size: 2 + Math.random(), alpha: 0.7 + Math.random() * 0.25, depth: 1.0, glow: true, twinkleSpeed: Math.random() * 0.8 + 0.3, twinkleOffset: Math.random() * Math.PI * 2 });
     }
   }
 
@@ -2247,25 +2272,8 @@ function initStarfield() {
     makeStars();
   }
 
-  document.addEventListener('mousemove', e => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    const cx = w / 2, cy = h / 2;
-    document.documentElement.style.setProperty('--nebula-px', ((mouseX - cx) * 0.01) + 'px');
-    document.documentElement.style.setProperty('--nebula-py', ((mouseY - cy) * 0.01) + 'px');
-  });
-
-  document.addEventListener('click', e => {
-    const tag = e.target.tagName;
-    if (tag === 'BUTTON' || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'A' || tag === 'SELECT' || e.target.closest('button,a,input,textarea,.type-btn,.chip,.type-chip')) return;
-    const count = 4 + Math.floor(Math.random() * 3);
-    for (let i = 0; i < count; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const speed = 30 + Math.random() * 30;
-      particles.push({ x: e.clientX, y: e.clientY, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, alpha: 0.8, size: 1 + Math.random(), life: 0 });
-    }
-    if (particles.length > 30) particles.splice(0, particles.length - 30);
-  });
+  document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; mouseActive = true; });
+  document.addEventListener('mouseleave', () => { mouseActive = false; });
 
   function spawnShootingStar() {
     const fromTop = Math.random() > 0.5;
@@ -2277,74 +2285,62 @@ function initStarfield() {
     shootingStar = { sx, sy, angle, len, dur, life: 0, speed: (w * 0.8) / dur };
   }
 
-  let startTime = 0;
   function frame(ts) {
     requestAnimationFrame(frame);
-    if (!startTime) startTime = ts;
-    const time = (ts - startTime) / 1000;
-    const dt = Math.min(1 / 30, 1 / 60 * 2);
-
-    const cx = w / 2, cy = h / 2;
-    lerpX += (mouseX - lerpX) * 0.05;
-    lerpY += (mouseY - lerpY) * 0.05;
+    const dt = 1 / 60;
 
     ctx.clearRect(0, 0, w, h);
 
-    // Cursor glow
-    if (lerpX > 0 || lerpY > 0) {
-      const glow = ctx.createRadialGradient(lerpX, lerpY, 0, lerpX, lerpY, 200);
-      glow.addColorStop(0, 'rgba(180,170,255,0.06)');
-      glow.addColorStop(1, 'rgba(180,170,255,0)');
-      ctx.fillStyle = glow;
-      ctx.fillRect(lerpX - 200, lerpY - 200, 400, 400);
-    }
-
-    // Stars
     for (const s of stars) {
-      s.currentAlpha = s.baseAlpha + Math.sin(time * s.twinkleSpeed + s.twinkleOffset) * 0.15;
-      const dx = (lerpX - cx) * s.depth * 0.02;
-      const dy = (lerpY - cy) * s.depth * 0.02;
-      const sx = s.x + dx;
-      const sy = s.y + dy;
-      const distToCursor = Math.hypot(sx - lerpX, sy - lerpY);
-      let alpha = s.currentAlpha;
-      if (distToCursor < 200) alpha = Math.min(1, alpha * 1.4);
-      if (s.bright) {
+      // Cursor repulsion
+      if (mouseActive) {
+        const dx = s.x - mouseX;
+        const dy = s.y - mouseY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const radius = 120 + s.depth * 60;
+        if (dist < radius && dist > 0) {
+          const force = (1 - dist / radius) * (3 + s.depth * 5);
+          const angle = Math.atan2(dy, dx);
+          s.x += Math.cos(angle) * force;
+          s.y += Math.sin(angle) * force;
+        }
+      }
+
+      // Return to home
+      s.x += (s.homeX - s.x) * 0.02;
+      s.y += (s.homeY - s.y) * 0.02;
+
+      // Ambient drift
+      s.x += Math.sin(ts * 0.0004 + s.homeX * 0.01) * 0.1;
+      s.y += Math.cos(ts * 0.0003 + s.homeY * 0.01) * 0.1;
+
+      // Twinkle
+      const renderAlpha = s.alpha + Math.sin(ts * 0.001 * s.twinkleSpeed + s.twinkleOffset) * 0.15;
+
+      // Draw
+      ctx.globalAlpha = Math.max(0, Math.min(1, renderAlpha));
+      ctx.fillStyle = '#e8e0ff';
+      if (s.glow) {
         ctx.shadowBlur = 8;
         ctx.shadowColor = 'rgba(200,190,255,0.4)';
       }
       ctx.beginPath();
-      ctx.arc(sx, sy, s.baseSize, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(232,224,255,${alpha})`;
+      ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
       ctx.fill();
-      if (s.bright) { ctx.shadowBlur = 0; ctx.shadowColor = 'transparent'; }
+      if (s.glow) { ctx.shadowBlur = 0; ctx.shadowColor = 'transparent'; }
     }
 
-    // Click particles
-    for (let i = particles.length - 1; i >= 0; i--) {
-      const p = particles[i];
-      p.life += dt;
-      p.x += p.vx * dt;
-      p.y += p.vy * dt;
-      p.alpha = 0.8 * Math.max(0, 1 - p.life / 1.5);
-      if (p.alpha <= 0) { particles.splice(i, 1); continue; }
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(232,224,255,${p.alpha})`;
-      ctx.fill();
-    }
+    ctx.globalAlpha = 1;
 
     // Shooting star
-    if (!shootingStar && ts > nextShootTime) {
-      spawnShootingStar();
-    }
+    if (!shootingStar && ts > nextShootTime) spawnShootingStar();
     if (shootingStar) {
       const ss = shootingStar;
       ss.life += dt;
       const prog = ss.life / ss.dur;
       if (prog >= 1) {
         shootingStar = null;
-        nextShootTime = ts + (15 + Math.random() * 15) * 1000;
+        nextShootTime = ts + (20 + Math.random() * 20) * 1000;
       } else {
         const dist = ss.life * ss.speed;
         const hx = ss.sx + Math.cos(ss.angle) * dist;
@@ -2356,7 +2352,7 @@ function initStarfield() {
         else if (prog > 0.7) opacity = (1 - prog) / 0.3;
         const grad = ctx.createLinearGradient(hx, hy, tx, ty);
         grad.addColorStop(0, `rgba(220,215,255,${0.7 * opacity})`);
-        grad.addColorStop(1, `rgba(220,215,255,0)`);
+        grad.addColorStop(1, 'rgba(220,215,255,0)');
         ctx.strokeStyle = grad;
         ctx.lineWidth = 1.5;
         ctx.beginPath();
