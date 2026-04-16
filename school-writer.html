@@ -10,13 +10,15 @@
 <link rel="icon" type="image/png" sizes="512x512" href="favicon-512.png">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <meta property="og:title" content="School Max">
-<meta property="og:description" content="AI-powered writing tool for students. Write essays, FRQs, and more — then humanize to pass GPTZero and Turnitin.">
+<!-- <meta property="og:description" content="AI-powered writing tool for students. Write essays, FRQs, and more — then humanize to pass GPTZero and Turnitin."> -->
+<meta property="og:description" content="AI-powered writing tool for students. Write essays, FRQs, and more — humanized to sound like real student writing.">
 <meta property="og:image" content="https://schoolmax.vercel.app/og-image.png">
 <meta property="og:url" content="https://schoolmax.vercel.app">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="School Max">
-<meta name="twitter:description" content="AI-powered writing tool for students. Write essays, FRQs, and more — then humanize to pass GPTZero and Turnitin.">
+<!-- <meta name="twitter:description" content="AI-powered writing tool for students. Write essays, FRQs, and more — then humanize to pass GPTZero and Turnitin."> -->
+<meta name="twitter:description" content="AI-powered writing tool for students. Write essays, FRQs, and more — humanized to sound like real student writing.">
 <meta name="twitter:image" content="https://schoolmax.vercel.app/og-image.png">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,700&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -805,6 +807,61 @@
     font-size: 24px;
     margin-bottom: 10px;
     color: #6aaa6a;
+  }
+
+  /* Drip preview (review-before-commit) */
+  .drip-preview {
+    margin-top: 12px;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: rgba(255,255,255,0.02);
+  }
+  .drip-preview-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+  }
+  .drip-preview-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 360px;
+    overflow-y: auto;
+    margin-bottom: 12px;
+  }
+  .drip-preview-item {
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+  }
+  .drip-preview-item:first-child { border-top: none; padding-top: 0; }
+  .drip-preview-q {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+  .drip-preview-a {
+    width: 100%;
+    min-height: 60px;
+    resize: vertical;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 12px;
+    padding: 8px 10px;
+    line-height: 1.5;
+  }
+  .drip-preview-a:focus { outline: none; border-color: var(--accent-border); }
+  .drip-preview-actions {
+    display: flex;
+    gap: 10px;
   }
 
   @media (max-width: 618px) {
@@ -1672,7 +1729,7 @@
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
           <div class="feature-name">humanizer</div>
-          <p class="feature-desc">every essay runs through undetectable.ai automatically. passes gptzero, turnitin, and every real AI detector.</p>
+          <p class="feature-desc">every essay runs through undetectable.ai automatically.<!-- passes gptzero, turnitin, and every real AI detector. --></p>
         </div>
         <div class="landing-feature">
           <div class="feature-icon">
@@ -1746,6 +1803,7 @@
           <div class="progress-sub" id="dripProgressSub"></div>
           <button class="btn-cancel" onclick="cancelDrip('main')">cancel</button>
         </div>
+        <div id="dripPreviewWrap" style="display:none" class="drip-preview"></div>
         <div id="dripDoneWrap" style="display:none" class="drip-done">
           <div class="done-check">✓</div>
           <div>Done. Check <strong>File → Version history</strong> to confirm it looks natural.</div>
@@ -1866,7 +1924,7 @@
         <p class="about-text">
           i'm max. senior in high school. i built schoolmax because i was tired of spending my whole night on essays that nobody's gonna read twice.
           <br><br>
-          i'm not a tech company. i'm a student who is legit just like you and learned to code. schoolmax writes like you — not like chatgpt. it passes <strong>real AI detection</strong> like gptzero and turnitin, drip-writes into your google docs so version history looks real, and actually handles the assignments you get.
+          i'm not a tech company. i'm a student who is legit just like you and learned to code. schoolmax writes like you — not like chatgpt. <!-- it passes <strong>real AI detection</strong> like gptzero and turnitin, -->it drip-writes into your google docs so version history looks real, and actually handles the assignments you get.
           <br><br>
           free tier. no credit card. just paste your prompt and go.
         </p>
@@ -1925,7 +1983,7 @@
           <!-- Action bar + revise -->
           <div class="action-bar">
             <button class="btn-humanize" id="humanizeBtn" onclick="humanize()">humanize</button>
-            <button class="btn-action" id="checkScoreBtn" onclick="checkScore()">check score</button>
+            <button class="btn-action" id="checkScoreBtn" onclick="checkScore()" style="display:none">check score</button>
             <button class="btn-copy" id="copyBtn" onclick="copyOutput()">copy</button>
             <span class="score-badge" id="scoreBadge" style="display:none"></span>
           </div>
@@ -1991,6 +2049,7 @@
                 <div class="progress-sub" id="outDripProgressSub"></div>
                 <button class="btn-cancel" onclick="cancelDrip('output')">cancel</button>
               </div>
+              <div id="outDripPreviewWrap" style="display:none" class="drip-preview"></div>
               <div id="outDripDoneWrap" style="display:none" class="drip-done">
                 <div class="done-check">✓</div>
                 <div>Done. Check <strong>File → Version history</strong> to confirm it looks natural.</div>
@@ -2048,6 +2107,8 @@
 
 
 <script>
+const DETECTION_ENABLED = false;
+
 // ══════════════════════════════════════════════════
 //  FIREBASE
 // ══════════════════════════════════════════════════
@@ -2348,6 +2409,7 @@ function getGoogleClientId() {
 }
 
 async function checkAIScore(text) {
+  if (!DETECTION_ENABLED) return null;
   try {
     const r = await fetch('https://schoolmax-production.up.railway.app/check', {
       method: 'POST',
@@ -2888,6 +2950,7 @@ function showScoreBadge(score) {
 }
 
 async function checkScore() {
+  if (!DETECTION_ENABLED) return;
   const text = writerState.output;
   if (!text) return;
   const badge = document.getElementById('scoreBadge');
@@ -3246,7 +3309,7 @@ function showOutput(text) {
   document.getElementById('outputContent').style.display = 'block';
   document.getElementById('outputBox').textContent = cleaned;
   document.getElementById('humanizeBtn').style.display = MATH_CLASSES.has(writerState.selectedClass) ? 'none' : '';
-  document.getElementById('checkScoreBtn').style.display = MATH_CLASSES.has(writerState.selectedClass) ? 'none' : '';
+  document.getElementById('checkScoreBtn').style.display = (!DETECTION_ENABLED || MATH_CLASSES.has(writerState.selectedClass)) ? 'none' : '';
   document.getElementById('dripOutput').style.display = 'block';
   document.getElementById('outDripCustomText').value = cleaned;
   updateOutGoogleSignInState();
@@ -3432,11 +3495,13 @@ const drip = {
   token: sessionStorage.getItem('gToken') || '',
   docId: '',
   mode: 'auto',
-  tablePairs: [],
+  fillTargets: [],
   cancelFlag: false,
   outDocId: '',
   outMode: null,
-  outTablePairs: [],
+  outFillTargets: [],
+  docTitle: '',
+  outDocTitle: '',
 };
 
 // ── Google OAuth sign-in ──
@@ -3510,6 +3575,25 @@ function googleOAuthSignIn() {
   tokenClient.requestAccessToken();
 }
 
+async function refreshGoogleToken() {
+  return new Promise((resolve, reject) => {
+    try {
+      const tc = google.accounts.oauth2.initTokenClient({
+        client_id: getGoogleClientId(),
+        scope: 'https://www.googleapis.com/auth/documents https://www.googleapis.com/auth/drive.readonly',
+        callback: (response) => {
+          if (response.error) { reject(new Error(response.error)); return; }
+          drip.token = response.access_token;
+          sessionStorage.setItem('gToken', response.access_token);
+          updateGoogleSignInState();
+          resolve();
+        },
+      });
+      tc.requestAccessToken({ prompt: '' });
+    } catch (e) { reject(e); }
+  });
+}
+
 // Restore token from session on load
 window.addEventListener('load', () => {
   const saved = sessionStorage.getItem('gToken');
@@ -3552,22 +3636,31 @@ async function detectDoc() {
 
   try {
     const doc = await googleGet(`/documents/${drip.docId}`);
-    const pairs = extractTablePairs(doc);
+    drip.docTitle = doc.title || '';
+    const targets = extractFillTargets(doc);
 
-    if (pairs.length > 0) {
-      drip.tablePairs = pairs;
+    console.log('[drip debug]', {
+      tables: (doc.body?.content || []).filter(e => e.table).length,
+      rowsPerTable: (doc.body?.content || []).filter(e => e.table).map(t => t.table.tableRows.length),
+      cellsPerRow: (doc.body?.content || []).filter(e => e.table).flatMap(t => t.table.tableRows.map(r => (r.tableCells || []).map(c => ({ text: getCellText(c).slice(0, 30), idx: getCellInsertIndex(c) })))),
+      pairsFound: targets.length,
+      firstPair: targets[0]
+    });
+
+    if (targets.length > 0) {
+      drip.fillTargets = targets;
       setDripMode('table');
       statusEl.className = 'detect-status table';
-      statusEl.innerHTML = `<span class="detect-dot"></span> Smart fill — ${pairs.length} question${pairs.length !== 1 ? 's' : ''} found`;
+      statusEl.innerHTML = `<span class="detect-dot"></span> smart fill — ${targets.length} question${targets.length !== 1 ? 's' : ''} found`;
     } else {
-      drip.tablePairs = [];
+      drip.fillTargets = [];
       setDripMode('plain');
       statusEl.className = 'detect-status plain';
-      statusEl.innerHTML = '<span class="detect-dot"></span> Drip mode — plain text doc';
+      statusEl.innerHTML = '<span class="detect-dot"></span> drip mode — plain text doc';
     }
   } catch(e) {
     statusEl.className = 'detect-status detecting';
-    statusEl.innerHTML = '<span class="detect-dot"></span> ' + (e.message || 'Could not read doc');
+    statusEl.innerHTML = '<span class="detect-dot"></span> ' + (e.message || 'could not read doc');
     setDripMode(null);
   }
   updateDripStartBtn();
@@ -3613,21 +3706,22 @@ async function detectOutDoc() {
   statusEl.innerHTML = '<span class="detect-dot"></span> Reading doc...';
   try {
     const doc = await googleGet(`/documents/${drip.outDocId}`);
-    const pairs = extractTablePairs(doc);
-    if (pairs.length > 0) {
-      drip.outTablePairs = pairs;
+    drip.outDocTitle = doc.title || '';
+    const targets = extractFillTargets(doc);
+    if (targets.length > 0) {
+      drip.outFillTargets = targets;
       setOutDripMode('table');
       statusEl.className = 'detect-status table';
-      statusEl.innerHTML = `<span class="detect-dot"></span> Smart fill — ${pairs.length} question${pairs.length !== 1 ? 's' : ''} found`;
+      statusEl.innerHTML = `<span class="detect-dot"></span> smart fill — ${targets.length} question${targets.length !== 1 ? 's' : ''} found`;
     } else {
-      drip.outTablePairs = [];
+      drip.outFillTargets = [];
       setOutDripMode('plain');
       statusEl.className = 'detect-status plain';
-      statusEl.innerHTML = '<span class="detect-dot"></span> Drip mode — plain text doc';
+      statusEl.innerHTML = '<span class="detect-dot"></span> drip mode — plain text doc';
     }
   } catch(e) {
     statusEl.className = 'detect-status detecting';
-    statusEl.innerHTML = '<span class="detect-dot"></span> ' + (e.message || 'Could not read doc');
+    statusEl.innerHTML = '<span class="detect-dot"></span> ' + (e.message || 'could not read doc');
     setOutDripMode(null);
   }
   updateOutDripStartBtn();
@@ -3663,21 +3757,33 @@ function updateDripStartBtn() {
 // ── Google Docs API ──
 
 async function googleGet(path) {
-  const r = await fetch(`https://docs.googleapis.com/v1${path}`, {
-    headers: { Authorization: `Bearer ${drip.token}` }
-  });
-  const data = await r.json();
-  if (data.error) throw new Error(data.error.message || `Error ${r.status}`);
-  return data;
+  let refreshed = false;
+  while (true) {
+    const r = await fetch(`https://docs.googleapis.com/v1${path}`, {
+      headers: { Authorization: `Bearer ${drip.token}` }
+    });
+    if (r.status === 401 && !refreshed) {
+      refreshed = true;
+      try { await refreshGoogleToken(); continue; } catch {}
+    }
+    const data = await r.json();
+    if (data.error) throw new Error(data.error.message || `Error ${r.status}`);
+    return data;
+  }
 }
 
 async function googleInsert(docId, requests, retries = 2) {
+  let refreshed = false;
   for (let attempt = 0; attempt <= retries; attempt++) {
     const r = await fetch(`https://docs.googleapis.com/v1/documents/${docId}:batchUpdate`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${drip.token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ requests })
     });
+    if (r.status === 401 && !refreshed) {
+      refreshed = true;
+      try { await refreshGoogleToken(); attempt--; continue; } catch {}
+    }
     const data = await r.json();
     if (r.status === 429 && attempt < retries) {
       await sleep(2000 * (attempt + 1));
@@ -3688,7 +3794,7 @@ async function googleInsert(docId, requests, retries = 2) {
   }
 }
 
-// ── Table parsing ──
+// ── Target detection ──
 
 function getCellText(cell) {
   return (cell.content || [])
@@ -3698,41 +3804,336 @@ function getCellText(cell) {
 }
 
 function getCellInsertIndex(cell) {
-  const para = cell.content?.[0]?.paragraph;
-  return para?.elements?.[0]?.startIndex ?? null;
+  const first = cell.content?.[0];
+  const para = first?.paragraph;
+  const candidates = [
+    para?.elements?.[0]?.startIndex,
+    para?.startIndex,
+    first?.startIndex,
+    typeof cell.startIndex === 'number' ? cell.startIndex + 1 : undefined,
+  ];
+  for (const v of candidates) {
+    if (typeof v === 'number') return v;
+  }
+  return null;
 }
 
-function extractTablePairs(doc) {
-  const pairs = [];
-  for (const el of (doc.body?.content || [])) {
-    if (!el.table) continue;
-    for (const row of (el.table.tableRows || [])) {
-      const cells = row.tableCells || [];
-      if (cells.length >= 2) {
-        const q = getCellText(cells[0]);
-        const a = getCellText(cells[1]);
-        if (q && !a) {
-          const idx = getCellInsertIndex(cells[1]);
-          if (idx !== null) pairs.push({ question: q, insertIndex: idx });
+function getCellDeleteRange(cell) {
+  const paras = (cell.content || []).filter(c => c.paragraph);
+  if (paras.length === 0) return null;
+  const firstEl = paras[0].paragraph.elements?.[0];
+  const lastPara = paras[paras.length - 1].paragraph;
+  const lastEl = lastPara.elements?.[lastPara.elements.length - 1];
+  if (!firstEl || !lastEl) return null;
+  let endIndex = lastEl.endIndex;
+  if (lastEl.textRun?.content?.endsWith('\n')) endIndex -= 1;
+  if (endIndex <= firstEl.startIndex) return null;
+  return { startIndex: firstEl.startIndex, endIndex };
+}
+
+function getParaRawText(para) {
+  return (para.elements || []).map(e => e.textRun?.content || '').join('');
+}
+
+function getParaPlainText(para) {
+  return getParaRawText(para).replace(/\n+$/, '');
+}
+
+function getParaInsertIndex(para) {
+  return para.elements?.[0]?.startIndex ?? null;
+}
+
+function getParaDeleteRange(para) {
+  const els = para.elements || [];
+  if (els.length === 0) return null;
+  const startIndex = els[0].startIndex;
+  const lastEl = els[els.length - 1];
+  let endIndex = lastEl.endIndex;
+  if (lastEl.textRun?.content?.endsWith('\n')) endIndex -= 1;
+  if (endIndex <= startIndex) return null;
+  return { startIndex, endIndex };
+}
+
+function isHeadingStyle(para) {
+  const s = para.paragraphStyle?.namedStyleType || '';
+  return /HEADING|TITLE|SUBTITLE/.test(s);
+}
+
+function extractNumberedQuestion(text) {
+  const m = text.match(/^\s*\d+\s*[.\)]\s*(.+)$/);
+  return m ? m[1].trim() : null;
+}
+
+function isPlaceholderText(t) {
+  const s = (t || '').trim();
+  if (!s) return true;
+  if (/^_{3,}$/.test(s)) return true;
+  if (/^your answer( here)?\.?$/i.test(s)) return true;
+  if (/^\[.*\]$/.test(s)) return true;
+  return false;
+}
+
+function extractFillTargets(doc) {
+  const content = doc.body?.content || [];
+  const items = [];
+  for (const el of content) {
+    if (el.paragraph) {
+      const text = getParaPlainText(el.paragraph);
+      const trimmed = text.trim();
+      items.push({
+        kind: 'para',
+        para: el.paragraph,
+        text,
+        trimmed,
+        isPlaceholder: isPlaceholderText(text),
+        numberedQuestion: extractNumberedQuestion(trimmed),
+        isHeading: isHeadingStyle(el.paragraph),
+        insertIndex: getParaInsertIndex(el.paragraph),
+        deleteRange: getParaDeleteRange(el.paragraph),
+      });
+    } else if (el.table) {
+      items.push({ kind: 'table', table: el.table });
+    }
+  }
+
+  const contextUpTo = (idx) => {
+    const parts = [];
+    for (let i = 0; i < idx; i++) {
+      const it = items[i];
+      if (it.kind === 'para' && !it.isPlaceholder && it.trimmed) {
+        parts.push(it.trimmed);
+      } else if (it.kind === 'table') {
+        for (const row of (it.table.tableRows || [])) {
+          for (const cell of (row.tableCells || [])) {
+            const t = getCellText(cell);
+            if (t) parts.push(t);
+          }
         }
       }
     }
+    const joined = parts.join(' · ');
+    return joined.length > 500 ? joined.slice(-500) : joined;
+  };
+
+  const targets = [];
+  for (let i = 0; i < items.length; i++) {
+    const it = items[i];
+    if (it.kind === 'table') {
+      const rows = it.table.tableRows || [];
+      if (rows.length === 0) continue;
+
+      const headerCells = rows[0].tableCells || [];
+      const headers = headerCells.map(c => getCellText(c));
+      const headerLooksReal = headers.length > 0 && headers.every(h => h);
+
+      const firstDataRow = headerLooksReal ? 1 : 0;
+      for (let ri = firstDataRow; ri < rows.length; ri++) {
+        const cells = rows[ri].tableCells || [];
+        if (cells.length === 0) continue;
+        const texts = cells.map(c => getCellText(c));
+
+        let answerCol = -1;
+        for (let ci = cells.length - 1; ci >= 0; ci--) {
+          if (isPlaceholderText(texts[ci])) { answerCol = ci; break; }
+        }
+        if (answerCol === -1) continue;
+
+        const promptParts = [];
+        for (let ci = 0; ci < answerCol; ci++) {
+          const t = texts[ci];
+          if (t && !isPlaceholderText(t)) {
+            const label = headerLooksReal && headers[ci] ? `${headers[ci]}: ${t}` : t;
+            promptParts.push(label);
+          }
+        }
+        if (promptParts.length === 0) continue;
+
+        const answerCell = cells[answerCol];
+        const idx = getCellInsertIndex(answerCell);
+        if (idx === null) continue;
+        const existing = texts[answerCol];
+        const question = promptParts.join('\n\n---\n\n');
+        const wc = question.replace(/\s+/g, ' ').split(' ').length;
+        targets.push({
+          question,
+          insertIndex: idx,
+          deleteRange: existing ? getCellDeleteRange(answerCell) : null,
+          type: cells.length === 2 ? 'table-2col' : 'table-ncol',
+          precedingContext: contextUpTo(i),
+          expectedLength: wc > 60 ? 'long' : wc > 20 ? 'medium' : 'short',
+          existingText: existing,
+        });
+      }
+    } else if (it.kind === 'para') {
+      const next = items[i + 1];
+      if (!next || next.kind !== 'para' || !next.isPlaceholder) continue;
+
+      let question = null;
+      let type = null;
+      let expectedLength = 'medium';
+
+      if (it.numberedQuestion) {
+        question = it.numberedQuestion;
+        type = 'numbered';
+      } else if (/[?:]\s*$/.test(it.trimmed) && it.trimmed.length > 3) {
+        question = it.trimmed;
+        type = 'question-para';
+        expectedLength = it.trimmed.length > 60 ? 'long' : 'medium';
+      } else if (it.isHeading && it.trimmed.length > 0) {
+        question = it.trimmed;
+        type = 'heading';
+        expectedLength = 'long';
+      }
+
+      if (!question) continue;
+
+      targets.push({
+        question,
+        insertIndex: next.insertIndex,
+        deleteRange: next.text.trim() ? next.deleteRange : null,
+        type,
+        precedingContext: contextUpTo(i),
+        expectedLength,
+        existingText: next.text,
+      });
+    }
   }
-  // Descending order so filling back→front keeps indices stable
-  pairs.sort((a, b) => b.insertIndex - a.insertIndex);
-  return pairs;
+
+  const seen = new Set();
+  const unique = targets.filter(t => {
+    if (seen.has(t.insertIndex)) return false;
+    seen.add(t.insertIndex);
+    return true;
+  });
+  unique.sort((a, b) => b.insertIndex - a.insertIndex);
+  return unique;
 }
 
-// ── Claude answer generation ──
+// ── Answer generation ──
 
-async function generateTableAnswers(pairs, context) {
-  const questions = pairs.map((p, i) => `${i + 1}. ${p.question}`).join('\n');
-  const contextBlock = context ? `Context:\n${context}\n\n` : '';
-  const raw = await callAI([{
-    role: 'user',
-    content: `${contextBlock}You are filling in a student's form or table as Max Kremen. Answer each question naturally and concisely. Respond ONLY with a JSON array of strings in the same order as the questions — no markdown, no explanation.\n\nQuestions:\n${questions}`
-  }], '', 1200);
-  return JSON.parse(raw.trim().replace(/^```json\n?/, '').replace(/\n?```$/, ''));
+async function generateOneAnswer(target, context, docTitle) {
+  const lengthHint = target.expectedLength === 'short'
+    ? 'one short sentence or a few words'
+    : target.expectedLength === 'long'
+    ? 'one paragraph (4–7 sentences)'
+    : '2–4 sentences';
+  const multiBlock = target.question.includes('\n\n---\n\n');
+  const lines = [];
+  if (docTitle) lines.push(`Assignment title: ${docTitle}`);
+  if (context) lines.push(`Class/context (user-provided): ${context}`);
+  if (target.precedingContext) lines.push(`Instructions above this question: ${target.precedingContext}`);
+  if (multiBlock) {
+    lines.push('This row has multiple cells. The first block below is the main prompt; any following blocks (separated by "---") are task-verb instructions and/or sentence frames you must follow when writing the answer. Use the sentence frames if provided — do not ignore them.');
+  }
+  lines.push(`Question: ${target.question}`);
+  lines.push(`Expected answer length: ${target.expectedLength} — ${lengthHint}`);
+  lines.push('');
+  lines.push('Respond with a JSON object of the form {"answer": "..."} and nothing else.');
+
+  const sys = (typeof SYSTEM_PROMPT !== 'undefined' ? SYSTEM_PROMPT : '') +
+    '\n\nYou are filling in one slot of a student\'s form/assignment. Answer naturally in the student\'s voice at the specified length. Do not repeat the question.';
+  const raw = await callAI([{ role: 'user', content: lines.join('\n') }], sys, 600, 0.8);
+  const cleaned = raw.trim().replace(/^```json\n?/, '').replace(/\n?```$/, '');
+  try {
+    const obj = JSON.parse(cleaned);
+    return ((obj.answer ?? '') + '').trim();
+  } catch {
+    return cleaned.replace(/^["'`]+|["'`]+$/g, '').trim();
+  }
+}
+
+async function generateFillAnswers(targets, context, docTitle, onProgress) {
+  const answers = [];
+  for (let i = 0; i < targets.length; i++) {
+    let answer = '';
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        answer = await generateOneAnswer(targets[i], context, docTitle);
+        break;
+      } catch (e) {
+        if (attempt === 1) answer = '';
+      }
+    }
+    answers.push(answer);
+    if (onProgress) onProgress(i + 1, targets.length);
+  }
+  return answers;
+}
+
+async function safeHumanize(text) {
+  const wc = (text || '').trim().split(/\s+/).filter(Boolean).length;
+  if (wc < 50) return text;
+  try {
+    const out = await humanizeViaUndetectable(text);
+    return out || text;
+  } catch {
+    return text;
+  }
+}
+
+async function humanizeAnswers(answers, onProgress) {
+  const out = [];
+  for (let i = 0; i < answers.length; i++) {
+    out.push(await safeHumanize(answers[i] || ''));
+    if (onProgress) onProgress(i + 1, answers.length);
+  }
+  return out;
+}
+
+// ── Preview ──
+
+function showFillPreview(els, targets, answers) {
+  return new Promise((resolve, reject) => {
+    const wrap = els.previewWrap;
+    wrap.innerHTML = '';
+
+    const title = document.createElement('div');
+    title.className = 'drip-preview-title';
+    title.textContent = 'review answers before drip';
+    wrap.appendChild(title);
+
+    const list = document.createElement('div');
+    list.className = 'drip-preview-list';
+    targets.forEach((t, i) => {
+      const item = document.createElement('div');
+      item.className = 'drip-preview-item';
+      const q = document.createElement('div');
+      q.className = 'drip-preview-q';
+      q.textContent = t.question;
+      const a = document.createElement('textarea');
+      a.className = 'drip-preview-a';
+      a.value = answers[i] || '';
+      item.appendChild(q);
+      item.appendChild(a);
+      list.appendChild(item);
+    });
+    wrap.appendChild(list);
+
+    const actions = document.createElement('div');
+    actions.className = 'drip-preview-actions';
+    const commit = document.createElement('button');
+    commit.className = 'btn-drip-start';
+    commit.type = 'button';
+    commit.textContent = 'start drip';
+    const cancel = document.createElement('button');
+    cancel.className = 'btn-cancel';
+    cancel.type = 'button';
+    cancel.textContent = 'cancel';
+    actions.appendChild(commit);
+    actions.appendChild(cancel);
+    wrap.appendChild(actions);
+
+    wrap.style.display = 'block';
+    commit.onclick = () => {
+      const edited = Array.from(list.querySelectorAll('.drip-preview-a')).map(el => el.value);
+      wrap.style.display = 'none';
+      resolve(edited);
+    };
+    cancel.onclick = () => {
+      wrap.style.display = 'none';
+      reject(new Error('cancelled'));
+    };
+  });
 }
 
 // ── Drip execution ──
@@ -3741,22 +4142,30 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 function dripEls(source) {
   const o = source === 'output';
-  const id = n => document.getElementById((o ? 'out' : '') + n);
   return {
-    startBtn: id('DripStartBtn') || document.getElementById(o ? 'outDripStartBtn' : 'dripStartBtn'),
-    progressWrap: id('DripProgressWrap') || document.getElementById(o ? 'outDripProgressWrap' : 'dripProgressWrap'),
-    progressFill: id('DripProgressFill') || document.getElementById(o ? 'outDripProgressFill' : 'dripProgressFill'),
-    progressLabel: id('DripProgressLabel') || document.getElementById(o ? 'outDripProgressLabel' : 'dripProgressLabel'),
-    progressSub: id('DripProgressSub') || document.getElementById(o ? 'outDripProgressSub' : 'dripProgressSub'),
-    doneWrap: id('DripDoneWrap') || document.getElementById(o ? 'outDripDoneWrap' : 'dripDoneWrap'),
-    errorEl: id('DripError') || document.getElementById(o ? 'outDripError' : 'dripError'),
+    startBtn: document.getElementById(o ? 'outDripStartBtn' : 'dripStartBtn'),
+    progressWrap: document.getElementById(o ? 'outDripProgressWrap' : 'dripProgressWrap'),
+    progressFill: document.getElementById(o ? 'outDripProgressFill' : 'dripProgressFill'),
+    progressLabel: document.getElementById(o ? 'outDripProgressLabel' : 'dripProgressLabel'),
+    progressSub: document.getElementById(o ? 'outDripProgressSub' : 'dripProgressSub'),
+    doneWrap: document.getElementById(o ? 'outDripDoneWrap' : 'dripDoneWrap'),
+    errorEl: document.getElementById(o ? 'outDripError' : 'dripError'),
+    previewWrap: document.getElementById(o ? 'outDripPreviewWrap' : 'dripPreviewWrap'),
     customText: document.getElementById(o ? 'outDripCustomText' : 'dripCustomText'),
     context: document.getElementById(o ? 'outDripContext' : 'dripContext'),
     duration: document.getElementById(o ? 'outDripDuration' : 'dripDuration'),
     docId: o ? drip.outDocId : drip.docId,
     mode: o ? drip.outMode : drip.mode,
-    pairs: o ? drip.outTablePairs : drip.tablePairs,
+    targets: o ? drip.outFillTargets : drip.fillTargets,
+    docTitle: o ? drip.outDocTitle : drip.docTitle,
   };
+}
+
+function getDocEndIndex(doc) {
+  const content = doc.body?.content || [];
+  if (content.length === 0) return 1;
+  const last = content[content.length - 1];
+  return Math.max(1, (last.endIndex || 1) - 1);
 }
 
 async function startDrip(source) {
@@ -3782,6 +4191,12 @@ async function startDrip(source) {
     }
   } catch(e) {
     els.progressWrap.style.display = 'none';
+    if (els.previewWrap) els.previewWrap.style.display = 'none';
+    if (e && e.message === 'cancelled') {
+      els.startBtn.style.display = 'block';
+      els.startBtn.disabled = false;
+      return;
+    }
     els.errorEl.style.display = 'block';
     els.errorEl.textContent = e.message || 'Something went wrong.';
     els.startBtn.style.display = 'block';
@@ -3797,9 +4212,9 @@ async function runDripText(durationMin, els) {
   const chunks = [];
   for (let i = 0; i < words.length; i += CHUNK) chunks.push(words.slice(i, i + CHUNK).join(' '));
 
-  setProgress(els, 0, chunks.length, 'drip', 'Reading doc...');
+  setProgress(els, 0, chunks.length, 'drip', 'reading doc...');
   const doc = await googleGet(`/documents/${els.docId}`);
-  let insertIdx = 1;
+  let insertIdx = getDocEndIndex(doc);
   const totalMs = durationMin * 60 * 1000;
   const baseInterval = totalMs / chunks.length;
 
@@ -3808,7 +4223,7 @@ async function runDripText(durationMin, els) {
     const piece = (i > 0 ? ' ' : '') + chunks[i];
     await googleInsert(els.docId, [{ insertText: { location: { index: insertIdx }, text: piece } }]);
     insertIdx += piece.length;
-    setProgress(els, i + 1, chunks.length, 'drip', `Chunk ${i + 1} of ${chunks.length}`);
+    setProgress(els, i + 1, chunks.length, 'drip', `chunk ${i + 1} of ${chunks.length}`);
     let pause = baseInterval * (0.5 + Math.random());
     if (chunks[i].match(/[.!?]$/)) pause *= (1.5 + Math.random());
     await sleep(pause);
@@ -3817,32 +4232,63 @@ async function runDripText(durationMin, els) {
 
 async function runTableFill(durationMin, els) {
   const context = els.context?.value.trim() || '';
-  const pairs = els.pairs;
+  const targets = els.targets;
+  if (!targets || targets.length === 0) throw new Error('no fill targets detected.');
 
-  setProgress(els, 0, pairs.length, 'table', 'Generating answers...');
-  const answers = await generateTableAnswers(pairs, context);
+  setProgress(els, 0, targets.length, 'table', 'generating answers...');
+  const raw = await generateFillAnswers(targets, context, els.docTitle, (done, total) =>
+    setProgress(els, done, total, 'table', `generating ${done} of ${total}`));
+
+  setProgress(els, 0, targets.length, 'table', 'humanizing...');
+  const humanized = await humanizeAnswers(raw, (done, total) =>
+    setProgress(els, done, total, 'table', `humanizing ${done} of ${total}`));
+
+  els.progressWrap.style.display = 'none';
+  const edited = await showFillPreview(els, targets, humanized);
+  els.progressWrap.style.display = 'block';
+
+  setProgress(els, 0, targets.length, 'table', 're-reading doc...');
+  const freshDoc = await googleGet(`/documents/${els.docId}`);
+  const freshTargets = extractFillTargets(freshDoc);
+  const bySig = new Map();
+  freshTargets.forEach(t => bySig.set(`${t.insertIndex}|${t.question}`, t));
 
   const totalMs = durationMin * 60 * 1000;
-  const timePerCell = totalMs / answers.length;
+  const timePerCell = totalMs / Math.max(targets.length, 1);
 
-  for (let ci = 0; ci < answers.length; ci++) {
+  for (let ci = 0; ci < targets.length; ci++) {
     if (drip.cancelFlag) return;
-    const { insertIndex, question } = pairs[ci];
-    const answer = answers[ci] || '';
-    const subLabel = `Filling: "${question.slice(0, 50)}${question.length > 50 ? '…' : ''}"`;
-    setProgress(els, ci, answers.length, 'table', subLabel);
+    const target = targets[ci];
+    const answer = (edited[ci] || '').trim();
+    const shortQ = target.question.slice(0, 50) + (target.question.length > 50 ? '…' : '');
+    setProgress(els, ci, targets.length, 'table', `filling: "${shortQ}"`);
 
+    if (!answer) continue;
+
+    const fresh = bySig.get(`${target.insertIndex}|${target.question}`);
+    const currentExisting = (fresh?.existingText ?? target.existingText ?? '').trim();
+    if (currentExisting && !isPlaceholderText(currentExisting)) {
+      setProgress(els, ci + 1, targets.length, 'table', `skipped (already filled): "${shortQ}"`);
+      continue;
+    }
+
+    const delRange = fresh?.deleteRange || target.deleteRange;
+    if (currentExisting && delRange) {
+      await googleInsert(els.docId, [{ deleteContentRange: { range: delRange } }]);
+    }
+
+    const baseIndex = target.insertIndex;
     const CHUNK = 3;
     const charDelay = Math.min(timePerCell / Math.max(answer.length / CHUNK, 1), 1000);
 
     for (let j = 0; j < answer.length; j += CHUNK) {
       if (drip.cancelFlag) return;
       const slice = answer.slice(j, j + CHUNK);
-      await googleInsert(els.docId, [{ insertText: { location: { index: insertIndex + j }, text: slice } }]);
+      await googleInsert(els.docId, [{ insertText: { location: { index: baseIndex + j }, text: slice } }]);
       await sleep(charDelay * (0.6 + Math.random() * 0.8));
     }
 
-    setProgress(els, ci + 1, answers.length, 'table', subLabel);
+    setProgress(els, ci + 1, targets.length, 'table', `filling: "${shortQ}"`);
     const betweenPause = timePerCell * (0.2 + Math.random() * 0.3);
     await sleep(betweenPause);
   }
@@ -3853,8 +4299,8 @@ function setProgress(els, current, total, type, sub) {
   els.progressFill.style.width = pct + '%';
   els.progressLabel.textContent =
     type === 'table'
-      ? `Cell ${current} of ${total} — ${pct}%`
-      : `Chunk ${current} of ${total} — ${pct}%`;
+      ? `cell ${current} of ${total} — ${pct}%`
+      : `chunk ${current} of ${total} — ${pct}%`;
   els.progressSub.textContent = sub || '';
 }
 
@@ -3863,6 +4309,7 @@ function cancelDrip(source) {
   drip.cancelFlag = true;
   const els = dripEls(source);
   els.progressWrap.style.display = 'none';
+  if (els.previewWrap) els.previewWrap.style.display = 'none';
   els.startBtn.style.display = 'block';
   els.startBtn.disabled = false;
 }
@@ -3874,10 +4321,14 @@ function resetDrip() {
   document.getElementById('dripContext').value = '';
   setDripMode(null);
   drip.docId = '';
-  drip.tablePairs = [];
-  // Reset output drip too
+  drip.fillTargets = [];
+  drip.docTitle = '';
   const outDone = document.getElementById('outDripDoneWrap');
   if (outDone) outDone.style.display = 'none';
+  const outPreview = document.getElementById('outDripPreviewWrap');
+  if (outPreview) outPreview.style.display = 'none';
+  const mainPreview = document.getElementById('dripPreviewWrap');
+  if (mainPreview) mainPreview.style.display = 'none';
   document.getElementById('dripOutput').style.display = 'none';
 }
 
