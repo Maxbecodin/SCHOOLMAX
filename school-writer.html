@@ -1288,8 +1288,8 @@
   .about-text {
     font-size: 15px;
     line-height: 1.9;
-    color: var(--text);
-    font-weight: 500;
+    color: var(--text-dim);
+    font-weight: 400;
   }
   .about-text strong {
     color: var(--white);
@@ -2269,7 +2269,24 @@ Go through the output and check each item. Fix any that apply:
 - [ ] Is there at least one contraction in every body paragraph? → add one if missing
 - [ ] Does at least one sentence start with "But" or "And"? → add if missing in formal essays`;
 
-const CLASSES = ['American Literature','US History','AP Environmental Science','Photography','Trigonometry'];
+const CLASS_SKILLS = {
+  'English': 'Thesis-driven essays. Hook intros with a specific detail from the text — never a broad statement about humanity. Embedded quotes with context before and analysis after. Pattern: claim → quote with setup → what it proves → why it matters for thesis. Use contractions naturally. MLA format when citing. Literary device analysis must connect to the argument — never just name the device. Conclusions don\'t restate the thesis — they push the argument forward.',
+  'US History': 'Lead with a historical claim, not a question. Evidence = specific events, dates, people. For DBQs reference documents by number ("Doc 3 shows..."). Cause→effect reasoning with "led to", "resulted in", "because of". Contextualize before claiming. Don\'t editorialize — argue from evidence. For essays: thesis in intro, each body paragraph = one claim backed by specific historical evidence. AP-style: address complexity and counterarguments.',
+  'World History': 'Same rigor as US History but global scope. Compare across civilizations and time periods when relevant. Use specific empire/dynasty/movement names — never vague ("ancient people"). Evidence = dates, treaties, leaders, trade routes, primary sources. For DBQs and LEQs follow AP World format: thesis, contextualization, evidence, analysis, complexity. Connect local events to global patterns.',
+  'Psychology': 'Reference specific studies, researchers, and theories by name (Milgram, Pavlov, Bandura, etc.). Define key terms on first use but don\'t sound like a textbook. For FRQs: identify the concept, define it, then apply it to the scenario with a clear "because" connection. Use examples — real studies or realistic scenarios. Avoid armchair philosophizing. APA conventions if citing.',
+  'Biology': 'Precise scientific language. For FRQs: answer the verb exactly — identify = name it, describe = what it is, explain = how/why with mechanism, justify = claim + evidence + reasoning. Reference specific molecules, organelles, processes by name. Cause→effect chains for biological mechanisms. Lab reports: hypothesis, procedure summary, data analysis with actual numbers and units, conclusion tied to hypothesis. Passive voice acceptable.',
+  'Chemistry': 'Show reasoning through chemical logic. Reference specific reactions, compounds, and laws by name (Le Chatelier\'s, Hess\'s Law, etc.). For calculations: state the approach, show dimensional analysis or formula setup, give answer with correct sig figs and units. For conceptual questions: connect macroscopic observations to molecular-level explanations. Use proper notation (subscripts, charges, state symbols). Lab reports: procedure, observations, calculations, error analysis.',
+  'Environmental Science': 'FRQ-heavy. Answer the verb precisely: identify, describe, explain, justify, propose, calculate. Use real data and units from the stimulus. Cause→effect with "because" or "since". Reference specific laws (Clean Air Act, ESA), cycles (carbon, nitrogen, water), and ecological concepts by name. For math: show setup with units, box the answer. Propose realistic solutions with tradeoffs. Keep answers tight — one focused paragraph per sub-part. No filler.',
+  'Physics': 'Math-forward. State the relevant equation or principle first, then solve systematically. Show all work with units carried through. Significant figures matter. For conceptual questions: use force diagrams, energy arguments, or Newton\'s laws as reasoning framework. Reference specific laws and principles by name. Free-body diagrams described verbally when relevant. Lab reports: hypothesis, setup, data table, calculations, percent error, conclusion.',
+  'Advance Data Science & Statistics': 'Statistical reasoning is everything. Reference specific tests, distributions, and concepts by name (chi-square, t-test, p-value, confidence interval, regression, standard deviation). Interpret results in context — never just state numbers. "The p-value of 0.03 means..." followed by a contextual conclusion. For projects: state the question, describe the data, justify the method, interpret results, acknowledge limitations. Use proper notation. Show calculator/software steps when relevant.',
+  'Algebra I': 'Show work step by step. State what you\'re solving for. Write each algebraic step on its own line with brief justification ("distribute", "combine like terms", "divide both sides by 3"). Use proper notation — no skipping steps. For word problems: define variables, set up equation, solve, answer in a complete sentence with units. Check the answer by plugging back in when appropriate.',
+  'Algebra II': 'Same step-by-step rigor as Algebra I but with more complex functions. Factor, use the quadratic formula, work with logarithms and exponentials showing each transformation. For graphing questions: describe transformations from the parent function. State domain and range. For systems: show the method (substitution, elimination, or matrices) clearly. Notation matters.',
+  'Calculus': 'State the rule or theorem being applied (power rule, chain rule, FTC, etc.). Show derivatives and integrals step by step. For related rates and optimization: draw the setup, define variables, write the equation, differentiate, solve. For integration: state the method (u-sub, by parts, partial fractions) before executing. Include units in applied problems. Justify answers on conceptual questions using theorems (IVT, MVT, EVT).',
+  'Geometry': 'Proof-based reasoning when required — state the given, what you\'re proving, and each step with its justification (definition, postulate, theorem name). For calculations: state the formula, substitute values, solve with units. Reference specific theorems by name (Pythagorean, triangle inequality, CPCTC). Diagrams described verbally when relevant. Show all angle/side relationships used.',
+  'Spanish': 'Write in Spanish at the student\'s level — not native-level, not Google Translate. Use vocabulary and grammar structures appropriate for the course level. Common conjugation patterns should be correct but occasional minor errors are natural for a student. Use transition words (además, sin embargo, por ejemplo, en conclusión). For essays: intro with thesis, body paragraphs with supporting details, conclusion. Accent marks matter.',
+  'French': 'Write in French at the student\'s level. Correct use of gendered articles, basic/intermediate verb tenses (présent, passé composé, imparfait, futur simple) appropriate to course level. Use connectors (cependant, de plus, par exemple, en effet). Accent marks and cedillas must be correct. For compositions: introduction, développement, conclusion. Occasional minor errors are natural for a student — don\'t write like a native.',
+  'Mandarin': 'Write in Simplified Chinese characters at the student\'s level. Use grammar patterns appropriate for the course (是...的, 因为...所以, 虽然...但是). Include pinyin in parentheses after complex characters if the assignment level suggests it. For compositions: clear structure with opening, supporting details, closing. Keep sentence structures at the student\'s proficiency — don\'t write like a native speaker. Measure words must be correct.'
+};
 
 let writerState = {
   type: null, typeLabel: '', selectedClass: '',
@@ -2279,7 +2296,7 @@ let writerState = {
 
 function renderClassChips() {
   const container = document.getElementById('classChips');
-  container.innerHTML = CLASSES.map(c =>
+  container.innerHTML = Object.keys(CLASS_SKILLS).map(c =>
     `<button class="chip${writerState.selectedClass === c ? ' active' : ''}" onclick="selectClass('${c}')">${c}</button>`
   ).join('');
 }
@@ -2352,8 +2369,13 @@ async function generate() {
   document.getElementById('detectorCard').style.display = 'none';
   setLoadingText('writing...');
 
+  const classSkill = CLASS_SKILLS[writerState.selectedClass] || '';
+  const finalPrompt = classSkill
+    ? SYSTEM_PROMPT + '\n\n## CLASS-SPECIFIC RULES: ' + writerState.selectedClass + '\n' + classSkill
+    : SYSTEM_PROMPT;
+
   try {
-    const text = await callAI([{ role: 'user', content: userMsg }], SYSTEM_PROMPT, 4000, 0.8);
+    const text = await callAI([{ role: 'user', content: userMsg }], finalPrompt, 4000, 0.8);
     writerState.output = text;
     writerState.conversationHistory = [
       { role: 'user', content: userMsg },
@@ -2449,8 +2471,12 @@ async function revise() {
   document.getElementById('reviseBtn').disabled = true;
   document.getElementById('reviseBtn').textContent = '...';
   const newHistory = [...writerState.conversationHistory, { role: 'user', content: followUp }];
+  const reviseClassSkill = CLASS_SKILLS[writerState.selectedClass] || '';
+  const revisePrompt = reviseClassSkill
+    ? SYSTEM_PROMPT + '\n\n## CLASS-SPECIFIC RULES: ' + writerState.selectedClass + '\n' + reviseClassSkill
+    : SYSTEM_PROMPT;
   try {
-    const text = await callAI(newHistory, SYSTEM_PROMPT, 4000, 0.8);
+    const text = await callAI(newHistory, revisePrompt, 4000, 0.8);
     writerState.output = text;
     writerState.conversationHistory = [...newHistory, { role: 'assistant', content: text }];
     showOutput(text);
