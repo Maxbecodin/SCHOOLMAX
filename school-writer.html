@@ -1521,13 +1521,7 @@
 
         <div class="form-group">
           <label class="form-label">assignment type</label>
-          <div class="type-row">
-            <button class="type-chip" onclick="selectType('essay','Essay')">Essay</button>
-            <button class="type-chip" onclick="selectType('discussion','Classwork')">Classwork</button>
-            <button class="type-chip" onclick="selectType('frq','FRQ / Lab')">FRQ / Lab</button>
-            <button class="type-chip" onclick="selectType('email','Email to Teacher')">Email to Teacher</button>
-            <button class="type-chip" onclick="selectType('short','Short Response')">Short Response</button>
-          </div>
+          <div class="type-row" id="typeRow"></div>
         </div>
 
         <div class="form-group">
@@ -2189,6 +2183,35 @@ const CLASSES = [
 
 const MATH_CLASSES = new Set(['Advance Data Science & Statistics', 'Algebra I', 'Algebra II', 'Calculus', 'Geometry']);
 
+const CLASS_CATEGORIES = {
+  'English': 'english',
+  'US History': 'history',
+  'World History': 'history',
+  'Psychology': 'history',
+  'Biology': 'science',
+  'Chemistry': 'science',
+  'Physics': 'science',
+  'Environmental Science': 'science',
+  'Algebra I': 'math',
+  'Algebra II': 'math',
+  'Geometry': 'math',
+  'Calculus': 'math',
+  'Advance Data Science & Statistics': 'math',
+  'Spanish': 'language',
+  'French': 'language',
+  'Mandarin': 'language',
+};
+
+const ASSIGNMENT_TYPES = {
+  english:  ['Essay', 'FRQ', 'Classwork', 'Short Response'],
+  history:  ['Essay', 'Classwork', 'Short Response'],
+  science:  ['Essay', 'FRQ', 'Lab', 'Classwork', 'Short Response'],
+  math:     ['Classwork', 'Short Response'],
+  language: ['Essay', 'Classwork', 'Short Response'],
+};
+
+const TYPE_KEYS = { 'Essay': 'essay', 'FRQ': 'frq', 'Lab': 'lab', 'Classwork': 'discussion', 'Short Response': 'short', 'Email to Teacher': 'email' };
+
 let writerState = {
   type: null, typeLabel: '', selectedClass: '',
   conversationHistory: [], output: '',
@@ -2252,6 +2275,19 @@ function animateStep(outEl, inEl, inDisplay) {
   });
 }
 
+function renderTypeChips(className) {
+  const cat = CLASS_CATEGORIES[className] || 'english';
+  const types = ASSIGNMENT_TYPES[cat] || [];
+  const row = document.getElementById('typeRow');
+  let html = types.map(t => {
+    const key = TYPE_KEYS[t] || t.toLowerCase();
+    return `<button class="type-chip" onclick="selectType('${key}','${t}')">${t}</button>`;
+  }).join('');
+  html += `<span style="width:1px;background:var(--border);margin:0 4px"></span>`;
+  html += `<button class="type-chip" onclick="selectType('email','Email to Teacher')">Email to Teacher</button>`;
+  row.innerHTML = html;
+}
+
 function selectType(type, label) {
   writerState.type = type;
   writerState.typeLabel = label;
@@ -2264,10 +2300,13 @@ function selectType(type, label) {
 
 function selectClass(cls) {
   writerState.selectedClass = cls;
+  writerState.type = null;
+  writerState.typeLabel = '';
   const stepType = document.getElementById('step-type');
   const stepDetails = document.getElementById('step-details');
   animateStep(stepType, stepDetails, 'block');
   document.getElementById('classBadge').textContent = cls;
+  renderTypeChips(cls);
   document.getElementById('resetBtn').classList.add('visible');
   document.getElementById('plans-section').style.display = 'none';
   document.getElementById('about-section').style.display = 'none';
