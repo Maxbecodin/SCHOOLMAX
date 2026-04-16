@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,700&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #000000;
+    --bg: #050510;
     --surface: rgba(6,8,20,0.92);
     --border: rgba(160,200,255,0.06);
     --border-hover: rgba(160,200,255,0.12);
@@ -27,9 +27,6 @@
 
   body {
     background: var(--bg);
-    background-image:
-      radial-gradient(ellipse at 15% 10%, rgba(20,40,120,0.15) 0%, transparent 60%),
-      radial-gradient(ellipse at 85% 90%, rgba(60,20,100,0.12) 0%, transparent 60%);
     color: var(--text);
     font-family: var(--sans);
     font-size: 13px;
@@ -43,7 +40,7 @@
     flex-direction: column;
     min-height: 100vh;
     position: relative;
-    z-index: 1;
+    z-index: 3;
   }
 
   /* ── Header ── */
@@ -56,7 +53,7 @@
     position: sticky;
     top: 0;
     z-index: 10;
-    background: rgba(0,0,0,0.88);
+    background: rgba(5,5,16,0.85);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--border);
@@ -801,40 +798,68 @@
     .tab-btn { padding: 5px 8px; }
   }
 
-  /* Background solar system */
-  .solar-bg {
+  /* ── Deep-space background ── */
+  .nebula {
     position: fixed;
     inset: 0;
     z-index: 0;
-    pointer-events: none;
-    opacity: 0.3;
     overflow: hidden;
+    pointer-events: none;
   }
-  .solar-bg .solar-sun {
+  .nebula-cloud {
     position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 10px; height: 10px;
-    background: #fff8e7;
     border-radius: 50%;
-    box-shadow: 0 0 14px 4px rgba(255,240,180,0.4), 0 0 40px 8px rgba(255,200,80,0.15);
+    filter: blur(150px);
+    will-change: transform;
   }
-  .solar-bg .orbit-ring {
+  .nebula-1 {
+    width: 800px; height: 600px;
+    background: radial-gradient(circle, #0f1b5e 0%, transparent 70%);
+    top: -15%; left: -10%;
+    opacity: 0.5;
+    animation: nebula-drift-1 45s ease-in-out infinite alternate;
+  }
+  .nebula-2 {
+    width: 600px; height: 700px;
+    background: radial-gradient(circle, #2d1050 0%, transparent 70%);
+    bottom: -20%; right: -5%;
+    opacity: 0.35;
+    animation: nebula-drift-2 55s ease-in-out infinite alternate;
+  }
+  .nebula-3 {
+    width: 500px; height: 400px;
+    background: radial-gradient(circle, #0d3b66 0%, transparent 70%);
+    top: 30%; right: 25%;
+    opacity: 0.25;
+    animation: nebula-drift-3 40s ease-in-out infinite alternate;
+  }
+  @keyframes nebula-drift-1 { from { transform: translate(0,0) scale(1); } to { transform: translate(40px,30px) scale(1.08); } }
+  @keyframes nebula-drift-2 { from { transform: translate(0,0) scale(1); } to { transform: translate(-35px,-25px) scale(1.05); } }
+  @keyframes nebula-drift-3 { from { transform: translate(0,0) scale(1); } to { transform: translate(25px,-20px) scale(0.95); } }
+
+  #starCanvas {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .accent-stars {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .accent-star {
     position: absolute;
-    top: 50%; left: 50%;
-    border: 1px solid rgba(160,200,255,0.08);
+    width: var(--size); height: var(--size);
+    background: #e8e0ff;
     border-radius: 50%;
-    animation: orbit-spin linear infinite;
+    box-shadow: 0 0 var(--glow) rgba(200,190,255,0.5);
+    animation: star-pulse 4s ease-in-out infinite alternate;
+    animation-delay: var(--delay);
   }
-  .solar-bg .bg-dot {
-    position: absolute;
-    width: 6px; height: 6px;
-    border-radius: 50%;
-  }
-  @keyframes orbit-spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
-  @media (max-width: 768px) {
-    .solar-bg { opacity: 0.15; }
-  }
+  @keyframes star-pulse { from { opacity: 0.6; transform: scale(1); } to { opacity: 1; transform: scale(1.2); } }
 
   /* API key setup overlay */
   .setup-overlay {
@@ -1370,7 +1395,20 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 </head>
 <body>
-<div id="solarBg" class="solar-bg"></div>
+<div class="nebula" aria-hidden="true">
+  <div class="nebula-cloud nebula-1"></div>
+  <div class="nebula-cloud nebula-2"></div>
+  <div class="nebula-cloud nebula-3"></div>
+</div>
+<canvas id="starCanvas"></canvas>
+<div class="accent-stars" aria-hidden="true">
+  <div class="accent-star" style="top:12%;left:8%;--size:3px;--glow:12px;--delay:0s"></div>
+  <div class="accent-star" style="top:25%;right:15%;--size:2.5px;--glow:10px;--delay:2s"></div>
+  <div class="accent-star" style="top:60%;left:22%;--size:2px;--glow:8px;--delay:4s"></div>
+  <div class="accent-star" style="bottom:20%;right:30%;--size:3px;--glow:14px;--delay:1s"></div>
+  <div class="accent-star" style="top:45%;right:8%;--size:2px;--glow:9px;--delay:3s"></div>
+  <div class="accent-star" style="bottom:35%;left:45%;--size:2.5px;--glow:11px;--delay:5s"></div>
+</div>
 <div class="app">
 
   <!-- Header -->
@@ -2226,38 +2264,64 @@ function renderClassGrid() {
   }).join('');
 }
 
-function renderSolarBg() {
-  const bg = document.getElementById('solarBg');
-  const w = window.innerWidth;
-  const h = window.innerHeight;
-  const center = Math.min(w, h) / 2;
-  const maxOrbit = 6;
-  const minR = center * 0.1;
-  const maxR = center * 0.9;
-  const durations = { 1: 30, 2: 45, 3: 60, 4: 75, 5: 90, 6: 105 };
+function initStarfield() {
+  const canvas = document.getElementById('starCanvas');
+  const ctx = canvas.getContext('2d');
+  let w, h, stars;
 
-  const orbitGroups = {};
-  CLASSES.forEach(c => {
-    if (!orbitGroups[c.orbit]) orbitGroups[c.orbit] = [];
-    orbitGroups[c.orbit].push(c);
-  });
-
-  let html = '<div class="solar-sun"></div>';
-  for (let n = 1; n <= maxOrbit; n++) {
-    const classes = orbitGroups[n] || [];
-    const r = minR + (maxR - minR) * ((n - 1) / (maxOrbit - 1));
-    const size = r * 2;
-    const dur = durations[n];
-    html += `<div class="orbit-ring" style="width:${size}px;height:${size}px;animation-duration:${dur}s">`;
-    classes.forEach((c, i) => {
-      const angle = (i / classes.length) * Math.PI * 2 - Math.PI / 2;
-      const cx = size / 2 + Math.cos(angle) * r;
-      const cy = size / 2 + Math.sin(angle) * r;
-      html += `<div class="bg-dot" style="left:${cx}px;top:${cy}px;transform:translate(-50%,-50%);background:${c.color};box-shadow:0 0 6px ${c.color}"></div>`;
-    });
-    html += '</div>';
+  function makeStars() {
+    stars = [];
+    for (let i = 0; i < 350; i++) {
+      const roll = Math.random();
+      let size, alpha;
+      if (roll < 0.02) { size = 2 + Math.random(); alpha = 0.7 + Math.random() * 0.2; }
+      else if (roll < 0.1) { size = 1 + Math.random() * 0.5; alpha = 0.5 + Math.random() * 0.3; }
+      else { size = 0.5 + Math.random() * 0.5; alpha = 0.3 + Math.random() * 0.3; }
+      stars.push({ x: Math.random() * w, y: Math.random() * h, size, alpha, baseAlpha: alpha, bright: size >= 2 });
+    }
   }
-  bg.innerHTML = html;
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+    makeStars();
+    draw();
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    for (const s of stars) {
+      if (s.bright) {
+        ctx.shadowBlur = 6;
+        ctx.shadowColor = 'rgba(200,190,255,0.4)';
+      } else {
+        ctx.shadowBlur = 0;
+        ctx.shadowColor = 'transparent';
+      }
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(232,224,255,${s.alpha})`;
+      ctx.fill();
+    }
+    ctx.shadowBlur = 0;
+  }
+
+  let lastFrame = 0;
+  function twinkle(ts) {
+    requestAnimationFrame(twinkle);
+    if (ts - lastFrame < 50) return;
+    lastFrame = ts;
+    for (let i = 0; i < 12; i++) {
+      const s = stars[Math.floor(Math.random() * stars.length)];
+      const target = s.baseAlpha + (Math.random() - 0.5) * 0.3;
+      s.alpha += (Math.max(0.15, Math.min(0.95, target)) - s.alpha) * 0.3;
+    }
+    draw();
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+  requestAnimationFrame(twinkle);
 }
 
 function animateStep(outEl, inEl, inDisplay) {
@@ -3211,8 +3275,7 @@ function resetDrip() {
 // ══════════════════════════════════════════════════
 // Render class grid and solar background on load
 renderClassGrid();
-renderSolarBg();
-window.addEventListener('resize', renderSolarBg);
+initStarfield();
 
 </script>
 </body>
