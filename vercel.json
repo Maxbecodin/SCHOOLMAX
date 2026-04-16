@@ -1,7 +1,6 @@
 {
   "framework": null,
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/school-writer.html" }
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/school-writer.html" }
   ]
 }
