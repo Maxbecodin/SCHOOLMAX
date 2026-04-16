@@ -2288,6 +2288,8 @@ const CLASS_SKILLS = {
   'Mandarin': 'Write in Simplified Chinese characters at the student\'s level. Use grammar patterns appropriate for the course (是...的, 因为...所以, 虽然...但是). Include pinyin in parentheses after complex characters if the assignment level suggests it. For compositions: clear structure with opening, supporting details, closing. Keep sentence structures at the student\'s proficiency — don\'t write like a native speaker. Measure words must be correct.'
 };
 
+const MATH_CLASSES = new Set(['Advance Data Science & Statistics', 'Algebra I', 'Algebra II', 'Calculus', 'Geometry']);
+
 let writerState = {
   type: null, typeLabel: '', selectedClass: '',
   conversationHistory: [], output: '',
@@ -2385,8 +2387,12 @@ async function generate() {
     // Track word usage
     addWordsUsed(countWords(text));
 
-    // Auto-humanize pipeline
-    await autoHumanize(text);
+    // Auto-humanize pipeline (skip for math subjects)
+    if (MATH_CLASSES.has(writerState.selectedClass)) {
+      showOutput(text);
+    } else {
+      await autoHumanize(text);
+    }
     saveConversation();
   } catch(e) { showWriterError(e.message || 'Failed to connect. Try again.'); }
 }
@@ -2534,6 +2540,7 @@ function showOutput(text) {
   document.getElementById('loadingIndicator').style.display = 'none';
   document.getElementById('outputContent').style.display = 'block';
   document.getElementById('outputBox').textContent = cleaned;
+  document.getElementById('humanizeBtn').style.display = MATH_CLASSES.has(writerState.selectedClass) ? 'none' : '';
   // Show "use writer output" btn in drip tab if we have output
   document.getElementById('useOutputBtn').style.display = 'block';
 }
