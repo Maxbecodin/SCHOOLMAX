@@ -204,6 +204,7 @@ app.post('/create-checkout', async (req, res) => {
       line_items: [{ price: priceId, quantity: 1 }],
       customer_email: userEmail,
       client_reference_id: userId,
+      metadata: { tier },
       success_url: 'https://schoolmax.vercel.app/?upgraded=1',
       cancel_url: 'https://schoolmax.vercel.app/',
     });
@@ -226,8 +227,7 @@ app.post('/stripe-webhook', async (req, res) => {
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
     const userId = session.client_reference_id;
-    const priceId = session.line_items?.data?.[0]?.price?.id;
-    const tier = TIER_FOR_PRICE[priceId];
+    const tier = session.metadata?.tier;
 
     if (userId && tier) {
       await db.collection('users').doc(userId).set({ tier }, { merge: true });
