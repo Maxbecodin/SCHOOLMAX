@@ -134,112 +134,6 @@
   .btn-reset:hover { color: var(--text); border-color: var(--border-hover); }
   .btn-reset.visible { display: block; }
 
-  .brain-badge {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    font-size: 11px;
-    color: #556;
-    font-weight: 700;
-    font-family: var(--mono);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    cursor: pointer;
-    padding: 5px 10px;
-    border-radius: 6px;
-    border: 1px solid transparent;
-    transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-    user-select: none;
-  }
-  .brain-badge:hover {
-    color: var(--text-dim);
-    border-color: var(--border);
-    background: rgba(255,255,255,0.03);
-  }
-  .brain-dot {
-    width: 6px;
-    height: 6px;
-    background: var(--accent);
-    border-radius: 50%;
-    box-shadow: 0 0 8px rgba(91,159,255,0.65);
-    flex-shrink: 0;
-  }
-  .brain-badge svg {
-    opacity: 0.5;
-    transition: opacity 0.2s ease;
-  }
-  .brain-badge:hover svg { opacity: 0.8; }
-
-  /* ── Brain Graph Modal ── */
-  .brain-modal {
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    background: #060608;
-    display: flex;
-    flex-direction: column;
-    animation: modalIn 0.22s ease;
-  }
-  @keyframes modalIn {
-    from { opacity: 0; transform: scale(0.98); }
-    to   { opacity: 1; transform: scale(1); }
-  }
-  .brain-modal-header {
-    padding: 16px 24px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-shrink: 0;
-  }
-  .brain-modal-title {
-    font-size: 11px;
-    font-weight: 700;
-    font-family: var(--mono);
-    color: #445;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-  .brain-modal-close {
-    background: none;
-    border: 1px solid rgba(255,255,255,0.07);
-    color: #555;
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--sans);
-    transition: color 0.2s ease, border-color 0.2s ease;
-  }
-  .brain-modal-close:hover { color: var(--text-dim); border-color: var(--border-hover); }
-  .brain-canvas-wrap {
-    flex: 1;
-    position: relative;
-    overflow: hidden;
-  }
-  #brainCanvas {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
-  .brain-hint {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 10px;
-    color: #333;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    pointer-events: none;
-    white-space: nowrap;
-  }
 
   /* ── Writer section ── */
   .step-center {
@@ -305,6 +199,12 @@
     color: var(--text);
   }
   .type-btn:hover svg { opacity: 1; }
+  .type-btn.active {
+    background: rgba(91,159,255,0.08);
+    color: #a0d0ff;
+    border-left: 2px solid var(--accent);
+  }
+  .type-btn.active svg { opacity: 1; }
 
   .container {
     max-width: 618px;
@@ -1025,55 +925,117 @@
     text-transform: uppercase;
   }
   .btn-key:hover { color: var(--text); border-color: var(--border-hover); box-shadow: 0 0 10px rgba(91,159,255,0.12); }
-  /* ── Solar System Labels ── */
-  .system-modal .planet-label {
+  /* ── CSS Solar System ── */
+  .solar-system {
+    position: relative;
+    width: 620px;
+    height: 620px;
+    margin: 0 auto;
+  }
+  .solar-sun {
     position: absolute;
-    color: rgba(160,200,255,0.95);
-    font-size: 14px;
-    font-weight: 700;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 18px; height: 18px;
+    background: #fff8e7;
+    border-radius: 50%;
+    box-shadow: 0 0 20px 6px rgba(255,240,180,0.5), 0 0 60px 12px rgba(255,200,80,0.2);
+    z-index: 5;
+  }
+  .solar-sun-label {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, 18px);
+    font-size: 8px;
     font-family: var(--mono);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    white-space: nowrap;
-    pointer-events: none;
-    transition: color 0.3s;
-    text-shadow: 0 0 10px rgba(91,159,255,0.5);
-  }
-  .system-modal .planet-label.bright { color: rgba(200,230,255,1); text-shadow: 0 0 12px rgba(91,159,255,0.7); }
-  .system-modal .sun-label {
-    position: absolute;
-    color: rgba(255,240,180,0.95);
-    font-size: 16px;
     font-weight: 700;
-    letter-spacing: 1px;
+    color: rgba(255,240,180,0.6);
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     white-space: nowrap;
-    pointer-events: none;
-    text-shadow: 0 0 10px rgba(255,220,100,0.5);
+    z-index: 5;
   }
-  .system-modal #system-info-card {
+  .orbit-ring {
     position: absolute;
+    top: 50%; left: 50%;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    animation: orbit-spin linear infinite;
+  }
+  @keyframes orbit-spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+  @keyframes orbit-spin-reverse { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+  .orbit-1 { animation-duration: 30s; }
+  .orbit-2 { animation-duration: 45s; }
+  .orbit-3 { animation-duration: 60s; }
+  .orbit-4 { animation-duration: 75s; }
+  .orbit-5 { animation-duration: 90s; }
+  .orbit-6 { animation-duration: 105s; }
+  .planet-dot {
+    position: absolute;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+    z-index: 3;
+  }
+  .planet-dot .dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .planet-dot:hover .dot {
+    transform: scale(1.3);
+  }
+  .planet-dot .planet-label {
+    font-size: 9px;
+    font-family: var(--mono);
+    font-weight: 700;
+    color: var(--text-dim);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    transition: color 0.2s ease;
     pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    background: rgba(0,0,0,0.75);
-    border: 1px solid rgba(255,255,255,0.1);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-radius: 12px;
-    padding: 16px 20px;
-    min-width: 220px;
-    max-width: 300px;
-    z-index: 100;
   }
-  .system-modal #system-info-card.visible { opacity: 1; }
-  .system-modal #system-info-card h2 { color: #fff; font-size: 18px; font-weight: 700; margin-bottom: 6px; }
-  .system-modal #system-info-card .badge {
-    display: inline-block; font-size: 10px; font-weight: 600; text-transform: uppercase;
-    letter-spacing: 0.8px; padding: 3px 8px; border-radius: 6px;
-    background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); margin-bottom: 10px;
+  .planet-dot:hover .planet-label { color: var(--white); }
+  .planet-tooltip {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.85);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 10px;
+    color: var(--text-dim);
+    line-height: 1.4;
+    white-space: normal;
+    width: 180px;
+    margin-bottom: 6px;
+    pointer-events: none;
+    z-index: 10;
   }
-  .system-modal #system-info-card p { color: rgba(255,255,255,0.65); font-size: 13px; line-height: 1.5; }
+  .planet-dot:hover .planet-tooltip { display: block; }
+
+  .solar-system.solar-exit {
+    animation: solarExit 0.3s ease-in forwards;
+  }
+  @keyframes solarExit {
+    from { opacity: 1; transform: scale(1); }
+    to   { opacity: 0; transform: scale(0.92); }
+  }
+
+  @media (max-width: 768px) {
+    .solar-system { width: 320px; height: 320px; }
+    .planet-dot .planet-label { font-size: 7px; }
+    .planet-dot .dot { width: 9px; height: 9px; }
+    .solar-sun { width: 12px; height: 12px; }
+  }
 
   /* ── Auth UI ── */
   .auth-btn {
@@ -1451,14 +1413,6 @@
     .plans-grid { grid-template-columns: 1fr; }
   }
 </style>
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
-  }
-}
-</script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -1508,69 +1462,15 @@
         history
       </button>
 
-      <div class="brain-badge" onclick="openSystem()" title="solar system">
-        <span class="brain-dot"></span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8" stroke-dasharray="2 3"/><circle cx="12" cy="12" r="11" stroke-dasharray="1.5 4"/>
-        </svg>
-        <span>system</span>
-      </div>
     </div>
   </div>
 
   <!-- ── WRITER SECTION ── -->
   <div id="section-writer" style="display:contents">
 
-    <!-- Step 1: Type Selection -->
+    <!-- Step 1: Solar System Class Selection -->
     <div class="step-center" id="step-type">
-      <div class="step-inner">
-        <div class="step-label">assignment type</div>
-          <div class="type-grid">
-
-            <button class="type-btn" onclick="selectType('essay','Essay')">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
-                <polyline points="13 2 13 9 20 9"/>
-                <line x1="16" y1="13" x2="8" y2="13"/>
-                <line x1="16" y1="17" x2="8" y2="17"/>
-              </svg>
-              Essay
-            </button>
-
-            <button class="type-btn" onclick="selectType('discussion','Classwork')">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
-              </svg>
-              Classwork
-            </button>
-
-            <button class="type-btn" onclick="selectType('frq','FRQ / Lab')">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-              </svg>
-              FRQ / Lab
-            </button>
-
-            <button class="type-btn" onclick="selectType('email','Email to Teacher')">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                <polyline points="22,6 12,13 2,6"/>
-              </svg>
-              Email to Teacher
-            </button>
-
-            <button class="type-btn" onclick="selectType('short','Short Response')">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="17" y1="10" x2="3" y2="10"/>
-                <line x1="21" y1="6" x2="3" y2="6"/>
-                <line x1="21" y1="14" x2="3" y2="14"/>
-                <line x1="17" y1="18" x2="3" y2="18"/>
-              </svg>
-              Short Response
-            </button>
-
-          </div>
-      </div>
+      <div id="solarSystemContainer"></div>
     </div>
 
     <!-- Plans section (visible below the fold on main screen) -->
@@ -1663,11 +1563,32 @@
 
       <!-- Step 2: Details -->
       <div id="step-details" style="display:none">
-        <div class="type-badge" id="typeBadge"></div>
+        <div class="type-badge" id="classBadge"></div>
 
         <div class="form-group">
-          <label class="form-label">class</label>
-          <div class="class-chips" id="classChips"></div>
+          <label class="form-label">assignment type</label>
+          <div class="type-grid">
+            <button class="type-btn" onclick="selectType('essay','Essay')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              Essay
+            </button>
+            <button class="type-btn" onclick="selectType('discussion','Classwork')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+              Classwork
+            </button>
+            <button class="type-btn" onclick="selectType('frq','FRQ / Lab')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              FRQ / Lab
+            </button>
+            <button class="type-btn" onclick="selectType('email','Email to Teacher')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              Email to Teacher
+            </button>
+            <button class="type-btn" onclick="selectType('short','Short Response')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
+              Short Response
+            </button>
+          </div>
         </div>
 
         <div class="form-group">
@@ -1809,22 +1730,6 @@
 </div><!-- end app -->
 
 <!-- API Key Setup Overlay -->
-<!-- Solar System Modal -->
-<div class="brain-modal system-modal" id="systemModal" style="display:none">
-  <div class="brain-modal-header">
-    <span class="brain-modal-title">solar system</span>
-    <button class="brain-modal-close" onclick="closeSystem()">×</button>
-  </div>
-  <div class="brain-canvas-wrap" id="systemWrap">
-    <div id="system-label-container" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;"></div>
-    <div id="system-info-card">
-      <h2 id="sys-card-title"></h2>
-      <div class="badge" id="sys-card-badge"></div>
-      <p id="sys-card-body"></p>
-    </div>
-    <div class="brain-hint">hover planets to explore · scroll to zoom · esc to close</div>
-  </div>
-</div>
 
 <!-- History Panel -->
 <div class="history-panel" id="historyPanel">
@@ -2324,6 +2229,25 @@ const CLASS_SKILLS = {
   'Mandarin': 'Write in Simplified Chinese characters at the student\'s level. Use grammar patterns appropriate for the course (是...的, 因为...所以, 虽然...但是). Include pinyin in parentheses after complex characters if the assignment level suggests it. For compositions: clear structure with opening, supporting details, closing. Keep sentence structures at the student\'s proficiency — don\'t write like a native speaker. Measure words must be correct.'
 };
 
+const CLASSES = [
+  { name: 'Algebra I', orbit: 1, color: '#5b9fff' },
+  { name: 'Algebra II', orbit: 1, color: '#5b9fff' },
+  { name: 'Geometry', orbit: 1, color: '#6aadff' },
+  { name: 'Calculus', orbit: 2, color: '#7bbfff' },
+  { name: 'Advance Data Science & Statistics', orbit: 2, color: '#8cd1ff' },
+  { name: 'Biology', orbit: 3, color: '#4ade80' },
+  { name: 'Chemistry', orbit: 3, color: '#34d399' },
+  { name: 'Physics', orbit: 3, color: '#2dd4bf' },
+  { name: 'Environmental Science', orbit: 4, color: '#22d3ee' },
+  { name: 'English', orbit: 4, color: '#f472b6' },
+  { name: 'US History', orbit: 5, color: '#fb923c' },
+  { name: 'World History', orbit: 5, color: '#fbbf24' },
+  { name: 'Psychology', orbit: 5, color: '#c084fc' },
+  { name: 'Spanish', orbit: 6, color: '#f87171' },
+  { name: 'French', orbit: 6, color: '#fb7185' },
+  { name: 'Mandarin', orbit: 6, color: '#e879f9' },
+];
+
 const MATH_CLASSES = new Set(['Advance Data Science & Statistics', 'Algebra I', 'Algebra II', 'Calculus', 'Geometry']);
 
 let writerState = {
@@ -2332,11 +2256,54 @@ let writerState = {
   complicatedPunctuation: true
 };
 
-function renderClassChips() {
-  const container = document.getElementById('classChips');
-  container.innerHTML = Object.keys(CLASS_SKILLS).map(c =>
-    `<button class="chip${writerState.selectedClass === c ? ' active' : ''}" onclick="selectClass('${c}')">${c}</button>`
-  ).join('');
+function renderSolarSystem() {
+  const container = document.getElementById('solarSystemContainer');
+  const isMobile = window.innerWidth <= 768;
+  const totalSize = isMobile ? 320 : 620;
+  const center = totalSize / 2;
+  const maxOrbit = 6;
+  const minRadius = isMobile ? 32 : 60;
+  const maxRadius = isMobile ? 145 : 280;
+
+  let html = `<div class="solar-system" style="width:${totalSize}px;height:${totalSize}px">`;
+  html += `<div class="solar-sun"></div>`;
+  html += `<div class="solar-sun-label">SCHOOL MAX</div>`;
+
+  const orbitGroups = {};
+  CLASSES.forEach(c => {
+    if (!orbitGroups[c.orbit]) orbitGroups[c.orbit] = [];
+    orbitGroups[c.orbit].push(c);
+  });
+
+  for (let orbitNum = 1; orbitNum <= maxOrbit; orbitNum++) {
+    const classes = orbitGroups[orbitNum] || [];
+    const radius = minRadius + (maxRadius - minRadius) * ((orbitNum - 1) / (maxOrbit - 1));
+    const ringSize = radius * 2;
+    const durations = { 1: 30, 2: 45, 3: 60, 4: 75, 5: 90, 6: 105 };
+    const duration = durations[orbitNum];
+
+    html += `<div class="orbit-ring orbit-${orbitNum}" style="width:${ringSize}px;height:${ringSize}px;animation-duration:${duration}s">`;
+
+    classes.forEach((c, i) => {
+      const angle = (i / classes.length) * Math.PI * 2 - Math.PI / 2;
+      const x = center - (ringSize / 2) + radius + Math.cos(angle) * radius;
+      const y = center - (ringSize / 2) + radius + Math.sin(angle) * radius;
+      const skill = CLASS_SKILLS[c.name] || '';
+      const tooltip = skill.slice(0, 60) + (skill.length > 60 ? '...' : '');
+      const escapedName = c.name.replace(/'/g, "\\'");
+
+      html += `<button class="planet-dot" onclick="selectClass('${escapedName}')" style="left:${x}px;top:${y}px;transform:translate(-50%,-50%)">`;
+      html += `<div class="dot" style="background:${c.color};box-shadow:0 0 8px ${c.color}"></div>`;
+      html += `<span class="planet-label" style="animation:orbit-spin-reverse ${duration}s linear infinite">${c.name}</span>`;
+      if (tooltip) html += `<div class="planet-tooltip" style="animation:orbit-spin-reverse ${duration}s linear infinite">${tooltip}</div>`;
+      html += `</button>`;
+    });
+
+    html += `</div>`;
+  }
+
+  html += `</div>`;
+  container.innerHTML = html;
 }
 
 function animateStep(outEl, inEl, inDisplay) {
@@ -2357,28 +2324,39 @@ function animateStep(outEl, inEl, inDisplay) {
 function selectType(type, label) {
   writerState.type = type;
   writerState.typeLabel = label;
-  const stepType = document.getElementById('step-type');
-  const stepDetails = document.getElementById('step-details');
-  animateStep(stepType, stepDetails, 'block');
-  document.getElementById('typeBadge').textContent = label;
-  document.getElementById('resetBtn').classList.add('visible');
-  document.getElementById('plans-section').style.display = 'none';
-  document.getElementById('about-section').style.display = 'none';
-  renderClassChips();
+  document.querySelectorAll('#step-details .type-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent.trim() === label);
+  });
   updateGenerateBtn();
-  document.getElementById('promptInput').addEventListener('input', updateGenerateBtn);
 }
 
 function selectClass(cls) {
   writerState.selectedClass = cls;
-  renderClassChips();
+  const stepType = document.getElementById('step-type');
+  const stepDetails = document.getElementById('step-details');
+  const solar = stepType.querySelector('.solar-system');
+  if (solar) solar.classList.add('solar-exit');
+  setTimeout(() => {
+    stepType.style.display = 'none';
+    stepDetails.style.display = 'block';
+    stepDetails.classList.add('step-entering');
+    stepDetails.addEventListener('animationend', function h() {
+      stepDetails.classList.remove('step-entering');
+      stepDetails.removeEventListener('animationend', h);
+    });
+  }, 280);
+  document.getElementById('classBadge').textContent = cls;
+  document.getElementById('resetBtn').classList.add('visible');
+  document.getElementById('plans-section').style.display = 'none';
+  document.getElementById('about-section').style.display = 'none';
   updateGenerateBtn();
+  document.getElementById('promptInput').addEventListener('input', updateGenerateBtn);
 }
 
 function updateGenerateBtn() {
   const btn = document.getElementById('generateBtn');
   const hasPrompt = document.getElementById('promptInput').value.trim().length > 0;
-  btn.disabled = !(hasPrompt && writerState.selectedClass.length > 0);
+  btn.disabled = !(hasPrompt && writerState.selectedClass.length > 0 && writerState.type);
 }
 
 function setLoadingText(msg) {
@@ -2878,6 +2856,7 @@ function resetAll() {
   stepDetails.style.display = 'none';
   stepOutput.style.display = 'none';
   stepType.style.display = 'flex';
+  renderSolarSystem();
   stepType.classList.add('step-entering');
   stepType.addEventListener('animationend', function h() {
     stepType.classList.remove('step-entering');
@@ -2890,6 +2869,7 @@ function resetAll() {
   document.getElementById('contextInput').value = '';
   document.getElementById('followUpInput').value = '';
   document.getElementById('errorBox').style.display = 'none';
+  document.querySelectorAll('#step-details .type-btn').forEach(btn => btn.classList.remove('active'));
 }
 
 // ── Tab switching ──
@@ -3268,18 +3248,8 @@ function resetDrip() {
 
 
 // ══════════════════════════════════════════════════
-//  SOLAR SYSTEM (open/close wired from regular script)
-// ══════════════════════════════════════════════════
-
-window.openSystem = function() {
-  document.getElementById('systemModal').style.display = 'flex';
-  window.dispatchEvent(new Event('systemOpen'));
-};
-window.closeSystem = function() {
-  document.getElementById('systemModal').style.display = 'none';
-  window.dispatchEvent(new Event('systemClose'));
-};
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSystem(); });
+// Render solar system on load
+renderSolarSystem();
 
 // ══════════════════════════════════════════════════
 //  STARFIELD BACKGROUND
@@ -3341,672 +3311,6 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSystem(
   animate();
 })();
 
-</script>
-
-<script type="module">
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
-import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-
-let systemReady = false, systemRunning = false, systemAnimFrame = null, systemAnimate = null;
-
-window.addEventListener('systemOpen', () => { systemRunning = true; if (!systemReady) initSolarSystem(); else if (!systemAnimFrame) systemAnimate(); });
-window.addEventListener('systemClose', () => { systemRunning = false; if (systemAnimFrame) { cancelAnimationFrame(systemAnimFrame); systemAnimFrame = null; } });
-
-function initSolarSystem() {
-  systemReady = true;
-  const wrap = document.getElementById('systemWrap');
-  const BLOOM_LAYER = 1;
-  const bloomLayer = new THREE.Layers(); bloomLayer.set(BLOOM_LAYER);
-  const TEX = 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/';
-
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize(wrap.clientWidth, wrap.clientHeight);
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.0;
-  wrap.insertBefore(renderer.domElement, wrap.firstChild);
-
-  const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x000000);
-
-  const camera = new THREE.PerspectiveCamera(60, wrap.clientWidth / wrap.clientHeight, 1, 20000);
-  camera.position.set(0, 500, 900);
-  camera.lookAt(0, 0, 0);
-
-  const controls = new OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true;
-  controls.dampingFactor = 0.05;
-  controls.autoRotate = true;
-  controls.autoRotateSpeed = 0.25;
-  controls.minDistance = 80;
-  controls.maxDistance = 5000;
-  controls.maxPolarAngle = Math.PI * 0.85;
-
-  // Selective bloom
-  const renderPass = new RenderPass(scene, camera);
-  const bloomPass = new UnrealBloomPass(new THREE.Vector2(wrap.clientWidth, wrap.clientHeight), 1.0, 0.4, 0.0);
-  const bloomComp = new EffectComposer(renderer);
-  bloomComp.renderToScreen = false;
-  bloomComp.addPass(renderPass);
-  bloomComp.addPass(bloomPass);
-  const mixPass = new ShaderPass(new THREE.ShaderMaterial({
-    uniforms: { baseTexture: { value: null }, bloomTexture: { value: bloomComp.renderTarget2.texture } },
-    vertexShader: `varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
-    fragmentShader: `uniform sampler2D baseTexture;uniform sampler2D bloomTexture;varying vec2 vUv;void main(){gl_FragColor=texture2D(baseTexture,vUv)+texture2D(bloomTexture,vUv);}`,
-  }), 'baseTexture');
-  mixPass.needsSwap = true;
-  const finalComp = new EffectComposer(renderer);
-  finalComp.addPass(renderPass);
-  finalComp.addPass(mixPass);
-  finalComp.addPass(new OutputPass());
-  const darkMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
-  const stored = {};
-  function darkenNonBloom(obj) {
-    if ((obj.isMesh || obj.isSprite || obj.isLine) && !bloomLayer.test(obj.layers)) { stored[obj.uuid] = obj.material; obj.material = darkMat; }
-  }
-  function restoreMats(obj) {
-    if (stored[obj.uuid]) { obj.material = stored[obj.uuid]; delete stored[obj.uuid]; }
-  }
-
-  // GLSL noise
-  const noiseGLSL = `
-vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}
-vec4 mod289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}
-vec4 permute(vec4 x){return mod289(((x*34.0)+1.0)*x);}
-vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-0.85373472095314*r;}
-vec3 fade(vec3 t){return t*t*t*(t*(t*6.0-15.0)+10.0);}
-float cnoise(vec3 P){
-  vec3 Pi0=floor(P),Pi1=Pi0+vec3(1.0);Pi0=mod289(Pi0);Pi1=mod289(Pi1);
-  vec3 Pf0=fract(P),Pf1=Pf0-vec3(1.0);
-  vec4 ix=vec4(Pi0.x,Pi1.x,Pi0.x,Pi1.x),iy=vec4(Pi0.yy,Pi1.yy),iz0=Pi0.zzzz,iz1=Pi1.zzzz;
-  vec4 ixy=permute(permute(ix)+iy),ixy0=permute(ixy+iz0),ixy1=permute(ixy+iz1);
-  vec4 gx0=ixy0*(1.0/7.0),gy0=fract(floor(gx0)*(1.0/7.0))-0.5;gx0=fract(gx0);
-  vec4 gz0=vec4(0.5)-abs(gx0)-abs(gy0),sz0=step(gz0,vec4(0.0));
-  gx0-=sz0*(step(0.0,gx0)-0.5);gy0-=sz0*(step(0.0,gy0)-0.5);
-  vec4 gx1=ixy1*(1.0/7.0),gy1=fract(floor(gx1)*(1.0/7.0))-0.5;gx1=fract(gx1);
-  vec4 gz1=vec4(0.5)-abs(gx1)-abs(gy1),sz1=step(gz1,vec4(0.0));
-  gx1-=sz1*(step(0.0,gx1)-0.5);gy1-=sz1*(step(0.0,gy1)-0.5);
-  vec3 g000=vec3(gx0.x,gy0.x,gz0.x),g100=vec3(gx0.y,gy0.y,gz0.y),
-       g010=vec3(gx0.z,gy0.z,gz0.z),g110=vec3(gx0.w,gy0.w,gz0.w),
-       g001=vec3(gx1.x,gy1.x,gz1.x),g101=vec3(gx1.y,gy1.y,gz1.y),
-       g011=vec3(gx1.z,gy1.z,gz1.z),g111=vec3(gx1.w,gy1.w,gz1.w);
-  vec4 norm0=taylorInvSqrt(vec4(dot(g000,g000),dot(g010,g010),dot(g100,g100),dot(g110,g110)));
-  g000*=norm0.x;g010*=norm0.y;g100*=norm0.z;g110*=norm0.w;
-  vec4 norm1=taylorInvSqrt(vec4(dot(g001,g001),dot(g011,g011),dot(g101,g101),dot(g111,g111)));
-  g001*=norm1.x;g011*=norm1.y;g101*=norm1.z;g111*=norm1.w;
-  float n000=dot(g000,Pf0),n100=dot(g100,vec3(Pf1.x,Pf0.yz)),n010=dot(g010,vec3(Pf0.x,Pf1.y,Pf0.z)),
-        n110=dot(g110,vec3(Pf1.xy,Pf0.z)),n001=dot(g001,vec3(Pf0.xy,Pf1.z)),
-        n101=dot(g101,vec3(Pf1.x,Pf0.y,Pf1.z)),n011=dot(g011,vec3(Pf0.x,Pf1.yz)),n111=dot(g111,Pf1);
-  vec3 fade_xyz=fade(Pf0);
-  vec4 n_z=mix(vec4(n000,n100,n010,n110),vec4(n001,n101,n011,n111),fade_xyz.z);
-  vec2 n_yz=mix(n_z.xy,n_z.zw,fade_xyz.y);
-  return 2.2*mix(n_yz.x,n_yz.y,fade_xyz.x);
-}
-float fbm(vec3 p){float f=0.0,a=0.5;for(int i=0;i<5;i++){f+=a*cnoise(p);p*=2.0;a*=0.5;}return f;}`;
-
-  const pVert = `varying vec2 vUv;varying vec3 vNormal;varying vec3 vPosition;
-void main(){vUv=uv;vNormal=normalize(normalMatrix*normal);vPosition=(modelViewMatrix*vec4(position,1.0)).xyz;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`;
-
-  // Textures
-  const tl = new THREE.TextureLoader();
-  const earthMap = tl.load(TEX + 'earth_atmos_2048.jpg');
-  const earthNorm = tl.load(TEX + 'earth_normal_2048.jpg');
-  const earthSpec = tl.load(TEX + 'earth_specular_2048.jpg');
-  const earthClouds = tl.load(TEX + 'earth_clouds_1024.png');
-  const moonMap = tl.load(TEX + 'moon_1024.jpg');
-  const earthLightsMap = tl.load(TEX + 'earth_lights_2048.png');
-  earthMap.colorSpace = THREE.SRGBColorSpace;
-  earthClouds.colorSpace = THREE.SRGBColorSpace;
-  moonMap.colorSpace = THREE.SRGBColorSpace;
-  earthLightsMap.colorSpace = THREE.SRGBColorSpace;
-
-  // Lights
-  const sunLight = new THREE.PointLight(0xfff0cc, 3.0, 3000, 0.2);
-  scene.add(sunLight);
-  scene.add(new THREE.AmbientLight(0x0a0a1a, 0.06));
-
-  // Starfield
-  const starCount = 10000;
-  const sPos = new Float32Array(starCount*3), sCol = new Float32Array(starCount*3);
-  for (let i = 0; i < starCount; i++) {
-    const r = 3000+Math.random()*7000, th = Math.random()*Math.PI*2, ph = Math.acos(2*Math.random()-1);
-    sPos[i*3]=r*Math.sin(ph)*Math.cos(th); sPos[i*3+1]=r*Math.sin(ph)*Math.sin(th); sPos[i*3+2]=r*Math.cos(ph);
-    const roll = Math.random();
-    if (roll<0.1){sCol[i*3]=1;sCol[i*3+1]=0.85;sCol[i*3+2]=0.63;}
-    else if(roll<0.3){sCol[i*3]=0.78;sCol[i*3+1]=0.85;sCol[i*3+2]=1;}
-    else{sCol[i*3]=1;sCol[i*3+1]=1;sCol[i*3+2]=1;}
-  }
-  const sGeo = new THREE.BufferGeometry();
-  sGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
-  sGeo.setAttribute('color', new THREE.BufferAttribute(sCol, 3));
-  scene.add(new THREE.Points(sGeo, new THREE.PointsMaterial({size:1.8,sizeAttenuation:true,vertexColors:true,transparent:true,opacity:0.9})));
-
-  const brightStars = [];
-  for (let i = 0; i < 400; i++) {
-    const r=2500+Math.random()*5000, th=Math.random()*Math.PI*2, ph=Math.acos(2*Math.random()-1);
-    const m = new THREE.Mesh(new THREE.SphereGeometry(0.5+Math.random()*1.5,6,6), new THREE.MeshBasicMaterial({color:0xffffff}));
-    m.position.set(r*Math.sin(ph)*Math.cos(th),r*Math.sin(ph)*Math.sin(th),r*Math.cos(ph));
-    m.layers.enable(BLOOM_LAYER); scene.add(m);
-    if (i<60) brightStars.push({mesh:m,phase:Math.random()*6.28,speed:0.8+Math.random()*3,base:0.5+Math.random()*0.5});
-  }
-
-  // Shooting stars
-  const shootingStars = [];
-  let nextShoot = 3;
-  function spawnShootingStar() {
-    const start = new THREE.Vector3((Math.random()-0.5)*4000,500+Math.random()*2000,(Math.random()-0.5)*4000);
-    const dir = new THREE.Vector3((Math.random()-0.5)*2,-0.5-Math.random(),(Math.random()-0.5)*2).normalize();
-    const trail = dir.clone().multiplyScalar(120);
-    const geo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0), trail]);
-    const colorRoll = Math.random();
-    const color = colorRoll<0.15?0x6699ff:colorRoll<0.25?0xffcc44:0xffffff;
-    const mat = new THREE.LineBasicMaterial({color,transparent:true,opacity:0.9});
-    const line = new THREE.Line(geo,mat);
-    line.position.copy(start); line.layers.enable(BLOOM_LAYER); scene.add(line);
-    const headGeo = new THREE.SphereGeometry(1.5,6,6);
-    const headMat = new THREE.MeshBasicMaterial({color,transparent:true,opacity:0.7,blending:THREE.AdditiveBlending});
-    const head = new THREE.Mesh(headGeo,headMat);
-    head.position.copy(start); head.layers.enable(BLOOM_LAYER); scene.add(head);
-    shootingStars.push({line,head,dir:dir.clone().multiplyScalar(30),life:0,maxLife:1.5});
-  }
-
-  // Sun
-  const sunCore = new THREE.Mesh(new THREE.SphereGeometry(45,64,64), new THREE.MeshBasicMaterial({color:0xfff8e7}));
-  sunCore.layers.enable(BLOOM_LAYER); scene.add(sunCore);
-  const plasmaMat = new THREE.ShaderMaterial({
-    uniforms:{uTime:{value:0}},
-    vertexShader:`varying vec2 vUv;varying vec3 vPos;void main(){vUv=uv;vPos=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
-    fragmentShader: noiseGLSL+`
-      uniform float uTime;varying vec2 vUv;varying vec3 vPos;
-      void main(){vec3 p=vPos*0.04+vec3(0.0,0.0,uTime*0.15);float n=fbm(p)*0.5+0.5;float n2=fbm(p*2.0+vec3(uTime*0.08))*0.5+0.5;
-      vec3 deep=vec3(0.85,0.3,0.0);vec3 mid=vec3(1.0,0.75,0.2);vec3 hot=vec3(1.0,0.98,0.85);
-      vec3 col=mix(deep,mid,n);col=mix(col,hot,n2*n);gl_FragColor=vec4(col,1.0);}`,
-    transparent:false, blending:THREE.AdditiveBlending,
-  });
-  const plasmaSphere = new THREE.Mesh(new THREE.SphereGeometry(48,48,48), plasmaMat);
-  plasmaSphere.layers.enable(BLOOM_LAYER); scene.add(plasmaSphere);
-  const sunAtmoMat = new THREE.ShaderMaterial({
-    vertexShader:`varying vec3 vN;varying vec3 vP;void main(){vN=normalize(normalMatrix*normal);vP=(modelViewMatrix*vec4(position,1.0)).xyz;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
-    fragmentShader:`varying vec3 vN;varying vec3 vP;void main(){float f=pow(1.0-abs(dot(normalize(-vP),vN)),2.5);gl_FragColor=vec4(1.0,0.9,0.6,f*0.5);}`,
-    transparent:true, blending:THREE.AdditiveBlending, side:THREE.BackSide, depthWrite:false,
-  });
-  const sunAtmoMesh = new THREE.Mesh(new THREE.SphereGeometry(56,32,32), sunAtmoMat);
-  sunAtmoMesh.layers.enable(BLOOM_LAYER); scene.add(sunAtmoMesh);
-  const coronaOuterMat = new THREE.ShaderMaterial({
-    uniforms:{uTime:{value:0}},
-    vertexShader:`varying vec3 vN;varying vec3 vP;void main(){vN=normalize(normalMatrix*normal);vP=(modelViewMatrix*vec4(position,1.0)).xyz;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
-    fragmentShader:`uniform float uTime;varying vec3 vN;varying vec3 vP;void main(){float f=pow(1.0-abs(dot(normalize(-vP),vN)),3.0);float breathe=0.5+0.5*sin(uTime*1.57);gl_FragColor=vec4(1.0,0.92,0.7,f*0.12*breathe);}`,
-    transparent:true, blending:THREE.AdditiveBlending, side:THREE.BackSide, depthWrite:false,
-  });
-  const coronaOuterMesh = new THREE.Mesh(new THREE.SphereGeometry(68,32,32), coronaOuterMat);
-  coronaOuterMesh.layers.enable(BLOOM_LAYER); scene.add(coronaOuterMesh);
-
-  // Solar flares
-  const flares = [];
-  function spawnFlare() {
-    const angle = Math.random()*Math.PI*2;
-    const geo = new THREE.SphereGeometry(3,8,8); geo.scale(1,2.5,1);
-    const mat = new THREE.MeshBasicMaterial({color:0xffcc66,transparent:true,opacity:0.6,blending:THREE.AdditiveBlending});
-    const m = new THREE.Mesh(geo,mat);
-    m.position.set(Math.cos(angle)*48,Math.sin(angle)*48,0);
-    m.layers.enable(BLOOM_LAYER); scene.add(m);
-    flares.push({mesh:m,angle,life:0,maxLife:2,vr:18+Math.random()*10});
-  }
-  let nextFlare = 6+Math.random()*6;
-
-  // Solar wind
-  const windCount = 2000;
-  const windPos = new Float32Array(windCount*3), windVel = [];
-  for (let i=0;i<windCount;i++){
-    const dir = new THREE.Vector3(Math.random()-0.5,Math.random()-0.5,Math.random()-0.5).normalize();
-    const d = 50+Math.random()*200;
-    windPos[i*3]=dir.x*d;windPos[i*3+1]=dir.y*d;windPos[i*3+2]=dir.z*d;
-    windVel.push(dir.clone().multiplyScalar(1.5+Math.random()*2));
-  }
-  const windGeo = new THREE.BufferGeometry();
-  windGeo.setAttribute('position', new THREE.BufferAttribute(windPos,3));
-  scene.add(new THREE.Points(windGeo, new THREE.PointsMaterial({color:0xccddff,size:0.6,sizeAttenuation:true,transparent:true,opacity:0.15})));
-
-  // Planet shaders
-  function mkShader(frag){
-    return new THREE.ShaderMaterial({uniforms:{uTime:{value:0},sunPos:{value:new THREE.Vector3()}},vertexShader:pVert,fragmentShader:noiseGLSL+frag});
-  }
-  const mercuryFrag=`uniform float uTime;uniform vec3 sunPos;varying vec2 vUv;varying vec3 vNormal;varying vec3 vPosition;
-void main(){float n=cnoise(vec3(vUv*14.0,1.0))*0.5+0.5;float c=1.0;
-for(int i=0;i<10;i++){vec2 cp=vec2(sin(float(i)*2.3+0.5)*0.4+0.5,cos(float(i)*1.7+0.3)*0.4+0.5);float d=length(vUv-cp);float sz=0.015+sin(float(i)*3.1)*0.012;c*=smoothstep(sz*0.4,sz,d)*0.3+0.7;}
-float b=0.17+n*0.15;vec3 col=vec3(b)*c;col=mix(col,vec3(0.22,0.2,0.19),0.3);
-vec3 ld=normalize(sunPos-vPosition);float diff=max(dot(vNormal,ld),0.0);col*=diff*0.95+0.05;gl_FragColor=vec4(col,1.0);}`;
-  const venusFrag=`uniform float uTime;uniform vec3 sunPos;varying vec2 vUv;varying vec3 vNormal;varying vec3 vPosition;
-void main(){float n=fbm(vec3(vUv*3.0+uTime*0.006,uTime*0.004))*0.5+0.5;float n2=fbm(vec3(vUv*6.0-uTime*0.01,uTime*0.002))*0.3;
-vec3 col=mix(vec3(0.92,0.84,0.62),vec3(0.97,0.92,0.78),n+n2);col+=vec3(0.04)*cnoise(vec3(vUv*12.0,uTime*0.008));
-vec3 ld=normalize(sunPos-vPosition);float diff=max(dot(vNormal,ld),0.0);col*=diff*0.8+0.2;gl_FragColor=vec4(col,1.0);}`;
-  const marsFrag=`uniform float uTime;uniform vec3 sunPos;varying vec2 vUv;varying vec3 vNormal;varying vec3 vPosition;
-void main(){float n=cnoise(vec3(vUv*8.0,0.5))*0.5+0.5;float n2=cnoise(vec3(vUv*16.0,1.5))*0.3;
-vec3 c1=vec3(0.76,0.27,0.06),c2=vec3(0.88,0.48,0.22),c3=vec3(0.55,0.2,0.08);vec3 col=mix(c1,c2,n);col=mix(col,c3,n2);
-float polar=smoothstep(0.88,0.97,vUv.y)+smoothstep(0.12,0.03,vUv.y);col=mix(col,vec3(0.92,0.9,0.87),polar*0.75);
-vec3 ld=normalize(sunPos-vPosition);float diff=max(dot(vNormal,ld),0.0);col*=diff*0.92+0.08;gl_FragColor=vec4(col,1.0);}`;
-  const jupiterFrag=`uniform float uTime;uniform vec3 sunPos;varying vec2 vUv;varying vec3 vNormal;varying vec3 vPosition;
-void main(){float lat=vUv.y;float band=sin(lat*30.0)*0.5+0.5;band+=sin(lat*15.0+1.5)*0.3;
-band+=cnoise(vec3(vUv.x*8.0+uTime*0.02,lat*12.0,uTime*0.008))*0.15;
-vec3 c1=vec3(0.82,0.55,0.25),c2=vec3(0.95,0.87,0.68),c3=vec3(0.62,0.32,0.12),c4=vec3(0.92,0.78,0.52);
-vec3 col=mix(mix(c1,c2,band),mix(c3,c4,band),sin(lat*7.0)*0.5+0.5);
-float spot=1.0-smoothstep(0.025,0.07,length((vUv-vec2(0.65,0.55))*vec2(1.5,1.0)));
-float swirl=cnoise(vec3(vUv*30.0+uTime*0.03,uTime*0.02));
-col=mix(col,vec3(0.75,0.25,0.15),spot*0.65*(0.8+swirl*0.2));
-vec3 ld=normalize(sunPos-vPosition);float diff=max(dot(vNormal,ld),0.0);col*=diff*0.88+0.12;gl_FragColor=vec4(col,1.0);}`;
-  const saturnFrag=`uniform float uTime;uniform vec3 sunPos;varying vec2 vUv;varying vec3 vNormal;varying vec3 vPosition;
-void main(){float lat=vUv.y;float band=sin(lat*24.0)*0.5+0.5;band+=cnoise(vec3(vUv.x*5.0+uTime*0.012,lat*10.0,0.0))*0.1;
-vec3 c1=vec3(0.92,0.85,0.65),c2=vec3(0.87,0.78,0.58);vec3 col=mix(c1,c2,band);col+=vec3(0.04,0.025,0.0)*sin(lat*44.0);
-vec3 ld=normalize(sunPos-vPosition);float diff=max(dot(vNormal,ld),0.0);col*=diff*0.88+0.12;gl_FragColor=vec4(col,1.0);}`;
-  const uranusFrag=`uniform float uTime;uniform vec3 sunPos;varying vec2 vUv;varying vec3 vNormal;varying vec3 vPosition;
-void main(){float lat=abs(vUv.y-0.5)*2.0;vec3 eq=vec3(0.49,0.91,0.91),po=vec3(0.4,0.78,0.82);
-vec3 col=mix(eq,po,lat);col+=cnoise(vec3(vUv*5.0,uTime*0.003))*0.02;
-vec3 ld=normalize(sunPos-vPosition);float diff=max(dot(vNormal,ld),0.0);col*=diff*0.88+0.12;gl_FragColor=vec4(col,1.0);}`;
-  const neptuneFrag=`uniform float uTime;uniform vec3 sunPos;varying vec2 vUv;varying vec3 vNormal;varying vec3 vPosition;
-void main(){float lat=vUv.y;vec3 base=vec3(0.12,0.22,0.7),lt=vec3(0.22,0.38,0.85);
-float band=sin(lat*18.0)*0.5+0.5;vec3 col=mix(base,lt,band*0.3);
-float wisps=cnoise(vec3(vUv.x*12.0+uTime*0.025,lat*8.0,uTime*0.012));col+=vec3(0.08,0.12,0.18)*wisps*0.5;
-float spot=1.0-smoothstep(0.02,0.055,length(vUv-vec2(0.3,0.45)));col=mix(col,vec3(0.08,0.12,0.45),spot*0.55);
-vec3 ld=normalize(sunPos-vPosition);float diff=max(dot(vNormal,ld),0.0);col*=diff*0.88+0.12;gl_FragColor=vec4(col,1.0);}`;
-  const plutoFrag=`uniform float uTime;uniform vec3 sunPos;varying vec2 vUv;varying vec3 vNormal;varying vec3 vPosition;
-void main(){float n=cnoise(vec3(vUv*6.0,0.0))*0.5+0.5;vec3 base=mix(vec3(0.45,0.38,0.32),vec3(0.55,0.48,0.42),n);
-float h=length((vUv-vec2(0.5,0.5))*vec2(1.0,1.3));float hs=smoothstep(0.22,0.14,h);
-float l1=smoothstep(0.17,0.09,length((vUv-vec2(0.44,0.52))*vec2(1.0,1.2)));
-float l2=smoothstep(0.17,0.09,length((vUv-vec2(0.56,0.52))*vec2(1.0,1.2)));
-base=mix(base,vec3(0.88,0.8,0.72),max(hs,max(l1,l2))*0.7);
-vec3 ld=normalize(sunPos-vPosition);float diff=max(dot(vNormal,ld),0.0);base*=diff*0.9+0.1;gl_FragColor=vec4(base,1.0);}`;
-
-  // Saturn ring texture
-  function makeSaturnRingTex(){
-    const c=document.createElement('canvas');c.width=1024;c.height=64;const ctx=c.getContext('2d');
-    for(let x=0;x<1024;x++){const t=x/1024;const b=Math.sin(t*80)*0.3+Math.sin(t*40)*0.2+Math.sin(t*120)*0.1;
-    const g1=Math.abs(t-0.45)<0.015?0:1,g2=Math.abs(t-0.65)<0.01?0:1;
-    const r=Math.floor((205+b*40)*g1*g2),g=Math.floor((185+b*30)*g1*g2),bl=Math.floor((145+b*20)*g1*g2);
-    const a=Math.floor((0.3+Math.abs(b)*0.5)*255*g1*g2*(t>0.05&&t<0.95?1:0));
-    ctx.fillStyle=`rgba(${r},${g},${bl},${a/255})`;ctx.fillRect(x,0,1,64);}
-    const tx=new THREE.CanvasTexture(c);tx.colorSpace=THREE.SRGBColorSpace;return tx;
-  }
-
-  // Atmosphere helper
-  function addAtmo(parent,radius,color){
-    const mat=new THREE.ShaderMaterial({
-      vertexShader:`varying vec3 vN;varying vec3 vP;void main(){vN=normalize(normalMatrix*normal);vP=(modelViewMatrix*vec4(position,1.0)).xyz;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
-      fragmentShader:`varying vec3 vN;varying vec3 vP;uniform vec3 uColor;void main(){float f=pow(1.0-abs(dot(normalize(-vP),vN)),3.0);gl_FragColor=vec4(uColor,f*0.45);}`,
-      uniforms:{uColor:{value:new THREE.Color(color)}},
-      transparent:true,blending:THREE.AdditiveBlending,side:THREE.BackSide,depthWrite:false,
-    });
-    const m=new THREE.Mesh(new THREE.SphereGeometry(radius,32,32),mat);parent.add(m);return m;
-  }
-
-  // Planet data
-  const planetDefs = [
-    {name:'Email',body:'mercury',orbit:160,speed:0.8,radius:12,rotSpeed:0.002,type:'assignment type',info:'Hey [name], 3-5 sentences, direct ask'},
-    {name:'Classwork',body:'venus',orbit:210,speed:0.6,radius:12,rotSpeed:-0.003,type:'assignment type',info:'Discussion posts, short answers, in-class writing'},
-    {name:'Essay',body:'earth',orbit:260,speed:0.5,radius:24,rotSpeed:0.01,type:'assignment type',info:'5-paragraph structure, thesis-driven, MLA format'},
-    {name:'Short Response',body:'moon',orbit:310,speed:0.4,radius:12,rotSpeed:0.002,type:'assignment type',info:'Lead with the answer, back it up, done'},
-    {name:'FRQ / Lab',body:'mars',orbit:360,speed:0.35,radius:12,rotSpeed:0.009,type:'assignment type',info:'Data-first, cause→effect, tight and precise'},
-    {name:'American Lit',body:'jupiter',orbit:480,speed:0.22,radius:12,rotSpeed:0.006,type:'class',info:'Hook → thesis, quote + analysis every paragraph',moons:[{n:'hook',r:2,o:22},{n:'voice',r:1.5,o:30}]},
-    {name:'US History',body:'saturn',orbit:540,speed:0.18,radius:12,rotSpeed:0.005,type:'class',info:'Evidence-based argument, context matters',moons:[{n:'thesis',r:2,o:22},{n:'evidence',r:1.5,o:30}]},
-    {name:'APES',body:'uranus',orbit:600,speed:0.15,radius:12,rotSpeed:0.003,axisTilt:98,type:'class',info:'Data first, numbers, cause and effect',moons:[{n:'analysis',r:1.5,o:22},{n:'data',r:1,o:28}]},
-    {name:'Photography',body:'neptune',orbit:660,speed:0.12,radius:12,rotSpeed:0.003,type:'class',info:'Observation and visual analysis'},
-    {name:'Trigonometry',body:'pluto',orbit:720,speed:0.09,radius:12,rotSpeed:0.001,type:'class',info:'Problem sets, show your work'},
-  ];
-
-  // Build planets
-  const planets = [], planetMeshes = [], shaderMats = [];
-  const labelContainer = document.getElementById('system-label-container');
-
-  planetDefs.forEach(def => {
-    const group = new THREE.Group(); scene.add(group);
-    const oGeo = new THREE.RingGeometry(def.orbit-0.4,def.orbit+0.4,180);
-    const oMat = new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.07,side:THREE.DoubleSide});
-    const oMesh = new THREE.Mesh(oGeo,oMat); oMesh.rotation.x=-Math.PI/2; scene.add(oMesh);
-    const geo = new THREE.SphereGeometry(def.radius,48,48);
-    let mat; const extras = [];
-
-    switch(def.body){
-      case 'earth':
-        mat = new THREE.MeshPhongMaterial({map:earthMap,normalMap:earthNorm,specularMap:earthSpec,specular:new THREE.Color(0x333333),shininess:25});
-        { const cg=new THREE.SphereGeometry(24.6,48,48);
-          const cm=new THREE.MeshPhongMaterial({map:earthClouds,alphaMap:earthClouds,transparent:true,opacity:0.4,depthWrite:false,side:THREE.DoubleSide});
-          const cmesh=new THREE.Mesh(cg,cm); extras.push({mesh:cmesh,type:'clouds',rotSpeed:0.0115});
-          const lgm=new THREE.MeshBasicMaterial({map:earthLightsMap,transparent:true,opacity:0.8,blending:THREE.AdditiveBlending,depthWrite:false});
-          const lgmesh=new THREE.Mesh(new THREE.SphereGeometry(24.15,48,48),lgm);
-          extras.push({mesh:lgmesh,type:'lights'});
-          addAtmo(group,27,0x8ab4f8); addAtmo(group,29,0x4488ff);
-          const auroraMat=new THREE.ShaderMaterial({
-            uniforms:{uTime:{value:0}},
-            vertexShader:`varying vec3 vN;varying vec3 vP;varying vec2 vUv;void main(){vN=normalize(normalMatrix*normal);vP=(modelViewMatrix*vec4(position,1.0)).xyz;vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
-            fragmentShader:noiseGLSL+`uniform float uTime;varying vec3 vN;varying vec3 vP;varying vec2 vUv;
-            void main(){float lat=abs(vUv.y-0.5)*2.0;float polar=smoothstep(0.6,0.95,lat);
-            float n=cnoise(vec3(vUv.x*12.0+uTime*0.5,lat*4.0,uTime*0.3));float curtain=polar*max(0.0,n)*0.7;
-            vec3 col=mix(vec3(0.1,1.0,0.4),vec3(0.2,0.5,1.0),n*0.5+0.5);
-            float f=pow(1.0-abs(dot(normalize(-vP),vN)),2.0);gl_FragColor=vec4(col,curtain*f);}`,
-            transparent:true,blending:THREE.AdditiveBlending,side:THREE.BackSide,depthWrite:false,
-          });
-          extras.push({mesh:new THREE.Mesh(new THREE.SphereGeometry(26,48,48),auroraMat),type:'aurora'});
-          shaderMats.push(auroraMat);
-        } break;
-      case 'moon':
-        mat=new THREE.MeshPhongMaterial({map:moonMap,bumpMap:moonMap,bumpScale:0.4,shininess:3}); break;
-      case 'mercury': mat=mkShader(mercuryFrag); shaderMats.push(mat); break;
-      case 'venus': mat=mkShader(venusFrag); shaderMats.push(mat); addAtmo(group,def.radius*1.08,0xddcc88); break;
-      case 'mars': mat=mkShader(marsFrag); shaderMats.push(mat); addAtmo(group,def.radius*1.04,0xcc8844); break;
-      case 'jupiter': mat=mkShader(jupiterFrag); shaderMats.push(mat); addAtmo(group,def.radius*1.05,0xcc9944); break;
-      case 'saturn':
-        mat=mkShader(saturnFrag); shaderMats.push(mat);
-        { const rg=new THREE.RingGeometry(17,29,128);
-          const pos=rg.attributes.position,uv=rg.attributes.uv;
-          for(let i=0;i<pos.count;i++){const x=pos.getX(i),y=pos.getY(i);const d=Math.sqrt(x*x+y*y);uv.setXY(i,(d-17)/(29-17),0.5);}
-          const rm=new THREE.MeshBasicMaterial({map:makeSaturnRingTex(),transparent:true,side:THREE.DoubleSide,depthWrite:false});
-          const rmesh=new THREE.Mesh(rg,rm); rmesh.rotation.x=-27*Math.PI/180;
-          extras.push({mesh:rmesh,type:'ring'});
-        }
-        addAtmo(group,def.radius*1.06,0xccaa55); break;
-      case 'uranus':
-        mat=mkShader(uranusFrag); shaderMats.push(mat);
-        { const urg=new THREE.RingGeometry(def.radius*1.8,def.radius*1.85,64);
-          const urm=new THREE.MeshBasicMaterial({color:0x445566,transparent:true,opacity:0.12,side:THREE.DoubleSide,depthWrite:false});
-          extras.push({mesh:new THREE.Mesh(urg,urm),type:'ring'});
-        }
-        addAtmo(group,def.radius*1.06,0x7de8e8); break;
-      case 'neptune': mat=mkShader(neptuneFrag); shaderMats.push(mat); addAtmo(group,def.radius*1.06,0x2b65d9); break;
-      case 'pluto': mat=mkShader(plutoFrag); shaderMats.push(mat); break;
-    }
-
-    const mesh = new THREE.Mesh(geo,mat); group.add(mesh);
-    for(const e of extras) group.add(e.mesh);
-    if(def.axisTilt) mesh.rotation.z=def.axisTilt*Math.PI/180;
-
-    const label=document.createElement('div'); label.className='planet-label'; label.textContent=def.name;
-    labelContainer.appendChild(label);
-
-    const moonObjs=[];
-    if(def.moons){
-      def.moons.forEach((md,mi)=>{
-        const mg=new THREE.SphereGeometry(md.r,12,12);
-        const mm=new THREE.MeshPhongMaterial({color:0xbbbbbb,emissive:0x444444,emissiveIntensity:0.3,shininess:5});
-        const mmesh=new THREE.Mesh(mg,mm); group.add(mmesh);
-        const ml=document.createElement('div');ml.className='planet-label';ml.style.fontSize='9px';ml.textContent=md.n;
-        labelContainer.appendChild(ml);
-        moonObjs.push({mesh:mmesh,label:ml,orbitRadius:md.o,speed:2+mi*0.5,phase:mi*(Math.PI*2/(def.moons.length))});
-      });
-    }
-    planets.push({def,group,mesh,mat,label,moons:moonObjs,extras,angle:Math.random()*Math.PI*2});
-    planetMeshes.push(mesh);
-  });
-
-  // Sun label
-  const sunLabel=document.createElement('div'); sunLabel.className='sun-label'; sunLabel.textContent='Max';
-  labelContainer.appendChild(sunLabel);
-
-  // Asteroid belt
-  const asteroids=[];
-  for(let i=0;i<1200;i++){
-    const r=400+Math.random()*30,angle=Math.random()*Math.PI*2,tilt=(Math.random()-0.5)*0.17;
-    const size=0.4+Math.random()*1.6;
-    const geo=new THREE.IcosahedronGeometry(size,0);
-    const pos=geo.attributes.position;
-    for(let j=0;j<pos.count;j++){pos.setX(j,pos.getX(j)+(Math.random()-0.5)*size*0.4);pos.setY(j,pos.getY(j)+(Math.random()-0.5)*size*0.4);pos.setZ(j,pos.getZ(j)+(Math.random()-0.5)*size*0.4);}
-    geo.computeVertexNormals();
-    const grey=0.25+Math.random()*0.2;
-    const mat=new THREE.MeshPhongMaterial({color:new THREE.Color(grey,grey*0.95,grey*0.9),shininess:2});
-    const mesh=new THREE.Mesh(geo,mat);
-    const y=Math.sin(tilt)*r;
-    mesh.position.set(Math.cos(angle)*r,y,Math.sin(angle)*r);
-    mesh.rotation.set(Math.random()*6,Math.random()*6,Math.random()*6);
-    scene.add(mesh); asteroids.push({mesh,angle,r,tilt,speed:0.06+Math.random()*0.04});
-  }
-
-  // Comet
-  const cometNucleus=new THREE.Mesh(new THREE.SphereGeometry(2,8,8),new THREE.MeshBasicMaterial({color:0xddeeff}));
-  cometNucleus.scale.set(1,1,1.8); scene.add(cometNucleus);
-  const cometTailCount=500;
-  const cTailPos=new Float32Array(cometTailCount*3);
-  const cTailGeo=new THREE.BufferGeometry();
-  cTailGeo.setAttribute('position',new THREE.BufferAttribute(cTailPos,3));
-  const cometTail=new THREE.Points(cTailGeo,new THREE.PointsMaterial({color:0xaaccff,size:1.2,sizeAttenuation:true,transparent:true,opacity:0.4}));
-  cometTail.layers.enable(BLOOM_LAYER); scene.add(cometTail);
-  let cometAngle=0; const cometA=800,cometB=400,cometOffX=-300;
-
-  // Satellites
-  const earthPlanet=planets[2];
-  const issBody=new THREE.Group();
-  const issCore=new THREE.Mesh(new THREE.BoxGeometry(0.6,0.6,2),new THREE.MeshPhongMaterial({color:0xcccccc,shininess:40}));
-  const issP1=new THREE.Mesh(new THREE.BoxGeometry(6,0.1,1.5),new THREE.MeshPhongMaterial({color:0x224488,shininess:30}));
-  const issP2=issP1.clone(); issP2.position.z=1;issP1.position.z=-1;
-  issBody.add(issCore,issP1,issP2);
-  const issLight=new THREE.Mesh(new THREE.SphereGeometry(0.2,6,6),new THREE.MeshBasicMaterial({color:0xff3333}));
-  issLight.layers.enable(BLOOM_LAYER); issBody.add(issLight); scene.add(issBody);
-
-  const hubbleBody=new THREE.Group();
-  const hubbleTube=new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.4,2.5,8),new THREE.MeshPhongMaterial({color:0xaaaaaa,shininess:50}));
-  const hubbleP1=new THREE.Mesh(new THREE.BoxGeometry(3,0.05,1),new THREE.MeshPhongMaterial({color:0x2244aa}));
-  const hubbleP2=hubbleP1.clone(); hubbleP1.position.x=1.8;hubbleP2.position.x=-1.8;
-  hubbleBody.add(hubbleTube,hubbleP1,hubbleP2); scene.add(hubbleBody);
-
-  const gpsSats=[];
-  for(let i=0;i<6;i++){
-    const sat=new THREE.Mesh(new THREE.BoxGeometry(0.4,0.4,0.4),new THREE.MeshPhongMaterial({color:0xdddddd}));
-    const panel=new THREE.Mesh(new THREE.BoxGeometry(2,0.05,0.8),new THREE.MeshPhongMaterial({color:0x1a3366}));
-    const g=new THREE.Group();g.add(sat,panel);scene.add(g);
-    gpsSats.push({group:g,phase:(i/6)*Math.PI*2});
-  }
-
-  // Nebula
-  const nebulaMat=new THREE.ShaderMaterial({
-    uniforms:{uTime:{value:0}},
-    vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
-    fragmentShader:noiseGLSL+`
-      uniform float uTime;varying vec2 vUv;
-      void main(){vec2 p=vUv*2.0-1.0;float edge=1.0-smoothstep(0.3,1.0,length(p));
-      float n1=fbm(vec3(p*1.5,uTime*0.01))*0.5+0.5;float n2=fbm(vec3(p*2.5+3.0,uTime*0.008))*0.5+0.5;float n3=fbm(vec3(p*1.8-5.0,uTime*0.012))*0.5+0.5;
-      vec3 col=vec3(0.12,0.02,0.18)*n1+vec3(0.04,0.02,0.12)*n2+vec3(0.02,0.06,0.16)*n3;
-      float a=max(n1*0.25,max(n2*0.15,n3*0.2))*0.4*edge;gl_FragColor=vec4(col,a);}`,
-    transparent:true,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,depthWrite:false,
-  });
-  for(let i=0;i<4;i++){
-    const plane=new THREE.Mesh(new THREE.PlaneGeometry(8000,8000),nebulaMat.clone());
-    plane.material.uniforms.uTime=nebulaMat.uniforms.uTime;
-    const angle=(i/4)*Math.PI*2+0.4;
-    plane.position.set(Math.cos(angle)*7000,(Math.random()-0.5)*3000,Math.sin(angle)*7000);
-    plane.lookAt(0,0,0); shaderMats.push(plane.material); scene.add(plane);
-  }
-
-  // Jupiter lightning
-  const jupiterLightning=[]; let nextLightning=3+Math.random()*2;
-
-  // Space debris
-  const debris=[];
-  for(let i=0;i<150;i++){
-    const size=0.15+Math.random()*0.4;
-    const geo=new THREE.TetrahedronGeometry(size,0);
-    const mat=new THREE.MeshPhongMaterial({color:new THREE.Color(0.4+Math.random()*0.3,0.4+Math.random()*0.3,0.4+Math.random()*0.3),shininess:10});
-    const mesh=new THREE.Mesh(geo,mat);
-    scene.add(mesh);
-    debris.push({mesh,altitude:28+Math.random()*20,inclination:(Math.random()-0.5)*Math.PI*0.6,phase:Math.random()*Math.PI*2,speed:0.3+Math.random()*0.7,tumbleX:Math.random()*0.05,tumbleY:Math.random()*0.05});
-  }
-
-  // Info card
-  const infoCard=document.getElementById('system-info-card');
-  const cardTitle=document.getElementById('sys-card-title');
-  const cardBadge=document.getElementById('sys-card-badge');
-  const cardBody=document.getElementById('sys-card-body');
-
-  // Raycasting
-  const raycaster=new THREE.Raycaster();
-  const mouse=new THREE.Vector2();
-  let hoveredPlanet=null;
-  renderer.domElement.addEventListener('mousemove', e=>{
-    const rect=wrap.getBoundingClientRect();
-    mouse.x=((e.clientX-rect.left)/rect.width)*2-1;
-    mouse.y=-((e.clientY-rect.top)/rect.height)*2+1;
-    raycaster.setFromCamera(mouse,camera);
-    const hits=raycaster.intersectObjects(planetMeshes);
-    if(hits.length>0){
-      const idx=planetMeshes.indexOf(hits[0].object);
-      if(idx!==-1&&hoveredPlanet!==idx){
-        hoveredPlanet=idx;renderer.domElement.style.cursor='pointer';
-        const p=planets[idx];cardTitle.textContent=p.def.name;cardBadge.textContent=p.def.type;cardBody.textContent=p.def.info;
-        infoCard.classList.add('visible');
-      }
-      if(hoveredPlanet!==null){infoCard.style.left=Math.min(e.clientX-rect.left+20,rect.width-320)+'px';infoCard.style.top=Math.min(e.clientY-rect.top-20,rect.height-160)+'px';}
-    } else if(hoveredPlanet!==null){hoveredPlanet=null;renderer.domElement.style.cursor='default';infoCard.classList.remove('visible');}
-  });
-
-  // Label projection
-  const toScreen = pos => {
-    const v=pos.clone().project(camera);
-    const rect=wrap.getBoundingClientRect();
-    return {x:(v.x*0.5+0.5)*rect.width,y:(-v.y*0.5+0.5)*rect.height,z:v.z};
-  };
-
-  // Resize
-  window.addEventListener('resize', ()=>{
-    if(!systemRunning) return;
-    const w=wrap.clientWidth,h=wrap.clientHeight;
-    camera.aspect=w/h; camera.updateProjectionMatrix();
-    renderer.setSize(w,h); bloomComp.setSize(w,h); finalComp.setSize(w,h);
-    bloomPass.resolution.set(w,h);
-  });
-
-  // Animate
-  const clock=new THREE.Clock();
-  function animate(){
-    if(!systemRunning){ systemAnimFrame=null; return; }
-    systemAnimFrame=requestAnimationFrame(animate);
-    const t=clock.getElapsedTime();
-    const dt=Math.min(clock.getDelta(),0.05);
-
-    camera.position.y=500+Math.sin(t*0.314)*12;
-
-    sunCore.rotation.y=t*0.03;
-    plasmaMat.uniforms.uTime.value=t;
-    coronaOuterMat.uniforms.uTime.value=t;
-
-    // Flares
-    nextFlare-=dt;
-    if(nextFlare<=0){spawnFlare();nextFlare=6+Math.random()*6;}
-    for(let i=flares.length-1;i>=0;i--){
-      const f=flares[i];f.life+=dt;const prog=f.life/f.maxLife;
-      const r=48+prog*f.vr;f.mesh.position.set(Math.cos(f.angle)*r,Math.sin(f.angle)*r,0);
-      f.mesh.material.opacity=0.6*(1-prog);f.mesh.scale.setScalar(1+prog*2);
-      if(f.life>=f.maxLife){scene.remove(f.mesh);flares.splice(i,1);}
-    }
-
-    // Shooting stars
-    nextShoot-=dt;
-    if(nextShoot<=0){spawnShootingStar();nextShoot=2+Math.random()*4;}
-    for(let i=shootingStars.length-1;i>=0;i--){
-      const s=shootingStars[i];s.life+=dt;s.line.position.add(s.dir);s.head.position.copy(s.line.position);
-      const fade=1-s.life/s.maxLife;s.line.material.opacity=0.9*fade;s.head.material.opacity=0.7*fade;
-      if(s.life>=s.maxLife){scene.remove(s.line);scene.remove(s.head);shootingStars.splice(i,1);}
-    }
-
-    // Star twinkle
-    for(const s of brightStars) s.mesh.material.opacity=s.base*(0.6+0.4*Math.sin(t*s.speed+s.phase));
-
-    // Solar wind
-    const wp2=windGeo.attributes.position;
-    for(let i=0;i<windCount;i++){
-      wp2.array[i*3]+=windVel[i].x;wp2.array[i*3+1]+=windVel[i].y;wp2.array[i*3+2]+=windVel[i].z;
-      const d=Math.sqrt(wp2.array[i*3]**2+wp2.array[i*3+1]**2+wp2.array[i*3+2]**2);
-      if(d>600){const dir=windVel[i].clone().normalize();const nd=50+Math.random()*30;
-      wp2.array[i*3]=dir.x*nd;wp2.array[i*3+1]=dir.y*nd;wp2.array[i*3+2]=dir.z*nd;}
-    }
-    wp2.needsUpdate=true;
-
-    for(const sm of shaderMats) sm.uniforms.uTime.value=t;
-
-    // Planets
-    planets.forEach((p,i)=>{
-      p.angle+=p.def.speed*0.002;
-      const x=Math.cos(p.angle)*p.def.orbit,z=Math.sin(p.angle)*p.def.orbit;
-      p.mesh.position.set(x,0,z); p.mesh.rotation.y+=p.def.rotSpeed;
-      if(p.mat.uniforms&&p.mat.uniforms.sunPos) p.mat.uniforms.sunPos.value.set(-x,0,-z);
-      for(const e of p.extras){
-        e.mesh.position.copy(p.mesh.position);
-        if(e.type==='clouds') e.mesh.rotation.y+=e.rotSpeed;
-        if(e.type==='lights') e.mesh.rotation.y=p.mesh.rotation.y;
-      }
-      if(hoveredPlanet===i) p.label.classList.add('bright'); else p.label.classList.remove('bright');
-      const wp3=new THREE.Vector3();p.mesh.getWorldPosition(wp3);wp3.y+=p.def.radius+6;
-      const sc=toScreen(wp3);
-      if(sc.z>0&&sc.z<1){p.label.style.display='';p.label.style.left=sc.x+'px';p.label.style.top=sc.y+'px';p.label.style.transform='translate(-50%,-100%)';}
-      else p.label.style.display='none';
-      p.moons.forEach(m=>{
-        const mx=x+Math.cos(t*m.speed+m.phase)*m.orbitRadius,mz=z+Math.sin(t*m.speed+m.phase)*m.orbitRadius;
-        m.mesh.position.set(mx,0,mz);
-        const mw=new THREE.Vector3();m.mesh.getWorldPosition(mw);mw.y+=4;
-        const ms=toScreen(mw);
-        if(ms.z>0&&ms.z<1){m.label.style.display='';m.label.style.left=ms.x+'px';m.label.style.top=ms.y+'px';m.label.style.transform='translate(-50%,-100%)';}
-        else m.label.style.display='none';
-      });
-    });
-
-    // Asteroids
-    for(const a of asteroids){a.angle+=a.speed*0.001;const y=Math.sin(a.tilt)*a.r;a.mesh.position.set(Math.cos(a.angle)*a.r,y,Math.sin(a.angle)*a.r);a.mesh.rotation.y+=0.01;}
-
-    // Comet
-    cometAngle+=0.003;
-    const cx=Math.cos(cometAngle)*cometA+cometOffX,cz=Math.sin(cometAngle)*cometB;
-    cometNucleus.position.set(cx,10,cz);
-    const sunDist=Math.sqrt(cx*cx+cz*cz);const tailLen=Math.max(20,200-sunDist*0.15);
-    const tailDir=new THREE.Vector3(cx,0,cz).normalize();
-    const tp=cTailGeo.attributes.position;
-    for(let i=0;i<cometTailCount;i++){const prog=i/cometTailCount;tp.array[i*3]=cx+tailDir.x*prog*tailLen+(Math.random()-0.5)*3;tp.array[i*3+1]=10+(Math.random()-0.5)*3;tp.array[i*3+2]=cz+tailDir.z*prog*tailLen+(Math.random()-0.5)*3;}
-    tp.needsUpdate=true;cometTail.material.opacity=Math.min(0.5,120/sunDist);
-
-    // Sun label
-    const ss=toScreen(new THREE.Vector3(0,58,0));
-    sunLabel.style.left=ss.x+'px';sunLabel.style.top=ss.y+'px';sunLabel.style.transform='translate(-50%,-100%)';
-
-    // Satellites
-    const ep=earthPlanet.mesh.position;
-    const issAngle=t*2.5;
-    issBody.position.set(ep.x+Math.cos(issAngle)*30,ep.y+Math.sin(issAngle*0.3)*3,ep.z+Math.sin(issAngle)*30);
-    issBody.rotation.y=issAngle; issLight.material.opacity=Math.sin(t*8)>0?1:0.1;
-    const hubbleAngle=t*1.2,hubbleTilt=15*Math.PI/180;
-    hubbleBody.position.set(ep.x+Math.cos(hubbleAngle)*40,ep.y+Math.sin(hubbleAngle)*Math.sin(hubbleTilt)*40,ep.z+Math.sin(hubbleAngle)*Math.cos(hubbleTilt)*40);
-    hubbleBody.rotation.x=t*0.4;hubbleBody.rotation.z=t*0.3;
-    for(const gps of gpsSats){const ga=t*0.8+gps.phase;gps.group.position.set(ep.x+Math.cos(ga)*55,ep.y+Math.sin(ga*0.2)*5,ep.z+Math.sin(ga)*55);gps.group.rotation.y=ga;}
-
-    // Jupiter lightning
-    nextLightning-=dt;
-    if(nextLightning<=0){
-      const jp=planets[5].mesh.position;
-      const flash=new THREE.Mesh(new THREE.SphereGeometry(1.5,8,8),new THREE.MeshBasicMaterial({color:0xffffaa,transparent:true,opacity:1.0,blending:THREE.AdditiveBlending}));
-      const theta=Math.random()*Math.PI*2,phi=(Math.random()-0.5)*Math.PI*0.6;
-      flash.position.set(jp.x+Math.cos(theta)*Math.cos(phi)*12.5,jp.y+Math.sin(phi)*12.5,jp.z+Math.sin(theta)*Math.cos(phi)*12.5);
-      flash.layers.enable(BLOOM_LAYER);scene.add(flash);
-      jupiterLightning.push({mesh:flash,life:0,maxLife:0.3});nextLightning=3+Math.random()*2;
-    }
-    for(let i=jupiterLightning.length-1;i>=0;i--){
-      const jl=jupiterLightning[i];jl.life+=dt;const prog=jl.life/jl.maxLife;
-      jl.mesh.scale.setScalar(1+prog*3);jl.mesh.material.opacity=1.0-prog;
-      if(jl.life>=jl.maxLife){scene.remove(jl.mesh);jupiterLightning.splice(i,1);}
-    }
-
-    // Space debris
-    for(const d of debris){
-      const da=t*d.speed+d.phase;
-      d.mesh.position.set(ep.x+Math.cos(da)*d.altitude*Math.cos(d.inclination),ep.y+Math.sin(d.inclination)*Math.sin(da)*d.altitude,ep.z+Math.sin(da)*d.altitude*Math.cos(d.inclination));
-      d.mesh.rotation.x+=d.tumbleX;d.mesh.rotation.y+=d.tumbleY;
-    }
-
-    nebulaMat.uniforms.uTime.value=t;
-
-    controls.update();
-    scene.traverse(darkenNonBloom);bloomComp.render();scene.traverse(restoreMats);finalComp.render();
-  }
-  systemAnimate = animate;
-  animate();
-}
 </script>
 </body>
 </html>
