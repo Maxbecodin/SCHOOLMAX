@@ -1735,7 +1735,7 @@
             <input type="range" id="dripDuration" min="5" max="90" value="30" oninput="updateDurationLabel()">
             <span class="duration-val" id="durationLabel">30 min</span>
           </div>
-          <button class="btn-drip-start" id="dripStartBtn" onclick="startDrip()">start drip</button>
+          <button class="btn-drip-start" id="dripStartBtn" onclick="startDrip('main')">start drip</button>
         </div>
         <div id="dripProgressWrap" style="display:none" class="drip-progress-wrap">
           <div class="progress-label" id="dripProgressLabel">Preparing...</div>
@@ -1743,7 +1743,7 @@
             <div class="progress-bar-fill" id="dripProgressFill" style="width:0%"></div>
           </div>
           <div class="progress-sub" id="dripProgressSub"></div>
-          <button class="btn-cancel" onclick="cancelDrip()">cancel</button>
+          <button class="btn-cancel" onclick="cancelDrip('main')">cancel</button>
         </div>
         <div id="dripDoneWrap" style="display:none" class="drip-done">
           <div class="done-check">✓</div>
@@ -1943,6 +1943,57 @@
             <div style="display:flex;gap:8px;margin-top:6px">
               <button onclick="saveVoiceSample()">save</button>
               <button onclick="dismissVoiceBanner()">skip</button>
+            </div>
+          </div>
+
+          <!-- Drip to Google Docs (output area) -->
+          <div id="dripOutput" class="drip-section" style="display:none">
+            <div class="drip-section-header">
+              <span class="drip-section-title">drip to google docs</span>
+              <span class="drip-section-sub">types your text into a doc gradually, like a real student</span>
+            </div>
+            <div class="drip-section-body">
+              <div class="form-group" id="outDripAuthGroup">
+                <div class="google-auth-row">
+                  <button class="btn-google-signin" id="outGoogleSignInBtn" onclick="googleOAuthSignIn()">
+                    <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+                    Sign in with Google
+                  </button>
+                  <div class="token-status" id="outTokenStatus" style="display:none"></div>
+                </div>
+              </div>
+              <div class="form-group" style="display:none" id="outDripDocGroup">
+                <input type="text" id="outDripDocUrl" class="drip-doc-input" placeholder="paste google doc url..." oninput="onOutDocUrlInput()" onblur="detectOutDoc()">
+                <div id="outDetectStatus" style="display:none"></div>
+              </div>
+              <div class="form-group" style="display:none" id="outDripTextGroup">
+                <label class="form-label">text to drip <span class="label-opt">leave empty to use generated output</span></label>
+                <textarea id="outDripCustomText" class="drip-doc-input" style="min-height:80px;resize:vertical" placeholder="paste your own text here, or leave empty to drip the output above..."></textarea>
+              </div>
+              <div class="form-group" id="outDripContextGroup" style="display:none">
+                <label class="form-label">context / notes <span class="label-opt">optional</span></label>
+                <textarea id="outDripContext" class="textarea-context" placeholder="background info to help claude answer the form questions..."></textarea>
+              </div>
+              <div class="drip-controls" style="display:none" id="outDripDurationGroup">
+                <div class="drip-duration-row">
+                  <input type="range" id="outDripDuration" min="5" max="90" value="30" oninput="updateOutDurationLabel()">
+                  <span class="duration-val" id="outDurationLabel">30 min</span>
+                </div>
+                <button class="btn-drip-start" id="outDripStartBtn" onclick="startDrip('output')">start drip</button>
+              </div>
+              <div id="outDripProgressWrap" style="display:none" class="drip-progress-wrap">
+                <div class="progress-label" id="outDripProgressLabel">Preparing...</div>
+                <div class="progress-bar-track">
+                  <div class="progress-bar-fill" id="outDripProgressFill" style="width:0%"></div>
+                </div>
+                <div class="progress-sub" id="outDripProgressSub"></div>
+                <button class="btn-cancel" onclick="cancelDrip('output')">cancel</button>
+              </div>
+              <div id="outDripDoneWrap" style="display:none" class="drip-done">
+                <div class="done-check">✓</div>
+                <div>Done. Check <strong>File → Version history</strong> to confirm it looks natural.</div>
+              </div>
+              <div id="outDripError" class="error-box" style="display:none;margin-top:8px"></div>
             </div>
           </div>
 
@@ -3194,6 +3245,9 @@ function showOutput(text) {
   document.getElementById('outputBox').textContent = cleaned;
   document.getElementById('humanizeBtn').style.display = MATH_CLASSES.has(writerState.selectedClass) ? 'none' : '';
   document.getElementById('checkScoreBtn').style.display = MATH_CLASSES.has(writerState.selectedClass) ? 'none' : '';
+  document.getElementById('dripOutput').style.display = 'block';
+  document.getElementById('outDripCustomText').value = cleaned;
+  updateOutGoogleSignInState();
 }
 
 function showWriterError(msg) {
@@ -3375,9 +3429,12 @@ function resetAll() {
 const drip = {
   token: sessionStorage.getItem('gToken') || '',
   docId: '',
-  mode: 'auto', // auto | plain | table
+  mode: 'auto',
   tablePairs: [],
   cancelFlag: false,
+  outDocId: '',
+  outMode: null,
+  outTablePairs: [],
 };
 
 // ── Google OAuth sign-in ──
@@ -3385,9 +3442,7 @@ const drip = {
 function updateGoogleSignInState() {
   const btn = document.getElementById('googleSignInBtn');
   const statusEl = document.getElementById('tokenStatus');
-
   btn.disabled = false;
-
   if (drip.token) {
     statusEl.style.display = 'flex';
     statusEl.className = 'token-status connected';
@@ -3397,6 +3452,24 @@ function updateGoogleSignInState() {
   } else {
     statusEl.style.display = 'none';
     document.getElementById('dripAuthGroup').style.display = 'block';
+  }
+  updateOutGoogleSignInState();
+}
+
+function updateOutGoogleSignInState() {
+  const btn = document.getElementById('outGoogleSignInBtn');
+  const statusEl = document.getElementById('outTokenStatus');
+  if (!btn) return;
+  btn.disabled = false;
+  if (drip.token) {
+    statusEl.style.display = 'flex';
+    statusEl.className = 'token-status connected';
+    statusEl.textContent = '✓ signed in';
+    document.getElementById('outDripAuthGroup').style.display = 'none';
+    document.getElementById('outDripDocGroup').style.display = 'block';
+  } else {
+    statusEl.style.display = 'none';
+    document.getElementById('outDripAuthGroup').style.display = 'block';
   }
 }
 
@@ -3510,6 +3583,72 @@ function updateDurationLabel() {
   document.getElementById('durationLabel').textContent = document.getElementById('dripDuration').value + ' min';
 }
 
+function updateOutDurationLabel() {
+  document.getElementById('outDurationLabel').textContent = document.getElementById('outDripDuration').value + ' min';
+}
+
+// Output drip doc detection
+let outDetectTimeout = null;
+function onOutDocUrlInput() {
+  clearTimeout(outDetectTimeout);
+  const url = document.getElementById('outDripDocUrl').value.trim();
+  if (!url) {
+    document.getElementById('outDetectStatus').style.display = 'none';
+    setOutDripMode(null);
+    return;
+  }
+  outDetectTimeout = setTimeout(detectOutDoc, 600);
+}
+
+async function detectOutDoc() {
+  const url = document.getElementById('outDripDocUrl').value.trim();
+  if (!url || !drip.token) { updateOutDripStartBtn(); return; }
+  drip.outDocId = extractDocId(url);
+  if (!drip.outDocId) { updateOutDripStartBtn(); return; }
+  const statusEl = document.getElementById('outDetectStatus');
+  statusEl.style.display = 'flex';
+  statusEl.className = 'detect-status detecting';
+  statusEl.innerHTML = '<span class="detect-dot"></span> Reading doc...';
+  try {
+    const doc = await googleGet(`/documents/${drip.outDocId}`);
+    const pairs = extractTablePairs(doc);
+    if (pairs.length > 0) {
+      drip.outTablePairs = pairs;
+      setOutDripMode('table');
+      statusEl.className = 'detect-status table';
+      statusEl.innerHTML = `<span class="detect-dot"></span> Smart fill — ${pairs.length} question${pairs.length !== 1 ? 's' : ''} found`;
+    } else {
+      drip.outTablePairs = [];
+      setOutDripMode('plain');
+      statusEl.className = 'detect-status plain';
+      statusEl.innerHTML = '<span class="detect-dot"></span> Drip mode — plain text doc';
+    }
+  } catch(e) {
+    statusEl.className = 'detect-status detecting';
+    statusEl.innerHTML = '<span class="detect-dot"></span> ' + (e.message || 'Could not read doc');
+    setOutDripMode(null);
+  }
+  updateOutDripStartBtn();
+}
+
+function setOutDripMode(mode) {
+  drip.outMode = mode;
+  document.getElementById('outDripContextGroup').style.display = mode === 'table' ? 'block' : 'none';
+  document.getElementById('outDripTextGroup').style.display = mode === 'plain' ? 'block' : 'none';
+  document.getElementById('outDripDurationGroup').style.display = mode ? 'flex' : 'none';
+  updateOutDripStartBtn();
+}
+
+function updateOutDripStartBtn() {
+  const btn = document.getElementById('outDripStartBtn');
+  if (!btn) return;
+  const hasToken = drip.token.length > 0;
+  const hasDoc = (drip.outDocId || '').length > 0;
+  const customText = document.getElementById('outDripCustomText')?.value.trim() || '';
+  const hasContent = drip.outMode === 'table' || (drip.outMode === 'plain' && (writerState.output.length > 0 || customText.length > 0));
+  btn.disabled = !(hasToken && hasDoc && hasContent);
+}
+
 function updateDripStartBtn() {
   const btn = document.getElementById('dripStartBtn');
   const hasToken = drip.token.length > 0;
@@ -3598,46 +3737,66 @@ async function generateTableAnswers(pairs, context) {
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-async function startDrip() {
-  drip.cancelFlag = false;
-  const durationMin = parseInt(document.getElementById('dripDuration').value);
+function dripEls(source) {
+  const o = source === 'output';
+  const id = n => document.getElementById((o ? 'out' : '') + n);
+  return {
+    startBtn: id('DripStartBtn') || document.getElementById(o ? 'outDripStartBtn' : 'dripStartBtn'),
+    progressWrap: id('DripProgressWrap') || document.getElementById(o ? 'outDripProgressWrap' : 'dripProgressWrap'),
+    progressFill: id('DripProgressFill') || document.getElementById(o ? 'outDripProgressFill' : 'dripProgressFill'),
+    progressLabel: id('DripProgressLabel') || document.getElementById(o ? 'outDripProgressLabel' : 'dripProgressLabel'),
+    progressSub: id('DripProgressSub') || document.getElementById(o ? 'outDripProgressSub' : 'dripProgressSub'),
+    doneWrap: id('DripDoneWrap') || document.getElementById(o ? 'outDripDoneWrap' : 'dripDoneWrap'),
+    errorEl: id('DripError') || document.getElementById(o ? 'outDripError' : 'dripError'),
+    customText: document.getElementById(o ? 'outDripCustomText' : 'dripCustomText'),
+    context: document.getElementById(o ? 'outDripContext' : 'dripContext'),
+    duration: document.getElementById(o ? 'outDripDuration' : 'dripDuration'),
+    docId: o ? drip.outDocId : drip.docId,
+    mode: o ? drip.outMode : drip.mode,
+    pairs: o ? drip.outTablePairs : drip.tablePairs,
+  };
+}
 
-  // Switch to progress UI
-  document.getElementById('dripStartBtn').style.display = 'none';
-  document.getElementById('dripProgressWrap').style.display = 'block';
-  document.getElementById('dripDoneWrap').style.display = 'none';
-  document.getElementById('dripError').style.display = 'none';
+async function startDrip(source) {
+  source = source || 'main';
+  const els = dripEls(source);
+  drip.cancelFlag = false;
+  const durationMin = parseInt(els.duration.value);
+
+  els.startBtn.style.display = 'none';
+  els.progressWrap.style.display = 'block';
+  els.doneWrap.style.display = 'none';
+  els.errorEl.style.display = 'none';
 
   try {
-    if (drip.mode === 'table') {
-      await runTableFill(durationMin);
+    if (els.mode === 'table') {
+      await runTableFill(durationMin, els);
     } else {
-      await runDripText(durationMin);
+      await runDripText(durationMin, els);
     }
     if (!drip.cancelFlag) {
-      document.getElementById('dripProgressWrap').style.display = 'none';
-      document.getElementById('dripDoneWrap').style.display = 'block';
+      els.progressWrap.style.display = 'none';
+      els.doneWrap.style.display = 'block';
     }
   } catch(e) {
-    document.getElementById('dripProgressWrap').style.display = 'none';
-    document.getElementById('dripError').style.display = 'block';
-    document.getElementById('dripError').textContent = e.message || 'Something went wrong.';
-    document.getElementById('dripStartBtn').style.display = 'block';
-    document.getElementById('dripStartBtn').disabled = false;
+    els.progressWrap.style.display = 'none';
+    els.errorEl.style.display = 'block';
+    els.errorEl.textContent = e.message || 'Something went wrong.';
+    els.startBtn.style.display = 'block';
+    els.startBtn.disabled = false;
   }
 }
 
-async function runDripText(durationMin) {
-  const customText = document.getElementById('dripCustomText').value.trim();
+async function runDripText(durationMin, els) {
+  const customText = els.customText?.value.trim() || '';
   const text = customText || writerState.output.trim();
   const words = text.split(/\s+/);
   const CHUNK = 6;
   const chunks = [];
   for (let i = 0; i < words.length; i += CHUNK) chunks.push(words.slice(i, i + CHUNK).join(' '));
 
-  setProgress(0, chunks.length, 'drip', 'Reading doc...');
-  const doc = await googleGet(`/documents/${drip.docId}`);
-  // Insert at start of doc body (index 1, after SectionBreak)
+  setProgress(els, 0, chunks.length, 'drip', 'Reading doc...');
+  const doc = await googleGet(`/documents/${els.docId}`);
   let insertIdx = 1;
   const totalMs = durationMin * 60 * 1000;
   const baseInterval = totalMs / chunks.length;
@@ -3645,20 +3804,20 @@ async function runDripText(durationMin) {
   for (let i = 0; i < chunks.length; i++) {
     if (drip.cancelFlag) return;
     const piece = (i > 0 ? ' ' : '') + chunks[i];
-    await googleInsert(drip.docId, [{ insertText: { location: { index: insertIdx }, text: piece } }]);
+    await googleInsert(els.docId, [{ insertText: { location: { index: insertIdx }, text: piece } }]);
     insertIdx += piece.length;
-    setProgress(i + 1, chunks.length, 'drip', `Chunk ${i + 1} of ${chunks.length}`);
+    setProgress(els, i + 1, chunks.length, 'drip', `Chunk ${i + 1} of ${chunks.length}`);
     let pause = baseInterval * (0.5 + Math.random());
     if (chunks[i].match(/[.!?]$/)) pause *= (1.5 + Math.random());
     await sleep(pause);
   }
 }
 
-async function runTableFill(durationMin) {
-  const context = document.getElementById('dripContext').value.trim();
-  const pairs = drip.tablePairs;
+async function runTableFill(durationMin, els) {
+  const context = els.context?.value.trim() || '';
+  const pairs = els.pairs;
 
-  setProgress(0, pairs.length, 'table', 'Generating answers...');
+  setProgress(els, 0, pairs.length, 'table', 'Generating answers...');
   const answers = await generateTableAnswers(pairs, context);
 
   const totalMs = durationMin * 60 * 1000;
@@ -3669,7 +3828,7 @@ async function runTableFill(durationMin) {
     const { insertIndex, question } = pairs[ci];
     const answer = answers[ci] || '';
     const subLabel = `Filling: "${question.slice(0, 50)}${question.length > 50 ? '…' : ''}"`;
-    setProgress(ci, answers.length, 'table', subLabel);
+    setProgress(els, ci, answers.length, 'table', subLabel);
 
     const CHUNK = 3;
     const charDelay = Math.min(timePerCell / Math.max(answer.length / CHUNK, 1), 1000);
@@ -3677,31 +3836,33 @@ async function runTableFill(durationMin) {
     for (let j = 0; j < answer.length; j += CHUNK) {
       if (drip.cancelFlag) return;
       const slice = answer.slice(j, j + CHUNK);
-      await googleInsert(drip.docId, [{ insertText: { location: { index: insertIndex + j }, text: slice } }]);
+      await googleInsert(els.docId, [{ insertText: { location: { index: insertIndex + j }, text: slice } }]);
       await sleep(charDelay * (0.6 + Math.random() * 0.8));
     }
 
-    setProgress(ci + 1, answers.length, 'table', subLabel);
+    setProgress(els, ci + 1, answers.length, 'table', subLabel);
     const betweenPause = timePerCell * (0.2 + Math.random() * 0.3);
     await sleep(betweenPause);
   }
 }
 
-function setProgress(current, total, type, sub) {
+function setProgress(els, current, total, type, sub) {
   const pct = total > 0 ? Math.round((current / total) * 100) : 0;
-  document.getElementById('dripProgressFill').style.width = pct + '%';
-  document.getElementById('dripProgressLabel').textContent =
+  els.progressFill.style.width = pct + '%';
+  els.progressLabel.textContent =
     type === 'table'
       ? `Cell ${current} of ${total} — ${pct}%`
       : `Chunk ${current} of ${total} — ${pct}%`;
-  document.getElementById('dripProgressSub').textContent = sub || '';
+  els.progressSub.textContent = sub || '';
 }
 
-function cancelDrip() {
+function cancelDrip(source) {
+  source = source || 'main';
   drip.cancelFlag = true;
-  document.getElementById('dripProgressWrap').style.display = 'none';
-  document.getElementById('dripStartBtn').style.display = 'block';
-  document.getElementById('dripStartBtn').disabled = false;
+  const els = dripEls(source);
+  els.progressWrap.style.display = 'none';
+  els.startBtn.style.display = 'block';
+  els.startBtn.disabled = false;
 }
 
 function resetDrip() {
@@ -3712,6 +3873,10 @@ function resetDrip() {
   setDripMode(null);
   drip.docId = '';
   drip.tablePairs = [];
+  // Reset output drip too
+  const outDone = document.getElementById('outDripDoneWrap');
+  if (outDone) outDone.style.display = 'none';
+  document.getElementById('dripOutput').style.display = 'none';
 }
 
 
