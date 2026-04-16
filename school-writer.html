@@ -3576,7 +3576,8 @@ async function runDripText(durationMin) {
 
   setProgress(0, chunks.length, 'drip', 'Reading doc...');
   const doc = await googleGet(`/documents/${drip.docId}`);
-  let insertIdx = doc.body.content[doc.body.content.length - 1].endIndex - 1;
+  // Insert at start of doc body (index 1, after SectionBreak)
+  let insertIdx = 1;
   const totalMs = durationMin * 60 * 1000;
   const baseInterval = totalMs / chunks.length;
 
