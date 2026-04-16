@@ -42,6 +42,8 @@
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    position: relative;
+    z-index: 1;
   }
 
   /* ── Header ── */
@@ -174,8 +176,6 @@
     animation: stepOut 0.2s ease-in forwards;
   }
 
-  .type-grid { display: flex; flex-direction: column; gap: 1px; }
-
   .type-btn {
     background: transparent;
     border: none;
@@ -199,12 +199,6 @@
     color: var(--text);
   }
   .type-btn:hover svg { opacity: 1; }
-  .type-btn.active {
-    background: rgba(91,159,255,0.08);
-    color: #a0d0ff;
-    border-left: 2px solid var(--accent);
-  }
-  .type-btn.active svg { opacity: 1; }
 
   .container {
     max-width: 618px;
@@ -807,14 +801,39 @@
     .tab-btn { padding: 5px 8px; }
   }
 
-  /* Starfield canvas */
-  #starfieldCanvas {
+  /* Background solar system */
+  .solar-bg {
     position: fixed;
     inset: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
+    z-index: 0;
     pointer-events: none;
+    opacity: 0.3;
+    overflow: hidden;
+  }
+  .solar-bg .solar-sun {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px; height: 10px;
+    background: #fff8e7;
+    border-radius: 50%;
+    box-shadow: 0 0 14px 4px rgba(255,240,180,0.4), 0 0 40px 8px rgba(255,200,80,0.15);
+  }
+  .solar-bg .orbit-ring {
+    position: absolute;
+    top: 50%; left: 50%;
+    border: 1px solid rgba(160,200,255,0.08);
+    border-radius: 50%;
+    animation: orbit-spin linear infinite;
+  }
+  .solar-bg .bg-dot {
+    position: absolute;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+  }
+  @keyframes orbit-spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+  @media (max-width: 768px) {
+    .solar-bg { opacity: 0.15; }
   }
 
   /* API key setup overlay */
@@ -925,116 +944,48 @@
     text-transform: uppercase;
   }
   .btn-key:hover { color: var(--text); border-color: var(--border-hover); box-shadow: 0 0 10px rgba(91,159,255,0.12); }
-  /* ── CSS Solar System ── */
-  .solar-system {
-    position: relative;
-    width: 620px;
-    height: 620px;
-    margin: 0 auto;
+  /* ── Class grid ── */
+  .class-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
   }
-  .solar-sun {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 18px; height: 18px;
-    background: #fff8e7;
-    border-radius: 50%;
-    box-shadow: 0 0 20px 6px rgba(255,240,180,0.5), 0 0 60px 12px rgba(255,200,80,0.2);
-    z-index: 5;
-  }
-  .solar-sun-label {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, 18px);
-    font-size: 8px;
-    font-family: var(--mono);
-    font-weight: 700;
-    color: rgba(255,240,180,0.6);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    white-space: nowrap;
-    z-index: 5;
-  }
-  .orbit-ring {
-    position: absolute;
-    top: 50%; left: 50%;
-    border: 1px solid var(--border);
-    border-radius: 50%;
-    animation: orbit-spin linear infinite;
-  }
-  @keyframes orbit-spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
-  @keyframes orbit-spin-reverse { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
-  .orbit-1 { animation-duration: 30s; }
-  .orbit-2 { animation-duration: 45s; }
-  .orbit-3 { animation-duration: 60s; }
-  .orbit-4 { animation-duration: 75s; }
-  .orbit-5 { animation-duration: 90s; }
-  .orbit-6 { animation-duration: 105s; }
-  .planet-dot {
-    position: absolute;
-    background: none;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 0;
-    z-index: 3;
-  }
-  .planet-dot .dot {
-    width: 12px; height: 12px;
+  .class-dot {
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     flex-shrink: 0;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
-  .planet-dot:hover .dot {
-    transform: scale(1.3);
-  }
-  .planet-dot .planet-label {
-    font-size: 9px;
-    font-family: var(--mono);
-    font-weight: 700;
-    color: var(--text-dim);
-    letter-spacing: 0.04em;
-    white-space: nowrap;
-    transition: color 0.2s ease;
-    pointer-events: none;
-  }
-  .planet-dot:hover .planet-label { color: var(--white); }
-  .planet-tooltip {
-    display: none;
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0,0,0,0.85);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 6px 10px;
-    font-size: 10px;
-    color: var(--text-dim);
-    line-height: 1.4;
-    white-space: normal;
-    width: 180px;
-    margin-bottom: 6px;
-    pointer-events: none;
-    z-index: 10;
-  }
-  .planet-dot:hover .planet-tooltip { display: block; }
 
-  .solar-system.solar-exit {
-    animation: solarExit 0.3s ease-in forwards;
+  /* ── Type chips (row in step 2) ── */
+  .type-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 21px;
   }
-  @keyframes solarExit {
-    from { opacity: 1; transform: scale(1); }
-    to   { opacity: 0; transform: scale(0.92); }
+  .type-chip {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 8px 13px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+    letter-spacing: 0.01em;
+  }
+  .type-chip:hover { border-color: var(--border-hover); color: var(--text-dim); }
+  .type-chip.active {
+    background: rgba(91,159,255,0.1);
+    border-color: var(--accent-border);
+    color: #a0d0ff;
   }
 
   @media (max-width: 768px) {
-    .solar-system { width: 320px; height: 320px; }
-    .planet-dot .planet-label { font-size: 7px; }
-    .planet-dot .dot { width: 9px; height: 9px; }
-    .solar-sun { width: 12px; height: 12px; }
+    .class-grid { grid-template-columns: 1fr; }
   }
 
   /* ── Auth UI ── */
@@ -1419,7 +1370,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 </head>
 <body>
-<canvas id="starfieldCanvas"></canvas>
+<div id="solarBg" class="solar-bg"></div>
 <div class="app">
 
   <!-- Header -->
@@ -1468,9 +1419,12 @@
   <!-- ── WRITER SECTION ── -->
   <div id="section-writer" style="display:contents">
 
-    <!-- Step 1: Solar System Class Selection -->
+    <!-- Step 1: Class Selection -->
     <div class="step-center" id="step-type">
-      <div id="solarSystemContainer"></div>
+      <div class="step-inner">
+        <div class="step-label">choose your class</div>
+        <div class="class-grid" id="classGrid"></div>
+      </div>
     </div>
 
     <!-- Plans section (visible below the fold on main screen) -->
@@ -1567,27 +1521,12 @@
 
         <div class="form-group">
           <label class="form-label">assignment type</label>
-          <div class="type-grid">
-            <button class="type-btn" onclick="selectType('essay','Essay')">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-              Essay
-            </button>
-            <button class="type-btn" onclick="selectType('discussion','Classwork')">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-              Classwork
-            </button>
-            <button class="type-btn" onclick="selectType('frq','FRQ / Lab')">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-              FRQ / Lab
-            </button>
-            <button class="type-btn" onclick="selectType('email','Email to Teacher')">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-              Email to Teacher
-            </button>
-            <button class="type-btn" onclick="selectType('short','Short Response')">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
-              Short Response
-            </button>
+          <div class="type-row">
+            <button class="type-chip" onclick="selectType('essay','Essay')">Essay</button>
+            <button class="type-chip" onclick="selectType('discussion','Classwork')">Classwork</button>
+            <button class="type-chip" onclick="selectType('frq','FRQ / Lab')">FRQ / Lab</button>
+            <button class="type-chip" onclick="selectType('email','Email to Teacher')">Email to Teacher</button>
+            <button class="type-chip" onclick="selectType('short','Short Response')">Short Response</button>
           </div>
         </div>
 
@@ -2256,18 +2195,23 @@ let writerState = {
   complicatedPunctuation: true
 };
 
-function renderSolarSystem() {
-  const container = document.getElementById('solarSystemContainer');
-  const isMobile = window.innerWidth <= 768;
-  const totalSize = isMobile ? 320 : 620;
-  const center = totalSize / 2;
-  const maxOrbit = 6;
-  const minRadius = isMobile ? 32 : 60;
-  const maxRadius = isMobile ? 145 : 280;
+function renderClassGrid() {
+  const grid = document.getElementById('classGrid');
+  grid.innerHTML = CLASSES.map(c => {
+    const escapedName = c.name.replace(/'/g, "\\'");
+    return `<button class="type-btn" onclick="selectClass('${escapedName}')"><span class="class-dot" style="background:${c.color}"></span>${c.name}</button>`;
+  }).join('');
+}
 
-  let html = `<div class="solar-system" style="width:${totalSize}px;height:${totalSize}px">`;
-  html += `<div class="solar-sun"></div>`;
-  html += `<div class="solar-sun-label">SCHOOL MAX</div>`;
+function renderSolarBg() {
+  const bg = document.getElementById('solarBg');
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  const center = Math.min(w, h) / 2;
+  const maxOrbit = 6;
+  const minR = center * 0.1;
+  const maxR = center * 0.9;
+  const durations = { 1: 30, 2: 45, 3: 60, 4: 75, 5: 90, 6: 105 };
 
   const orbitGroups = {};
   CLASSES.forEach(c => {
@@ -2275,35 +2219,22 @@ function renderSolarSystem() {
     orbitGroups[c.orbit].push(c);
   });
 
-  for (let orbitNum = 1; orbitNum <= maxOrbit; orbitNum++) {
-    const classes = orbitGroups[orbitNum] || [];
-    const radius = minRadius + (maxRadius - minRadius) * ((orbitNum - 1) / (maxOrbit - 1));
-    const ringSize = radius * 2;
-    const durations = { 1: 30, 2: 45, 3: 60, 4: 75, 5: 90, 6: 105 };
-    const duration = durations[orbitNum];
-
-    html += `<div class="orbit-ring orbit-${orbitNum}" style="width:${ringSize}px;height:${ringSize}px;animation-duration:${duration}s">`;
-
+  let html = '<div class="solar-sun"></div>';
+  for (let n = 1; n <= maxOrbit; n++) {
+    const classes = orbitGroups[n] || [];
+    const r = minR + (maxR - minR) * ((n - 1) / (maxOrbit - 1));
+    const size = r * 2;
+    const dur = durations[n];
+    html += `<div class="orbit-ring" style="width:${size}px;height:${size}px;animation-duration:${dur}s">`;
     classes.forEach((c, i) => {
       const angle = (i / classes.length) * Math.PI * 2 - Math.PI / 2;
-      const x = center - (ringSize / 2) + radius + Math.cos(angle) * radius;
-      const y = center - (ringSize / 2) + radius + Math.sin(angle) * radius;
-      const skill = CLASS_SKILLS[c.name] || '';
-      const tooltip = skill.slice(0, 60) + (skill.length > 60 ? '...' : '');
-      const escapedName = c.name.replace(/'/g, "\\'");
-
-      html += `<button class="planet-dot" onclick="selectClass('${escapedName}')" style="left:${x}px;top:${y}px;transform:translate(-50%,-50%)">`;
-      html += `<div class="dot" style="background:${c.color};box-shadow:0 0 8px ${c.color}"></div>`;
-      html += `<span class="planet-label" style="animation:orbit-spin-reverse ${duration}s linear infinite">${c.name}</span>`;
-      if (tooltip) html += `<div class="planet-tooltip" style="animation:orbit-spin-reverse ${duration}s linear infinite">${tooltip}</div>`;
-      html += `</button>`;
+      const cx = size / 2 + Math.cos(angle) * r;
+      const cy = size / 2 + Math.sin(angle) * r;
+      html += `<div class="bg-dot" style="left:${cx}px;top:${cy}px;transform:translate(-50%,-50%);background:${c.color};box-shadow:0 0 6px ${c.color}"></div>`;
     });
-
-    html += `</div>`;
+    html += '</div>';
   }
-
-  html += `</div>`;
-  container.innerHTML = html;
+  bg.innerHTML = html;
 }
 
 function animateStep(outEl, inEl, inDisplay) {
@@ -2324,9 +2255,10 @@ function animateStep(outEl, inEl, inDisplay) {
 function selectType(type, label) {
   writerState.type = type;
   writerState.typeLabel = label;
-  document.querySelectorAll('#step-details .type-btn').forEach(btn => {
+  document.querySelectorAll('#step-details .type-chip').forEach(btn => {
     btn.classList.toggle('active', btn.textContent.trim() === label);
   });
+  document.getElementById('classBadge').textContent = writerState.selectedClass + ' · ' + label;
   updateGenerateBtn();
 }
 
@@ -2334,17 +2266,7 @@ function selectClass(cls) {
   writerState.selectedClass = cls;
   const stepType = document.getElementById('step-type');
   const stepDetails = document.getElementById('step-details');
-  const solar = stepType.querySelector('.solar-system');
-  if (solar) solar.classList.add('solar-exit');
-  setTimeout(() => {
-    stepType.style.display = 'none';
-    stepDetails.style.display = 'block';
-    stepDetails.classList.add('step-entering');
-    stepDetails.addEventListener('animationend', function h() {
-      stepDetails.classList.remove('step-entering');
-      stepDetails.removeEventListener('animationend', h);
-    });
-  }, 280);
+  animateStep(stepType, stepDetails, 'block');
   document.getElementById('classBadge').textContent = cls;
   document.getElementById('resetBtn').classList.add('visible');
   document.getElementById('plans-section').style.display = 'none';
@@ -2856,7 +2778,7 @@ function resetAll() {
   stepDetails.style.display = 'none';
   stepOutput.style.display = 'none';
   stepType.style.display = 'flex';
-  renderSolarSystem();
+  renderClassGrid();
   stepType.classList.add('step-entering');
   stepType.addEventListener('animationend', function h() {
     stepType.classList.remove('step-entering');
@@ -2869,7 +2791,7 @@ function resetAll() {
   document.getElementById('contextInput').value = '';
   document.getElementById('followUpInput').value = '';
   document.getElementById('errorBox').style.display = 'none';
-  document.querySelectorAll('#step-details .type-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('#step-details .type-chip').forEach(btn => btn.classList.remove('active'));
 }
 
 // ── Tab switching ──
@@ -3248,68 +3170,10 @@ function resetDrip() {
 
 
 // ══════════════════════════════════════════════════
-// Render solar system on load
-renderSolarSystem();
-
-// ══════════════════════════════════════════════════
-//  STARFIELD BACKGROUND
-// ══════════════════════════════════════════════════
-
-(function() {
-  const canvas = document.getElementById('starfieldCanvas');
-  const ctx = canvas.getContext('2d');
-  let w, h;
-
-  function resize() {
-    w = canvas.width = window.innerWidth;
-    h = canvas.height = window.innerHeight;
-  }
-  resize();
-  window.addEventListener('resize', resize);
-
-  const STAR_COUNT = 800;
-  const stars = [];
-  for (let i = 0; i < STAR_COUNT; i++) {
-    stars.push({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      size: 0.5 + Math.random() * 1.5,
-      baseOpacity: 0.2 + Math.random() * 0.6,
-      opacity: 0,
-      speed: 0.01 + Math.random() * 0.04,
-      twinkle: Math.random() < 0.08,
-      twinklePhase: Math.random() * Math.PI * 2,
-      twinkleSpeed: 0.5 + Math.random() * 2,
-    });
-  }
-
-  let time = 0;
-  function animate() {
-    requestAnimationFrame(animate);
-    time += 0.016;
-
-    ctx.clearRect(0, 0, w, h);
-
-    for (const star of stars) {
-      star.x -= star.speed;
-      star.y -= star.speed * 0.3;
-
-      if (star.x < -2) star.x += w + 4;
-      if (star.y < -2) star.y += h + 4;
-
-      let opacity = star.baseOpacity;
-      if (star.twinkle) {
-        opacity *= 0.5 + 0.5 * Math.sin(time * star.twinkleSpeed + star.twinklePhase);
-      }
-
-      ctx.beginPath();
-      ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(210,220,255,${opacity})`;
-      ctx.fill();
-    }
-  }
-  animate();
-})();
+// Render class grid and solar background on load
+renderClassGrid();
+renderSolarBg();
+window.addEventListener('resize', renderSolarBg);
 
 </script>
 </body>
