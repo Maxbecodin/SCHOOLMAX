@@ -2094,7 +2094,7 @@ function updatePlansSection() {
 // ══════════════════════════════════════════════════
 
 function getGoogleClientId() {
-  return localStorage.getItem('googleClientId') || '';
+  return '210676495868-9v2eo6oou9uii0oglfmdsl2mj0rukfkb.apps.googleusercontent.com';
 }
 
 async function checkAIScore(text) {
@@ -3143,13 +3143,6 @@ function updateGoogleSignInState() {
   const statusEl = document.getElementById('tokenStatus');
   const helpEl = document.getElementById('googleAuthHelp');
 
-  if (!getGoogleClientId()) {
-    btn.disabled = true;
-    helpEl.textContent = 'Click "sign in to google" to enter your OAuth Client ID.';
-    statusEl.style.display = 'none';
-    return;
-  }
-
   btn.disabled = false;
 
   if (drip.token) {
@@ -3165,11 +3158,6 @@ function updateGoogleSignInState() {
 
 function googleOAuthSignIn() {
   const clientId = getGoogleClientId();
-  if (!clientId) {
-    const id = prompt('Enter your Google OAuth Client ID for Docs access:');
-    if (id) localStorage.setItem('googleClientId', id);
-    return;
-  }
 
   const tokenClient = google.accounts.oauth2.initTokenClient({
     client_id: clientId,
