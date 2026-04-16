@@ -1,6 +1,7 @@
 {
   "framework": null,
-  "rewrites": [
-    { "source": "/((?!privacy\\.html$|google788ccda609073807\\.html$).*)", "destination": "/school-writer.html" }
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/school-writer.html" }
   ]
 }
