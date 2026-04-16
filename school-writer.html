@@ -2878,8 +2878,20 @@ function openDocPicker() {
   fetch('https://www.googleapis.com/drive/v3/files?q=mimeType%3D%27application%2Fvnd.google-apps.document%27&orderBy=modifiedTime%20desc&pageSize=20&fields=files(id,name,modifiedTime)', {
     headers: { Authorization: 'Bearer ' + drip.token }
   })
-  .then(r => r.json())
+  .then(r => {
+    if (r.status === 401 || r.status === 403) {
+      // Token missing drive scope — re-auth
+      sessionStorage.removeItem('gToken');
+      drip.token = null;
+      closeDocPicker();
+      pendingDocPicker = true;
+      googleOAuthSignIn();
+      return null;
+    }
+    return r.json();
+  })
   .then(data => {
+    if (!data) return;
     const files = data.files || [];
     if (files.length === 0) {
       list.innerHTML = '<div class="doc-picker-empty">No documents found</div>';
