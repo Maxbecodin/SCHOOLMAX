@@ -1217,6 +1217,66 @@
     -webkit-box-orient: vertical;
   }
 
+  /* ── Voice section ── */
+  #voice-section {
+    padding: 55px 34px 0;
+    border-top: 1px solid var(--border);
+  }
+  .voice-inner {
+    max-width: 520px;
+    margin: 0 auto;
+  }
+  .voice-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+  .voice-toggle {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .voice-toggle:hover { color: var(--text); border-color: var(--border-hover); }
+  .voice-saved-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .voice-saved-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .voice-edit-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: var(--mono);
+    font-size: 10px;
+    cursor: pointer;
+    text-decoration: underline;
+    transition: color 0.2s;
+  }
+  .voice-edit-btn:hover { color: var(--text-dim); }
+  .voice-preview {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    line-height: 1.5;
+    font-style: italic;
+  }
+
   /* ── Plans section ── */
   #about-section {
     padding: 89px 34px 120px;
@@ -1440,6 +1500,34 @@
       <div class="step-inner">
         <div class="step-label">choose your class</div>
         <div class="class-grid" id="classGrid"></div>
+      </div>
+    </div>
+
+    <!-- Voice section -->
+    <div id="voice-section">
+      <div class="voice-inner">
+        <div class="step-label">your voice</div>
+        <p class="voice-desc">paste a sample of your writing and schoolmax will match your style — not a default AI voice.</p>
+        <div id="voiceContent">
+          <button class="voice-toggle" id="voiceToggleBtn" onclick="toggleVoiceInput()">
+            <span id="voiceToggleText">paste a sample →</span>
+          </button>
+        </div>
+        <div id="voiceInputArea" style="display:none">
+          <textarea id="mainVoiceSampleInput" class="textarea-prompt" placeholder="paste an old essay, discussion post, paragraph from an assignment — anything you've written for school. 200+ words works best."></textarea>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn-generate" style="width:auto;padding:10px 24px;font-size:12px" onclick="saveMainVoiceSample()">save</button>
+            <button class="btn-reset" style="display:block;padding:10px 16px;font-size:12px" onclick="toggleVoiceInput()">cancel</button>
+          </div>
+        </div>
+        <div id="voiceSaved" style="display:none">
+          <div class="voice-saved-row">
+            <span class="voice-saved-label">voice sample saved</span>
+            <button class="voice-edit-btn" onclick="editMainVoiceSample()">edit</button>
+            <button class="voice-edit-btn" onclick="removeMainVoiceSample()">remove</button>
+          </div>
+          <p class="voice-preview" id="voicePreview"></p>
+        </div>
       </div>
     </div>
 
@@ -1742,7 +1830,7 @@ auth.onAuthStateChanged(user => {
     loadHistory();
     loadUsage();
   } else {
-    userUsage = { wordsUsed: 0, tier: 'free', stripeCustomerId: '', writingSamples: [], hasSeenSamplePrompt: false, voicePreferences: [] };
+    userUsage = { wordsUsed: 0, tier: 'free', stripeCustomerId: '', writingSamples: [], hasSeenSamplePrompt: false, voicePreferences: [], writingSample: '' };
     signInBtn.style.display = 'flex';
     profile.style.display = 'none';
     renderHistoryEmpty();
@@ -1888,7 +1976,7 @@ async function loadConversation(docId) {
 // ══════════════════════════════════════════════════
 
 const TIER_LIMITS = { free: 1000, starter: 5000, pro: 15000, unlimited: 999999 };
-let userUsage = { wordsUsed: 0, tier: 'free', stripeCustomerId: '', writingSamples: [], hasSeenSamplePrompt: false, voicePreferences: [] };
+let userUsage = { wordsUsed: 0, tier: 'free', stripeCustomerId: '', writingSamples: [], hasSeenSamplePrompt: false, voicePreferences: [], writingSample: '' };
 
 async function loadUsage() {
   if (!currentUser) return;
@@ -1902,6 +1990,7 @@ async function loadUsage() {
       userUsage.writingSamples = d.writingSamples || [];
       userUsage.hasSeenSamplePrompt = d.hasSeenSamplePrompt || false;
       userUsage.voicePreferences = d.voicePreferences || [];
+      userUsage.writingSample = d.writingSample || '';
     } else {
       await db.collection('users').doc(currentUser.uid).set({
         wordsUsed: 0,
@@ -1913,6 +2002,7 @@ async function loadUsage() {
     console.error('Failed to load usage:', err.message);
   }
   updatePlansSection();
+  updateVoiceSection();
 }
 
 async function addWordsUsed(wordCount) {
@@ -2451,6 +2541,7 @@ function selectClass(cls) {
   document.getElementById('resetBtn').classList.add('visible');
   document.getElementById('plans-section').style.display = 'none';
   document.getElementById('about-section').style.display = 'none';
+  document.getElementById('voice-section').style.display = 'none';
   updateGenerateBtn();
   document.getElementById('promptInput').addEventListener('input', updateGenerateBtn);
 }
@@ -2489,9 +2580,10 @@ async function generate() {
 
   let finalPrompt = SYSTEM_PROMPT;
 
-  if (userUsage.writingSamples?.length > 0) {
+  const voiceSamples = userUsage.writingSample ? [userUsage.writingSample, ...(userUsage.writingSamples || [])] : (userUsage.writingSamples || []);
+  if (voiceSamples.length > 0) {
     finalPrompt += '\n\n## VOICE REFERENCE — THIS IS HOW THE STUDENT ACTUALLY WRITES\nThe following are real samples from the student. Match this voice exactly —\nsentence length patterns, vocabulary level, how they transition, how formal\nor casual they are, how they handle evidence and analysis. This is your\n#1 priority — the output should be indistinguishable from the student\'s\nreal writing.\n';
-    userUsage.writingSamples.forEach((s, i) => {
+    voiceSamples.forEach((s, i) => {
       finalPrompt += '\nSample ' + (i + 1) + ':\n' + s + '\n';
     });
   }
@@ -2615,9 +2707,10 @@ async function revise() {
   const newHistory = [...writerState.conversationHistory, { role: 'user', content: followUp }];
 
   let revisePrompt = SYSTEM_PROMPT;
-  if (userUsage.writingSamples?.length > 0) {
+  const reviseVoiceSamples = userUsage.writingSample ? [userUsage.writingSample, ...(userUsage.writingSamples || [])] : (userUsage.writingSamples || []);
+  if (reviseVoiceSamples.length > 0) {
     revisePrompt += '\n\n## VOICE REFERENCE — THIS IS HOW THE STUDENT ACTUALLY WRITES\nThe following are real samples from the student. Match this voice exactly —\nsentence length patterns, vocabulary level, how they transition, how formal\nor casual they are, how they handle evidence and analysis. This is your\n#1 priority — the output should be indistinguishable from the student\'s\nreal writing.\n';
-    userUsage.writingSamples.forEach((s, i) => {
+    reviseVoiceSamples.forEach((s, i) => {
       revisePrompt += '\nSample ' + (i + 1) + ':\n' + s + '\n';
     });
   }
@@ -2674,6 +2767,51 @@ function setPunctuation(on) {
   const chips = document.getElementById('punctChips').querySelectorAll('.chip');
   chips[0].classList.toggle('active', on);
   chips[1].classList.toggle('active', !on);
+}
+
+function toggleVoiceInput() {
+  if (!currentUser) { firebaseSignIn(); return; }
+  const area = document.getElementById('voiceInputArea');
+  area.style.display = area.style.display === 'none' ? 'block' : 'none';
+}
+
+function saveMainVoiceSample() {
+  const text = document.getElementById('mainVoiceSampleInput').value.trim();
+  if (!text) return;
+  if (!currentUser) { firebaseSignIn(); return; }
+  userUsage.writingSample = text;
+  db.collection('users').doc(currentUser.uid).set({ writingSample: text }, { merge: true });
+  document.getElementById('voiceInputArea').style.display = 'none';
+  document.getElementById('voiceContent').style.display = 'none';
+  document.getElementById('voiceSaved').style.display = 'block';
+  document.getElementById('voicePreview').textContent = text.slice(0, 150) + (text.length > 150 ? '...' : '');
+}
+
+function editMainVoiceSample() {
+  document.getElementById('mainVoiceSampleInput').value = userUsage.writingSample || '';
+  document.getElementById('voiceSaved').style.display = 'none';
+  document.getElementById('voiceContent').style.display = 'block';
+  document.getElementById('voiceInputArea').style.display = 'block';
+}
+
+function removeMainVoiceSample() {
+  if (!currentUser) return;
+  userUsage.writingSample = '';
+  db.collection('users').doc(currentUser.uid).set({ writingSample: '' }, { merge: true });
+  document.getElementById('voiceSaved').style.display = 'none';
+  document.getElementById('voiceContent').style.display = 'block';
+  document.getElementById('voiceInputArea').style.display = 'none';
+}
+
+function updateVoiceSection() {
+  if (userUsage.writingSample) {
+    document.getElementById('voiceContent').style.display = 'none';
+    document.getElementById('voiceSaved').style.display = 'block';
+    document.getElementById('voicePreview').textContent = userUsage.writingSample.slice(0, 150) + (userUsage.writingSample.length > 150 ? '...' : '');
+  } else {
+    document.getElementById('voiceContent').style.display = 'block';
+    document.getElementById('voiceSaved').style.display = 'none';
+  }
 }
 
 function saveVoiceSample() {
@@ -2967,6 +3105,7 @@ function resetAll() {
   document.getElementById('resetBtn').classList.remove('visible');
   document.getElementById('plans-section').style.display = '';
   document.getElementById('about-section').style.display = '';
+  document.getElementById('voice-section').style.display = '';
   document.getElementById('promptInput').value = '';
   document.getElementById('contextInput').value = '';
   document.getElementById('followUpInput').value = '';
