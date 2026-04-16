@@ -1220,6 +1220,77 @@
     max-width: 520px;
     margin: 0 auto;
   }
+  .voice-or { color: var(--text-muted); font-size: 11px; margin: 10px 0; font-family: var(--mono); }
+  .btn-import-docs {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-import-docs:hover { color: var(--text); border-color: var(--border-hover); }
+  .doc-picker-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    background: rgba(0,0,8,0.92);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .doc-picker {
+    width: 100%;
+    max-width: 480px;
+    max-height: 80vh;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+  }
+  .doc-picker-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+  .doc-picker-list {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 16px;
+  }
+  .doc-picker-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .doc-picker-item:hover { background: rgba(255,255,255,0.03); }
+  .doc-picker-item input[type="checkbox"] { accent-color: var(--accent); flex-shrink: 0; }
+  .doc-picker-item-name { font-size: 13px; color: var(--text); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .doc-picker-item-date { font-size: 10px; color: var(--text-muted); font-family: var(--mono); flex-shrink: 0; }
+  .doc-picker-actions { display: flex; gap: 8px; justify-content: flex-end; }
+  .doc-picker-empty { color: var(--text-muted); font-size: 12px; text-align: center; padding: 30px 0; }
+  .doc-picker-loading { color: var(--text-dim); font-size: 12px; text-align: center; padding: 30px 0; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .voice-import-status { font-size: 11px; color: var(--accent); margin-top: 8px; font-family: var(--mono); }
   .voice-desc {
     font-size: 13px;
     color: var(--text-dim);
@@ -1543,10 +1614,16 @@
         </div>
         <div id="voiceInputArea" style="display:none">
           <textarea id="mainVoiceSampleInput" class="textarea-prompt" placeholder="paste an old essay, discussion post, paragraph from an assignment — anything you've written for school. 200+ words works best."></textarea>
-          <div style="display:flex;gap:8px;margin-top:8px">
+          <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
             <button class="btn-generate" style="width:auto;padding:10px 24px;font-size:12px" onclick="saveMainVoiceSample()">save</button>
             <button class="btn-reset" style="display:block;padding:10px 16px;font-size:12px" onclick="toggleVoiceInput()">cancel</button>
           </div>
+          <div class="voice-or">or</div>
+          <button class="btn-import-docs" onclick="openDocPicker()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            import from google docs
+          </button>
+          <div id="voiceImportStatus" class="voice-import-status" style="display:none"></div>
         </div>
         <div id="voiceSaved" style="display:none">
           <div class="voice-saved-row">
@@ -1762,6 +1839,18 @@
     </div>
 
 </div><!-- end app -->
+
+<!-- Doc Picker Modal -->
+<div id="docPickerOverlay" class="doc-picker-overlay" style="display:none">
+  <div class="doc-picker">
+    <div class="doc-picker-title">select documents (up to 5)</div>
+    <div class="doc-picker-list" id="docPickerList"></div>
+    <div class="doc-picker-actions">
+      <button class="btn-reset" style="display:block;padding:8px 16px;font-size:11px" onclick="closeDocPicker()">cancel</button>
+      <button class="btn-generate" style="width:auto;padding:8px 20px;font-size:11px" id="docPickerConfirm" onclick="confirmDocPicker()" disabled>import selected</button>
+    </div>
+  </div>
+</div>
 
 <!-- API Key Setup Overlay -->
 
@@ -2773,6 +2862,94 @@ function removeMainVoiceSample() {
   document.getElementById('voiceInputArea').style.display = 'none';
 }
 
+function openDocPicker() {
+  if (!currentUser) { firebaseSignIn(); return; }
+  if (!drip.token) {
+    googleOAuthSignIn();
+    return;
+  }
+  const overlay = document.getElementById('docPickerOverlay');
+  const list = document.getElementById('docPickerList');
+  overlay.style.display = 'flex';
+  list.innerHTML = '<div class="doc-picker-loading"><div class="spinner"></div> loading docs...</div>';
+  document.getElementById('docPickerConfirm').disabled = true;
+
+  fetch('https://www.googleapis.com/drive/v3/files?q=mimeType%3D%27application%2Fvnd.google-apps.document%27&orderBy=modifiedTime%20desc&pageSize=20&fields=files(id,name,modifiedTime)', {
+    headers: { Authorization: 'Bearer ' + drip.token }
+  })
+  .then(r => r.json())
+  .then(data => {
+    const files = data.files || [];
+    if (files.length === 0) {
+      list.innerHTML = '<div class="doc-picker-empty">No documents found</div>';
+      return;
+    }
+    list.innerHTML = files.map(f => {
+      const date = new Date(f.modifiedTime).toLocaleDateString();
+      return `<label class="doc-picker-item"><input type="checkbox" value="${f.id}" onchange="updateDocPickerBtn()"><span class="doc-picker-item-name">${f.name.replace(/</g, '&lt;')}</span><span class="doc-picker-item-date">${date}</span></label>`;
+    }).join('');
+  })
+  .catch(() => {
+    list.innerHTML = '<div class="doc-picker-empty">Failed to load documents. Try signing in again.</div>';
+  });
+}
+
+function closeDocPicker() {
+  document.getElementById('docPickerOverlay').style.display = 'none';
+}
+
+function updateDocPickerBtn() {
+  const checked = document.querySelectorAll('#docPickerList input:checked');
+  const btn = document.getElementById('docPickerConfirm');
+  btn.disabled = checked.length === 0;
+  if (checked.length >= 5) {
+    document.querySelectorAll('#docPickerList input:not(:checked)').forEach(cb => cb.disabled = true);
+  } else {
+    document.querySelectorAll('#docPickerList input').forEach(cb => cb.disabled = false);
+  }
+}
+
+async function confirmDocPicker() {
+  const checked = Array.from(document.querySelectorAll('#docPickerList input:checked'));
+  if (checked.length === 0) return;
+  const btn = document.getElementById('docPickerConfirm');
+  btn.disabled = true;
+  btn.textContent = 'importing...';
+
+  const texts = [];
+  for (const cb of checked) {
+    try {
+      const r = await fetch('https://docs.googleapis.com/v1/documents/' + cb.value, {
+        headers: { Authorization: 'Bearer ' + drip.token }
+      });
+      const doc = await r.json();
+      let text = '';
+      for (const el of (doc.body?.content || [])) {
+        if (el.paragraph) {
+          for (const pe of (el.paragraph.elements || [])) {
+            if (pe.textRun?.content) text += pe.textRun.content;
+          }
+        }
+      }
+      const trimmed = text.trim();
+      if (trimmed) texts.push(trimmed);
+    } catch (e) { /* skip failed docs */ }
+  }
+
+  closeDocPicker();
+  btn.textContent = 'import selected';
+
+  if (texts.length === 0) return;
+
+  const combined = texts.join('\n\n---\n\n');
+  document.getElementById('mainVoiceSampleInput').value = combined;
+
+  const status = document.getElementById('voiceImportStatus');
+  status.textContent = 'imported ' + texts.length + ' doc' + (texts.length !== 1 ? 's' : '') + ' as your writing sample';
+  status.style.display = 'block';
+  setTimeout(() => { status.style.display = 'none'; }, 4000);
+}
+
 function updateVoiceSection() {
   if (userUsage.writingSample) {
     document.getElementById('voiceContent').style.display = 'none';
@@ -3119,7 +3296,7 @@ function googleOAuthSignIn() {
 
   const tokenClient = google.accounts.oauth2.initTokenClient({
     client_id: clientId,
-    scope: 'https://www.googleapis.com/auth/documents',
+    scope: 'https://www.googleapis.com/auth/documents https://www.googleapis.com/auth/drive.readonly',
     callback: (response) => {
       if (response.error) {
         const statusEl = document.getElementById('tokenStatus');
