@@ -81,33 +81,6 @@
     text-transform: uppercase;
   }
 
-  /* Tab nav */
-  .tab-nav {
-    display: flex;
-    gap: 2px;
-    flex-shrink: 0;
-  }
-
-  .tab-btn {
-    background: none;
-    border: none;
-    border-bottom: 2px solid transparent;
-    color: var(--text-muted);
-    font-size: 11px;
-    font-weight: 700;
-    font-family: var(--mono);
-    padding: 5px 14px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background 0.2s ease, color 0.2s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-  .tab-btn:hover { color: var(--text-dim); }
-  .tab-btn.active {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-  }
 
   .header-right {
     display: flex;
@@ -495,25 +468,6 @@
     line-height: 1.65;
   }
 
-  .btn-drip-this {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    padding: 7px 14px;
-    border-radius: 6px;
-    font-size: 11px;
-    font-weight: 500;
-    cursor: pointer;
-    font-family: var(--sans);
-    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
-    letter-spacing: 0.02em;
-  }
-  .btn-drip-this:hover {
-    border-color: var(--accent-border);
-    color: #a0d0ff;
-    background: var(--accent-glow);
-    box-shadow: 0 0 12px rgba(91,159,255,0.15);
-  }
 
   .followup-bar { display: flex; gap: 8px; margin-top: 21px; }
   .followup-bar input { flex: 1; }
@@ -563,23 +517,6 @@
     color: #cc6666;
     font-size: 12px;
     margin-bottom: 14px;
-  }
-
-  /* ── Drip section ── */
-  #section-drip {
-    flex: 1;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 55px 34px 89px;
-  }
-
-  .drip-inner {
-    width: 100%;
-    max-width: 618px;
-    display: flex;
-    flex-direction: column;
-    gap: 0;
   }
 
   /* Google sign-in row */
@@ -717,22 +654,6 @@
     white-space: nowrap;
   }
 
-  /* Use writer output btn */
-  .btn-use-output {
-    background: none;
-    border: none;
-    color: var(--accent);
-    font-size: 11px;
-    font-weight: 500;
-    font-family: var(--sans);
-    cursor: pointer;
-    padding: 0;
-    margin-bottom: 8px;
-    transition: color 0.2s ease;
-    letter-spacing: 0.01em;
-  }
-  .btn-use-output:hover { color: #a0d0ff; }
-
   /* Progress UI */
   .drip-progress-wrap {
     margin-top: 4px;
@@ -792,7 +713,7 @@
 
   @media (max-width: 618px) {
     .step-center { padding: 34px 13px 55px; }
-    .container, #section-drip { padding: 34px 13px 55px; }
+    .container { padding: 34px 13px 55px; }
     .header { padding: 13px; height: auto; gap: 13px; }
     .header h1 { font-size: 21px; }
     .tab-btn { padding: 5px 8px; }
@@ -1456,11 +1377,6 @@
       <div class="tagline">writes like max · not like ai</div>
     </div>
 
-    <div class="tab-nav">
-      <button class="tab-btn active" id="tab-writer" onclick="switchTab('writer')">writer</button>
-      <button class="tab-btn" id="tab-drip" onclick="switchTab('drip')">drip</button>
-    </div>
-
     <div class="header-right">
       <button class="btn-reset" id="resetBtn" onclick="resetAll()">← main menu</button>
 
@@ -1493,8 +1409,6 @@
   </div>
 
   <!-- ── WRITER SECTION ── -->
-  <div id="section-writer" style="display:contents">
-
     <!-- Step 1: Class Selection -->
     <div class="step-center" id="step-type">
       <div class="step-inner">
@@ -1666,7 +1580,6 @@
           <div class="action-bar">
             <button class="btn-humanize" id="humanizeBtn" onclick="humanize()">humanize</button>
             <button class="btn-copy" id="copyBtn" onclick="copyOutput()">copy</button>
-            <button class="btn-drip-this" onclick="dripThis()">drip this →</button>
           </div>
           <div id="voiceBanner" class="voice-banner" style="display:none">
             <p>this was written in a default voice. <strong>paste a sample of your writing</strong> and future outputs will match your style.</p>
@@ -1685,84 +1598,54 @@
             <input type="text" id="followUpInput" placeholder="make it shorter, change the hook, add more evidence..." onkeydown="if(event.key==='Enter')revise()">
             <button class="btn-revise" id="reviseBtn" onclick="revise()">revise</button>
           </div>
+
+          <div id="dripInline" style="display:none">
+            <div class="step-label" style="margin-top:34px">drip to google docs</div>
+            <div class="form-group">
+              <p class="google-auth-help" id="googleAuthHelp">Sign in to allow drip writing to your Google Docs.</p>
+              <div class="google-auth-row">
+                <button class="btn-google-signin" id="googleSignInBtn" onclick="googleOAuthSignIn()">
+                  <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+                  Sign in with Google
+                </button>
+                <div class="token-status" id="tokenStatus" style="display:none"></div>
+              </div>
+            </div>
+            <div class="form-group" style="display:none" id="dripDocGroup">
+              <label class="form-label">google doc url</label>
+              <input type="text" id="dripDocUrl" placeholder="docs.google.com/document/d/..." oninput="onDocUrlInput()" onblur="detectDoc()">
+              <div id="detectStatus" style="display:none"></div>
+            </div>
+            <div class="form-group" id="dripContextGroup" style="display:none">
+              <label class="form-label">context / notes <span class="label-opt">optional</span></label>
+              <textarea id="dripContext" class="textarea-context" placeholder="background info to help claude answer the form questions..."></textarea>
+            </div>
+            <div class="form-group" id="dripDurationGroup" style="display:none">
+              <label class="form-label">duration</label>
+              <div class="duration-row">
+                <input type="range" id="dripDuration" min="5" max="90" value="30" oninput="updateDurationLabel()">
+                <span class="duration-val" id="durationLabel">30 min</span>
+              </div>
+            </div>
+            <button class="btn-generate" id="dripStartBtn" style="display:none" onclick="startDrip()">start drip</button>
+            <div id="dripProgressWrap" style="display:none" class="drip-progress-wrap">
+              <div class="progress-label" id="dripProgressLabel">Preparing...</div>
+              <div class="progress-bar-track">
+                <div class="progress-bar-fill" id="dripProgressFill" style="width:0%"></div>
+              </div>
+              <div class="progress-sub" id="dripProgressSub"></div>
+              <button class="btn-cancel" onclick="cancelDrip()">cancel</button>
+            </div>
+            <div id="dripDoneWrap" style="display:none" class="drip-done">
+              <div class="done-check">✓</div>
+              <div>Done. Check <strong>File → Version history</strong> to confirm it looks natural.</div>
+            </div>
+            <div id="dripError" class="error-box" style="display:none;margin-top:12px"></div>
+          </div>
         </div>
       </div>
 
     </div>
-  </div><!-- end section-writer -->
-
-  <!-- ── DRIP SECTION ── -->
-  <div id="section-drip" style="display:none">
-    <div class="drip-inner">
-
-      <!-- Google sign-in -->
-      <div class="form-group">
-        <label class="form-label">google docs access</label>
-        <p class="google-auth-help" id="googleAuthHelp">Sign in to allow drip writing to your Google Docs.</p>
-        <div class="google-auth-row">
-          <button class="btn-google-signin" id="googleSignInBtn" onclick="googleOAuthSignIn()">
-            <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-            Sign in with Google
-          </button>
-          <div class="token-status" id="tokenStatus" style="display:none"></div>
-        </div>
-      </div>
-
-      <!-- Doc URL -->
-      <div class="form-group">
-        <label class="form-label">google doc url</label>
-        <input type="text" id="dripDocUrl" placeholder="docs.google.com/document/d/..." oninput="onDocUrlInput()" onblur="detectDoc()">
-        <div id="detectStatus" style="display:none"></div>
-      </div>
-
-      <!-- Context (table fill) -->
-      <div class="form-group" id="dripContextGroup" style="display:none">
-        <label class="form-label">context / notes <span class="label-opt">optional</span></label>
-        <textarea id="dripContext" class="textarea-context" placeholder="background info to help claude answer the form questions..."></textarea>
-      </div>
-
-      <!-- Text (drip mode) -->
-      <div class="form-group" id="dripTextGroup" style="display:none">
-        <label class="form-label">text to drip</label>
-        <button class="btn-use-output" id="useOutputBtn" onclick="useWriterOutput()" style="display:none">← use writer output</button>
-        <textarea id="dripText" class="textarea-prompt" placeholder="paste the text you want dripped in..."></textarea>
-      </div>
-
-      <!-- Duration -->
-      <div class="form-group" id="dripDurationGroup" style="display:none">
-        <label class="form-label">duration</label>
-        <div class="duration-row">
-          <input type="range" id="dripDuration" min="5" max="90" value="30" oninput="updateDurationLabel()">
-          <span class="duration-val" id="durationLabel">30 min</span>
-        </div>
-      </div>
-
-      <!-- Start button -->
-      <button class="btn-generate" id="dripStartBtn" style="display:none" onclick="startDrip()">start drip</button>
-
-      <!-- Progress -->
-      <div id="dripProgressWrap" style="display:none" class="drip-progress-wrap">
-        <div class="progress-label" id="dripProgressLabel">Preparing...</div>
-        <div class="progress-bar-track">
-          <div class="progress-bar-fill" id="dripProgressFill" style="width:0%"></div>
-        </div>
-        <div class="progress-sub" id="dripProgressSub"></div>
-        <button class="btn-cancel" onclick="cancelDrip()">cancel</button>
-      </div>
-
-      <!-- Done -->
-      <div id="dripDoneWrap" style="display:none" class="drip-done">
-        <div class="done-check">✓</div>
-        <div>Done. Check <strong>File → Version history</strong> to confirm it looks natural.</div>
-        <br>
-        <button class="btn-copy" onclick="resetDrip()">drip another</button>
-      </div>
-
-      <!-- Error -->
-      <div id="dripError" class="error-box" style="display:none;margin-top:12px"></div>
-
-    </div>
-  </div>
 
 </div><!-- end app -->
 
@@ -1962,8 +1845,6 @@ async function loadConversation(docId) {
     document.getElementById('detectorCard').style.display = 'none';
     document.getElementById('changesBox').style.display = 'none';
     document.getElementById('resetBtn').classList.add('visible');
-    // Switch to writer tab if not already
-    switchTab('writer');
     // Close history panel
     document.getElementById('historyPanel').classList.remove('open');
   } catch (err) {
@@ -2936,8 +2817,7 @@ function showOutput(text) {
   document.getElementById('outputContent').style.display = 'block';
   document.getElementById('outputBox').textContent = cleaned;
   document.getElementById('humanizeBtn').style.display = MATH_CLASSES.has(writerState.selectedClass) ? 'none' : '';
-  // Show "use writer output" btn in drip tab if we have output
-  document.getElementById('useOutputBtn').style.display = 'block';
+  document.getElementById('dripInline').style.display = 'block';
 }
 
 function showWriterError(msg) {
@@ -3079,15 +2959,6 @@ async function humanize() {
   }
 }
 
-function dripThis() {
-  switchTab('drip');
-  if (writerState.output) {
-    document.getElementById('dripText').value = writerState.output;
-    // Show the text group if not already visible (will be set once a doc is detected as plain)
-    document.getElementById('dripTextGroup').style.display = 'block';
-  }
-}
-
 function resetAll() {
   writerState = { type: null, typeLabel: '', selectedClass: '', conversationHistory: [], output: '', complicatedPunctuation: true };
   const stepType = document.getElementById('step-type');
@@ -3110,19 +2981,10 @@ function resetAll() {
   document.getElementById('contextInput').value = '';
   document.getElementById('followUpInput').value = '';
   document.getElementById('errorBox').style.display = 'none';
+  document.getElementById('dripInline').style.display = 'none';
   document.querySelectorAll('#step-details .type-chip').forEach(btn => btn.classList.remove('active'));
+  resetDrip();
 }
-
-// ── Tab switching ──
-function switchTab(tab) {
-  const isWriter = tab === 'writer';
-  document.getElementById('tab-writer').classList.toggle('active', isWriter);
-  document.getElementById('tab-drip').classList.toggle('active', !isWriter);
-  document.getElementById('section-writer').style.display = isWriter ? 'contents' : 'none';
-  document.getElementById('section-drip').style.display = isWriter ? 'none' : 'flex';
-  document.getElementById('resetBtn').style.display = isWriter ? '' : 'none';
-}
-
 
 // ══════════════════════════════════════════════════
 //  DRIP WRITER
@@ -3150,6 +3012,7 @@ function updateGoogleSignInState() {
     statusEl.className = 'token-status connected';
     statusEl.textContent = '✓ signed in';
     helpEl.textContent = 'Connected to Google Docs.';
+    document.getElementById('dripDocGroup').style.display = 'block';
   } else {
     statusEl.style.display = 'none';
     helpEl.textContent = 'Sign in to allow drip writing to your Google Docs.';
@@ -3248,10 +3111,7 @@ async function detectDoc() {
 
 function setDripMode(mode) {
   drip.mode = mode;
-  const showTable = mode === 'table';
-  const showPlain = mode === 'plain';
-  document.getElementById('dripContextGroup').style.display = showTable ? 'block' : 'none';
-  document.getElementById('dripTextGroup').style.display = showPlain ? 'block' : 'none';
+  document.getElementById('dripContextGroup').style.display = mode === 'table' ? 'block' : 'none';
   document.getElementById('dripDurationGroup').style.display = mode ? 'block' : 'none';
   document.getElementById('dripStartBtn').style.display = mode ? 'block' : 'none';
   updateDripStartBtn();
@@ -3261,23 +3121,13 @@ function updateDurationLabel() {
   document.getElementById('durationLabel').textContent = document.getElementById('dripDuration').value + ' min';
 }
 
-function useWriterOutput() {
-  if (writerState.output) {
-    document.getElementById('dripText').value = writerState.output;
-  }
-}
-
 function updateDripStartBtn() {
   const btn = document.getElementById('dripStartBtn');
   const hasToken = drip.token.length > 0;
   const hasDoc = drip.docId.length > 0;
-  const hasMode = drip.mode === 'table' || (drip.mode === 'plain' && document.getElementById('dripText')?.value?.trim().length > 0);
-  btn.disabled = !(hasToken && hasDoc && hasMode);
+  const hasContent = drip.mode === 'table' || (drip.mode === 'plain' && writerState.output.length > 0);
+  btn.disabled = !(hasToken && hasDoc && hasContent);
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('dripText')?.addEventListener('input', updateDripStartBtn);
-});
 
 // ── Google Docs API ──
 
@@ -3388,7 +3238,7 @@ async function startDrip() {
 }
 
 async function runDripText(durationMin) {
-  const text = document.getElementById('dripText').value.trim();
+  const text = writerState.output.trim();
   const words = text.split(/\s+/);
   const CHUNK = 6;
   const chunks = [];
@@ -3466,7 +3316,6 @@ function resetDrip() {
   document.getElementById('dripDoneWrap').style.display = 'none';
   document.getElementById('dripDocUrl').value = '';
   document.getElementById('detectStatus').style.display = 'none';
-  document.getElementById('dripText').value = '';
   document.getElementById('dripContext').value = '';
   setDripMode(null);
   drip.docId = '';
