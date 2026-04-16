@@ -2865,6 +2865,7 @@ function removeMainVoiceSample() {
 function openDocPicker() {
   if (!currentUser) { firebaseSignIn(); return; }
   if (!drip.token) {
+    pendingDocPicker = true;
     googleOAuthSignIn();
     return;
   }
@@ -3291,6 +3292,8 @@ function updateGoogleSignInState() {
   }
 }
 
+let pendingDocPicker = false;
+
 function googleOAuthSignIn() {
   const clientId = getGoogleClientId();
 
@@ -3299,6 +3302,7 @@ function googleOAuthSignIn() {
     scope: 'https://www.googleapis.com/auth/documents https://www.googleapis.com/auth/drive.readonly',
     callback: (response) => {
       if (response.error) {
+        pendingDocPicker = false;
         const statusEl = document.getElementById('tokenStatus');
         statusEl.style.display = 'flex';
         statusEl.className = 'token-status error';
@@ -3309,6 +3313,11 @@ function googleOAuthSignIn() {
       sessionStorage.setItem('gToken', response.access_token);
       updateGoogleSignInState();
       updateDripStartBtn();
+      // Re-open doc picker if that's what triggered sign-in
+      if (pendingDocPicker) {
+        pendingDocPicker = false;
+        openDocPicker();
+      }
       // Re-detect doc if URL already entered
       const docUrl = document.getElementById('dripDocUrl').value.trim();
       if (docUrl) detectDoc();
