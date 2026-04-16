@@ -60,26 +60,8 @@
     gap: 21px;
   }
 
-  .header-left { display: flex; flex-direction: column; gap: 3px; flex-shrink: 0; }
-
-  .header h1 {
-    font-size: 28px;
-    font-weight: 700;
-    font-style: italic;
-    font-family: var(--serif);
-    color: var(--white);
-    letter-spacing: -0.02em;
-    line-height: 1;
-  }
-
-  .header .tagline {
-    font-size: 8px;
-    color: #556;
-    font-weight: 400;
-    font-family: var(--mono);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
+  .header-left { display: flex; align-items: center; flex-shrink: 0; }
+  .header-logo { height: 28px; width: auto; }
 
 
   .header-right {
@@ -715,8 +697,72 @@
     .step-center { padding: 34px 13px 55px; }
     .container { padding: 34px 13px 55px; }
     .header { padding: 13px; height: auto; gap: 13px; }
-    .header h1 { font-size: 21px; }
-    .tab-btn { padding: 5px 8px; }
+    .header-logo { height: 22px; }
+  }
+
+  /* ── Landing ── */
+  .landing {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 34px 60px;
+    text-align: center;
+  }
+  .landing-hero { margin-bottom: 60px; }
+  .landing-logo { height: 80px; width: auto; margin-bottom: 16px; }
+  .landing-subtitle {
+    font-size: 16px;
+    color: var(--text-dim);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .landing-features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    max-width: 720px;
+    margin-bottom: 60px;
+  }
+  .landing-feature { text-align: center; }
+  .feature-icon { color: var(--accent); margin-bottom: 12px; opacity: 0.7; }
+  .feature-name {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+  .feature-desc { font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+  .landing-cta {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 14px 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s, border-color 0.2s;
+    animation: cta-bounce 2s ease-in-out infinite;
+  }
+  .landing-cta:hover { color: var(--white); border-color: var(--border-hover); }
+  @keyframes cta-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(4px); }
+  }
+  @media (max-width: 768px) {
+    .landing-logo { height: 50px; }
+    .landing-features { grid-template-columns: 1fr; gap: 30px; }
   }
 
   /* ── Deep-space background ── */
@@ -1395,8 +1441,7 @@
   <!-- Header -->
   <div class="header">
     <div class="header-left">
-      <h1>SCHOOL MAX</h1>
-      <div class="tagline">writes like max · not like ai</div>
+      <img src="logo.png" alt="SCHOOL MAX" class="header-logo">
     </div>
 
     <div class="header-right">
@@ -1430,7 +1475,41 @@
     </div>
   </div>
 
-  <!-- ── WRITER SECTION ── -->
+  <!-- ── LANDING ── -->
+    <div id="landing" class="landing">
+      <div class="landing-hero">
+        <img src="logo.png" alt="SCHOOL MAX" class="landing-logo">
+        <p class="landing-subtitle">AI that writes like you — not like ChatGPT</p>
+      </div>
+      <div class="landing-features">
+        <div class="landing-feature">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="feature-name">humanizer</div>
+          <p class="feature-desc">every essay runs through undetectable.ai automatically. passes gptzero, turnitin, and every real AI detector.</p>
+        </div>
+        <div class="landing-feature">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/><line x1="3" y1="22" x2="21" y2="22"/></svg>
+          </div>
+          <div class="feature-name">drip writer</div>
+          <p class="feature-desc">types your essay into google docs character by character over 30-90 minutes. version history looks like you actually wrote it.</p>
+        </div>
+        <div class="landing-feature">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+          </div>
+          <div class="feature-name">your voice</div>
+          <p class="feature-desc">paste a writing sample and every essay matches your style. your teacher won't notice a thing.</p>
+        </div>
+      </div>
+      <button class="landing-cta" onclick="scrollToClasses()">
+        get started
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+    </div>
+
     <!-- Step 1: Class Selection -->
     <div class="step-center" id="step-type">
       <div class="step-inner">
@@ -2416,6 +2495,7 @@ function selectClass(cls) {
   document.getElementById('classBadge').textContent = cls;
   renderTypeChips(cls);
   document.getElementById('resetBtn').classList.add('visible');
+  document.getElementById('landing').style.display = 'none';
   document.getElementById('plans-section').style.display = 'none';
   document.getElementById('about-section').style.display = 'none';
   document.getElementById('voice-section').style.display = 'none';
@@ -2955,6 +3035,10 @@ async function humanize() {
   }
 }
 
+function scrollToClasses() {
+  document.getElementById('step-type').scrollIntoView({ behavior: 'smooth' });
+}
+
 function resetAll() {
   writerState = { type: null, typeLabel: '', selectedClass: '', conversationHistory: [], output: '', complicatedPunctuation: true };
   const stepType = document.getElementById('step-type');
@@ -2970,9 +3054,11 @@ function resetAll() {
     stepType.removeEventListener('animationend', h);
   });
   document.getElementById('resetBtn').classList.remove('visible');
+  document.getElementById('landing').style.display = 'flex';
   document.getElementById('plans-section').style.display = '';
   document.getElementById('about-section').style.display = '';
   document.getElementById('voice-section').style.display = '';
+  window.scrollTo(0, 0);
   document.getElementById('promptInput').value = '';
   document.getElementById('contextInput').value = '';
   document.getElementById('followUpInput').value = '';
